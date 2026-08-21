@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -385,13 +386,39 @@ func (s *Server) handleRetireCredit(c *gin.Context) {
 }
 
 func (s *Server) handleUSSD(c *gin.Context) {
-	// Standard Africa's Talking USSD form payload: sessionId, phoneNumber, networkCode, serviceCode, text
+	// Support both standard Africa's Talking form-urlencoded and JSON payloads
 	var req models.USSDSession
-	if c.ContentType() == "application/json" {
-		c.ShouldBindJSON(&req)
+	if strings.Contains(c.ContentType(), "application/json") {
+		var raw map[string]interface{}
+		if err := c.ShouldBindJSON(&raw); err == nil {
+			if v, ok := raw["sessionId"].(string); ok {
+				req.SessionID = v
+			} else if v, ok := raw["session_id"].(string); ok {
+				req.SessionID = v
+			}
+			if v, ok := raw["phoneNumber"].(string); ok {
+				req.PhoneNumber = v
+			} else if v, ok := raw["phone_number"].(string); ok {
+				req.PhoneNumber = v
+			}
+			if v, ok := raw["text"].(string); ok {
+				req.Text = v
+			}
+			if v, ok := raw["serviceCode"].(string); ok {
+				req.ServiceCode = v
+			} else if v, ok := raw["service_code"].(string); ok {
+				req.ServiceCode = v
+			}
+		}
 	} else {
 		req.SessionID = c.PostForm("sessionId")
+		if req.SessionID == "" {
+			req.SessionID = c.PostForm("session_id")
+		}
 		req.PhoneNumber = c.PostForm("phoneNumber")
+		if req.PhoneNumber == "" {
+			req.PhoneNumber = c.PostForm("phone_number")
+		}
 		req.NetworkCode = c.PostForm("networkCode")
 		req.ServiceCode = c.PostForm("serviceCode")
 		req.Text = c.PostForm("text")
