@@ -5,8 +5,16 @@ import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 import { api } from '../services/api';
 
-export const CooperativeDashboard = ({ theme }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'kilns', 'members', 'transactions', 'smes', 'sell'
+export const CooperativeDashboard = ({ theme, activeSection = 'overview', setActiveSection }) => {
+  const [internalTab, setInternalTab] = useState('overview'); // 'overview', 'kilns', 'members', 'transactions', 'smes', 'sell'
+  const activeTab = (activeSection && ['overview', 'kilns', 'members', 'transactions', 'smes', 'sell'].includes(activeSection)) ? activeSection : internalTab;
+
+  const setActiveTab = (tabId) => {
+    setInternalTab(tabId);
+    if (setActiveSection) {
+      setActiveSection(tabId);
+    }
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRegion, setFilterRegion] = useState('all');
   const [isLoading, setIsLoading] = useState(true);

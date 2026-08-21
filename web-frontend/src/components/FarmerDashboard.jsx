@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Wallet, ArrowDownToLine, Flame, Sparkles, CheckCircle2, TrendingUp,
   History, Building2, Users, FileText, ArrowRight, ShieldCheck, Lock,
@@ -38,11 +38,40 @@ export const FarmerDashboard = ({ theme, activeSection = 'overview', setActiveSe
   const [isProcessingDisbursal, setIsProcessingDisbursal] = useState(false);
   const [lastReceipt, setLastReceipt] = useState(null);
 
+  // Synchronize with Sidebar activeSection clicks
+  useEffect(() => {
+    if (activeSection === 'cashout') {
+      setShowFullRecordsView(false);
+      if (farmerData.available_ksh > 0) {
+        setCashoutAmount(farmerData.available_ksh);
+        setCashoutStep(1);
+        setAccountPassword('');
+        setPasswordError('');
+        setShowCashoutModal(true);
+      }
+    } else if (activeSection === 'records') {
+      setShowFullRecordsView(true);
+    } else if (activeSection === 'overview') {
+      setShowFullRecordsView(false);
+    } else if (activeSection === 'kiln') {
+      setShowFullRecordsView(false);
+      const el = document.getElementById('farmer-3d-kiln');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else if (activeSection === 'market') {
+      setShowFullRecordsView(false);
+      const el = document.getElementById('farmer-spot-market');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeSection]);
+
   // If user clicked the Records link, display the full-screen Records & Sales Data page!
   if (showFullRecordsView) {
     return (
       <FarmerRecordsPage
-        onBack={() => setShowFullRecordsView(false)}
+        onBack={() => {
+          setShowFullRecordsView(false);
+          if (setActiveSection) setActiveSection('overview');
+        }}
         farmerName={farmerData.name}
         farmerType={farmerType}
       />
@@ -255,7 +284,7 @@ export const FarmerDashboard = ({ theme, activeSection = 'overview', setActiveSe
       </div>
 
       {/* 3D Representation of Smart Kilns with Multi-Kiln Switcher */}
-      <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl shadow-sm">
+      <div id="farmer-3d-kiln" className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl shadow-sm">
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#2d3f58]/40 mb-4">
           <div>
             <h3 className="font-bold text-sm text-slate-900 dark:text-stone-100">Interactive 3D Smart Kiln Digital Twin</h3>
@@ -272,7 +301,7 @@ export const FarmerDashboard = ({ theme, activeSection = 'overview', setActiveSe
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Line Graph */}
-        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm">
+        <div id="farmer-spot-market" className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-3">
             <div className="flex items-center space-x-2 font-bold text-slate-900 dark:text-stone-100">
               <TrendingUp className="w-5 h-5 text-orange-500" />

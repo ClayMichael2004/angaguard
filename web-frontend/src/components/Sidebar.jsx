@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Flame, LayoutDashboard, Wallet, Users, History, TrendingUp,
   Building2, ShieldCheck, FileText, PhoneCall, Volume2, Moon, Sun,
-  LogOut, X, ChevronRight, CheckCircle2, Factory, Sparkles, Layers, User
+  LogOut, X, ChevronRight, CheckCircle2, Factory, Sparkles, Layers, User, ShoppingBag
 } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -40,6 +40,7 @@ export const Sidebar = ({
         { id: 'members', label: 'Smallholders (148)', icon: Users },
         { id: 'transactions', label: 'Transactions & Audit', icon: History },
         { id: 'smes', label: 'Corporate Offtakers', icon: Building2 },
+        { id: 'sell', label: 'Sell Pooled Credits', icon: ShoppingBag, badge: 'Trade' },
       ];
     }
     if (role === 'sme') {

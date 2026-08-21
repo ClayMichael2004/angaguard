@@ -3,7 +3,7 @@ import { ShoppingCart, BarChart2, CheckCircle2, ArrowUpRight, Building2, ShieldC
 import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 
-export const NonBioSmeDashboard = ({ theme }) => {
+export const NonBioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSection }) => {
   const [smeProfile, setSmeProfile] = useState({
     name: 'East Africa Express Fleet Freight Ltd',
     location: 'Nairobi Inland Port Depot',
@@ -12,7 +12,14 @@ export const NonBioSmeDashboard = ({ theme }) => {
     retired_credits: 20.0,
   });
 
-  const [viewMode, setViewMode] = useState('dashboard'); // 'dashboard' or 'procure'
+  const [internalViewMode, setInternalViewMode] = useState('dashboard'); // 'dashboard' or 'procure'
+  const viewMode = activeSection === 'procure' ? 'procure' : internalViewMode;
+  const setViewMode = (mode) => {
+    setInternalViewMode(mode);
+    if (setActiveSection) {
+      setActiveSection(mode === 'procure' ? 'procure' : 'overview');
+    }
+  };
 
   const [coopCreditPools] = useState([
     { id: 'POOL-KAKAMEGA', coopName: 'Kakamega Smallholder Sugarcane Coop', availableCredits: 62.4, biocharMassKg: 28450, pricePerTon: 135, region: 'Western Kenya', ncrId: 'KE-NCR-2026-KKM-01', rating: 'AAA (Biochar)' },
