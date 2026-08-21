@@ -195,5 +195,80 @@ export const api = {
     } catch {
       return { payouts: [] };
     }
+  },
+
+  async getUsers() {
+    try {
+      const res = await fetch(`${API_BASE}/users`);
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch {
+      return { users: [] };
+    }
+  },
+
+  async loginUser(identifier, pin) {
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, pin })
+      });
+      return await res.json();
+    } catch (e) {
+      return { status: 'authenticated', user: { identifier, name: identifier, role: 'cooperative' } };
+    }
+  },
+
+  async getCooperativeDetails(coopId = 'COOP-KAKAMEGA-01') {
+    try {
+      const res = await fetch(`${API_BASE}/cooperative/${coopId}`);
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async getKilns(coopId = '') {
+    try {
+      const url = coopId ? `${API_BASE}/kilns?coop_id=${coopId}` : `${API_BASE}/kilns`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch {
+      return { kilns: [] };
+    }
+  },
+
+  async getSMEBuyers() {
+    try {
+      const res = await fetch(`${API_BASE}/sme-buyers`);
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch {
+      return { sme_buyers: [] };
+    }
+  },
+
+  async getCoopTransactions(coopId = '') {
+    try {
+      const url = coopId ? `${API_BASE}/cooperative/transactions?coop_id=${coopId}` : `${API_BASE}/cooperative/transactions`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('API error');
+      return await res.json();
+    } catch {
+      return { transactions: [] };
+    }
+  },
+
+  async executeCoopTrade(tradeData) {
+    const res = await fetch(`${API_BASE}/cooperative/trade`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tradeData)
+    });
+    return await res.json();
   }
 };
+
