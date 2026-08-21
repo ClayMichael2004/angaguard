@@ -6,12 +6,14 @@ import { FarmerDashboard } from './components/FarmerDashboard';
 import { CooperativeDashboard } from './components/CooperativeDashboard';
 import { SmeDashboard } from './components/SmeDashboard';
 import { UssdPhoneModal } from './components/UssdPhoneModal';
+import { HardwareBridgeModal } from './components/HardwareBridgeModal';
 
 export const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [returnOptionView, setReturnOptionView] = useState('home'); // Opens Landing Page ('home') first on initial load
   const [theme, setTheme] = useState('dark');
   const [isUssdOpen, setIsUssdOpen] = useState(false);
+  const [isHardwareBridgeOpen, setIsHardwareBridgeOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
 
@@ -47,10 +49,12 @@ export const App = () => {
           initialView={returnOptionView}
           onLogin={handleUserLogin}
           onOpenUssd={() => setIsUssdOpen(true)}
+          onOpenHardwareBridge={() => setIsHardwareBridgeOpen(true)}
           theme={theme}
           setTheme={setTheme}
         />
         <UssdPhoneModal isOpen={isUssdOpen} onClose={() => setIsUssdOpen(false)} />
+        <HardwareBridgeModal isOpen={isHardwareBridgeOpen} onClose={() => setIsHardwareBridgeOpen(false)} />
       </div>
     );
   }
@@ -81,6 +85,7 @@ export const App = () => {
         onLogout={handleDashboardBack}
         onOpenUssd={() => setIsUssdOpen(true)}
         onOpenVoiceAssistant={() => setIsUssdOpen(true)}
+        onOpenHardwareBridge={() => setIsHardwareBridgeOpen(true)}
         theme={theme}
         setTheme={setTheme}
         activeSection={activeSection}
@@ -95,6 +100,7 @@ export const App = () => {
           onLogout={handleDashboardBack}
           onOpenUssd={() => setIsUssdOpen(true)}
           onOpenVoiceAssistant={() => setIsUssdOpen(true)}
+          onOpenHardwareBridge={() => setIsHardwareBridgeOpen(true)}
           onToggleSidebar={() => setIsSidebarOpen(true)}
           theme={theme}
           setTheme={setTheme}
@@ -132,6 +138,9 @@ export const App = () => {
 
       {/* 2G USSD Phone Simulator Modal */}
       <UssdPhoneModal isOpen={isUssdOpen} onClose={() => setIsUssdOpen(false)} />
+
+      {/* Live WaziDev Web Serial Hardware Bridge Modal */}
+      <HardwareBridgeModal isOpen={isHardwareBridgeOpen} onClose={() => setIsHardwareBridgeOpen(false)} />
 
     </div>
   );

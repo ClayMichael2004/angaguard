@@ -1,5 +1,5 @@
 import React from 'react';
-import { PhoneCall, Menu, ArrowLeft, Leaf, Volume2 } from 'lucide-react';
+import { PhoneCall, Menu, ArrowLeft, Leaf, Volume2, Usb } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { Logo } from './Logo';
 
@@ -8,6 +8,7 @@ export const Navbar = ({
   onLogout,
   onOpenUssd,
   onOpenVoiceAssistant,
+  onOpenHardwareBridge,
   onToggleSidebar,
   theme,
   setTheme,
@@ -78,10 +79,20 @@ export const Navbar = ({
           </div>
 
           {/* Right Action Tools */}
-          <div className="flex items-center space-x-2.5">
+          <div className="flex items-center space-x-2">
             <div className="hidden sm:block">
               <ThemeToggle theme={theme} setTheme={setTheme} />
             </div>
+
+            {/* Connect Hardware Web Serial Button */}
+            <button
+              onClick={onOpenHardwareBridge}
+              className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl border border-emerald-400/40 shadow-sm transition-all cursor-pointer animate-pulse-slow"
+              title="Connect Physical WaziDev Arduino via Web Serial"
+            >
+              <Usb className="w-3.5 h-3.5" />
+              <span>Connect Hardware</span>
+            </button>
 
             {onOpenVoiceAssistant && (
               <button
@@ -96,11 +107,12 @@ export const Navbar = ({
 
             <button
               onClick={onOpenUssd}
-              className="flex items-center space-x-1.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl border border-emerald-500/40 shadow-sm transition-all cursor-pointer"
+              className="flex items-center space-x-1.5 bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl border border-slate-500/40 shadow-sm transition-all cursor-pointer"
               title="Launch 2G USSD Feature Phone Simulator (*384*55#)"
             >
               <PhoneCall className="w-3.5 h-3.5" />
-              <span>2G USSD (*384*55#)</span>
+              <span className="hidden md:inline">2G USSD</span>
+              <span className="md:hidden">USSD</span>
             </button>
           </div>
         </div>

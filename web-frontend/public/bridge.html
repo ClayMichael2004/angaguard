@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset=UTF-8>
+  <meta name=viewport content=width=device-width, initial-scale=1.0>
+  <title>AngaGuard - WaziDev Web Serial Hardware Bridge</title>
+  <script src=https://cdn.tailwindcss.com></script>
+</head>
+<body class=bg-slate-950 text-slate-100 font-mono min-h-screen p-4 sm:p-8 flex flex-col items-center justify-center>
+  <div class=w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8>
+    <div class=flex items-center justify-between border-b border-slate-800 pb-4 mb-6>
+      <div class=flex items-center space-x-3>
+        <span class=text-3xl>🌿</span>
+        <div>
+          <h1 class=text-xl font-bold text-emerald-400>AngaGuard Web Serial Bridge</h1>
+          <p class=text-xs text-slate-400>WaziDev / Arduino Hardware to Render Cloud Relay</p>
+        </div>
+      </div>
+      <div id=statusBadge class=flex items-center space-x-2 px-3 py-1 bg-slate-800 rounded-full border border-slate-700 text-xs text-amber-400>
+        <span class=w-2 h-2 rounded-full bg-amber-400></span>
+        <span id=statusText>DISCONNECTED</span>
+      </div>
+    </div>
+
+    <div class=mb-6 bg-slate-950 p-4 rounded-xl border border-slate-800/80>
+      <label class=block text-xs text-slate-400 mb-2 font-bold>Target Cloud Endpoint (Render Backend):</label>
+      <input type=text id=targetUrl class=w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-emerald-300 focus:outline-none focus:border-emerald-500 value=/api/telemetry />
+      <p class=text-[11px] text-slate-500 mt-1>Default <code class=text-slate-400>/api/telemetry</code> pipes to this domain, or enter full URL like <code class=text-slate-400>https://your-backend.onrender.com/api/telemetry</code></p>
+    </div>
+
+    <div class=flex flex-wrap items-center gap-3 mb-6>
+      <button id=btnConnect onclick=toggleConnect() class=flex-1 min-w-[200px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg text-sm cursor-pointer>
+        <span>🔌 Connect WaziDev USB</span>
+      </button>
+      <button onclick=sendTestPacket() class=bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold py-3 px-4 rounded-xl text-xs cursor-pointer>
+        🧪 Send Test Packet
+      </button>
+      <button onclick=clearLogs() class=bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800 py-3 px-4 rounded-xl text-xs cursor-pointer>
+        🧹 Clear Log
+      </button>
+    </div>
+
+    <div class=bg-black/90 border border-slate-800 rounded-xl p-4>
+      <div class=flex items-center justify-between text-xs text-slate-500 border-b border-slate-800/80 pb-2 mb-3>
+        <span>LIVE SERIAL TERMINAL STREAM (9600 BAUD)</span>
+        <span id=packetCount>Packets Forwarded: 0</span>
+      </div>
+      <pre id=terminal class=text-xs text-emerald-400 h-64 overflow-y-auto leading-relaxed whitespace-pre-wrap font-mono>Waiting for WaziDev USB connection...
+Click 'Connect WaziDev USB' above to select your Arduino COM Port.</pre>
+    </div>
+
+    <div class=mt-6 text-center>
+      <a href=/ class=text-xs text-slate-400 hover:text-emerald-400 transition-colors>← Return to AngaGuard Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    let port = null;
+    let reader = null;
+    let keepReading = false;
+    let forwardedCount = 0;
+
+    function log(msg, colorClass = text-slate-300) {
+      const term = document.getElementById(terminal);
+      const time = new Date().toISOString().split(T)[1].slice(0, 8);
+      const span = document.createElement(div);
+      span.className = colorClass;
+      span.innerText = [] ;
+      term.appendChild(span);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById(terminal).innerHTML = ";
+ log(Terminal log cleared., text-slate-500);
+ }
+
+ async function toggleConnect() {
+ if (port) {
+ keepReading = false;
+ if (reader) { await reader.cancel(); }
+ await port.close();
+ port = null;
+ updateStatus(false);
+ log(Serial port disconnected., text-amber-400);
+ return;
+ }
+
+ if (!(serial in navigator)) {
+ alert(Web Serial API is not supported on this browser.\nPlease use Google Chrome or Microsoft Edge.);
+ log(ERROR: Web Serial API not supported in this browser., text-rose-500 font-bold);
+ return;
+ }
+
+ try {
+ log(Requesting USB Serial device from browser popup..., text-slate-400);
+ port = await navigator.serial.requestPort();
+ await port.open({ baudRate: 9600 });
+
+ updateStatus(true);
+ log(SUCCESS: Connected to WaziDev at 9600 baud!, text-emerald-400 font-bold);
+
+ keepReading = true;
+ readSerialData();
+ } catch (err) {
+ log(Connection cancelled or failed: , text-rose-400);
+ updateStatus(false);
+ }
+ }
+
+ function updateStatus(connected) {
+ const badge = document.getElementById(statusBadge);
+ const text = document.getElementById(statusText);
+ const btn = document.getElementById(btnConnect);
+
+ if (connected) {
+ badge.className = flex items-center space-x-2 px-3 py-1 bg-emerald-950/80 rounded-full border border-emerald-500/40 text-xs text-emerald-400;
+ badge.innerHTML = '<span class=w-2 h-2 rounded-full bg-emerald-400 animate-ping></span><span>STREAMING LIVE</span>';
+ btn.innerText = Disconnect Hardware;
+ btn.className = flex-1 min-w-[200px] bg-rose-700 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg text-sm cursor-pointer;
+ } else {
+ badge.className = flex items-center space-x-2 px-3 py-1 bg-slate-800 rounded-full border border-slate-700 text-xs text-amber-400;
+ badge.innerHTML = '<span class=w-2 h-2 rounded-full bg-amber-400></span><span>DISCONNECTED</span>';
+ btn.innerText = 🔌 Connect WaziDev USB;
+ btn.className = flex-1 min-w-[200px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg text-sm cursor-pointer;
+ }
+ }
+
+ async function readSerialData() {
+ const textDecoder = new TextDecoderStream();
+ const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+ reader = textDecoder.readable.getReader();
+ let buffer = ;
+
+ try {
+ while (keepReading) {
+ const { value, done } = await reader.read();
+ if (done) break;
+ if (value) {
+ buffer += value;
+ let lines = buffer.split(\n);
+ buffer = lines.pop();
+
+ for (let rawLine of lines) {
+ let line = rawLine.trim();
+ if (!line) continue;
+
+ if (!line.startsWith({)) {
+ log([Arduino] , text-slate-400);
+ continue;
+ }
+
+ try {
+ const payload = JSON.parse(line);
+ log([Valid JSON] Temp: °C | InitH: cm | FinalH: cm, text-cyan-400 font-bold);
+ await forwardToCloud(payload);
+ } catch (e) {
+ log([Raw Serial] , text-slate-400);
+ }
+ }
+ }
+ }
+ } catch (err) {
+ log(Serial reading error: , text-rose-400);
+ } finally {
+ reader.releaseLock();
+ }
+ }
+
+ async function forwardToCloud(payload) {
+ const url = document.getElementById(targetUrl).value.trim() || /api/telemetry;
+ log([Forwarding] POST ..., text-amber-300);
+
+ try {
+ const response = await fetch(url, {
+ method: POST,
+ headers: { Content-Type: application/json },
+ body: JSON.stringify(payload)
+ });
+
+ const data = await response.json();
+ forwardedCount++;
+ document.getElementById(packetCount).innerText = Packets Forwarded: ;
+
+ if (response.ok) {
+ log([Cloud 200 OK] Biochar: kg | CORC: | Payout: KSh , text-emerald-400 font-bold);
+ } else {
+ log([Cloud Rejection] , text-rose-400 font-bold);
+ }
+ } catch (err) {
+ log([Cloud Network Error] , text-rose-500);
+ }
+ }
+
+ async function sendTestPacket() {
+ const testPacket = {
+ device_uid: MCU-WAZIDEV-77A9,
+ kiln_id: KILN-001,
+ coop_id: COOP-KAKAMEGA-01,
+ farmer_phone: +254712345678,
+ initial_height_cm: 85.0,
+ final_height_cm: 30.0,
+ peak_outer_temp_c: 58.5,
+ duration_minutes: 45.0,
+ heating_rate: 4.2,
+ latitude: 0.2827,
+ longitude: 34.7519,
+ cell_tower_id: SAF-TOWER-KKM-04,
+ timestamp: Math.floor(Date.now() / 1000)
+ };
+
+ log([Test Packet Generated] Forwarding synthetic WaziDev payload to cloud..., text-purple-300);
+ await forwardToCloud(testPacket);
+ }
+ </script>
+</body>
+</html>

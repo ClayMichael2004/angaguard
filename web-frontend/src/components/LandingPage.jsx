@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Smartphone, Users, Building2, ArrowRight, ShieldCheck, PhoneCall, LogIn, UserPlus, ArrowLeft, Key, CheckCircle2 } from 'lucide-react';
+import { Smartphone, Users, Building2, ArrowRight, ShieldCheck, PhoneCall, LogIn, UserPlus, ArrowLeft, Key, CheckCircle2, Usb } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { Logo } from './Logo';
 import { api } from '../services/api';
 
-export const LandingPage = ({ onLogin, onOpenUssd, theme, setTheme, initialView = 'home' }) => {
+export const LandingPage = ({ onLogin, onOpenUssd, onOpenHardwareBridge, theme, setTheme, initialView = 'home' }) => {
   const [historyStack, setHistoryStack] = useState(() => {
     return initialView && initialView !== 'home' ? ['home', initialView] : ['home'];
   });
@@ -147,7 +147,19 @@ export const LandingPage = ({ onLogin, onOpenUssd, theme, setTheme, initialView 
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2.5">
+            {onOpenHardwareBridge && (
+              <button
+                onClick={onOpenHardwareBridge}
+                className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl border border-emerald-400/40 shadow-sm transition-all cursor-pointer animate-pulse-slow"
+                title="Connect Physical WaziDev Arduino via Web Serial"
+              >
+                <Usb className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Connect Hardware</span>
+                <span className="sm:hidden">USB</span>
+              </button>
+            )}
+
             <button
               onClick={() => pushView('login-select')}
               className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
@@ -170,7 +182,7 @@ export const LandingPage = ({ onLogin, onOpenUssd, theme, setTheme, initialView 
 
             <button
               onClick={onOpenUssd}
-              className="flex items-center space-x-1.5 bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition-all cursor-pointer"
+              className="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition-all cursor-pointer"
             >
               <PhoneCall className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">2G USSD</span>

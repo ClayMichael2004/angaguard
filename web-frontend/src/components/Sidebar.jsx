@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Flame, LayoutDashboard, Wallet, Users, History, TrendingUp,
   Building2, ShieldCheck, FileText, PhoneCall, Volume2, Moon, Sun,
-  LogOut, X, ChevronRight, CheckCircle2, Factory, Sparkles, Layers, User, ShoppingBag
+  LogOut, X, ChevronRight, CheckCircle2, Factory, Sparkles, Layers, User, ShoppingBag, Usb
 } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -13,6 +13,7 @@ export const Sidebar = ({
   onLogout,
   onOpenUssd,
   onOpenVoiceAssistant,
+  onOpenHardwareBridge,
   theme,
   setTheme,
   activeSection = 'overview',
@@ -150,6 +151,20 @@ export const Sidebar = ({
             <p className="px-3 text-[10px] uppercase font-bold text-slate-400 dark:text-stone-500 tracking-wider">
               Hardware & Offline Tools
             </p>
+
+            <button
+              onClick={() => {
+                if (onOpenHardwareBridge) onOpenHardwareBridge();
+                if (setIsOpen) setIsOpen(false);
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800/40 text-emerald-900 dark:text-emerald-300 font-bold transition-all cursor-pointer"
+            >
+              <div className="flex items-center space-x-2">
+                <Usb className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>WaziDev USB Bridge</span>
+              </div>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200 font-black">Web Serial</span>
+            </button>
 
             <button
               onClick={() => {
