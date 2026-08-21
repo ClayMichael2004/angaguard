@@ -72,15 +72,30 @@ export const UssdPhoneModal = ({ isOpen, onClose }) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel(); // Stop ongoing speech
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.rate = 0.92;
-      utterance.pitch = 1.0;
-      utterance.lang = lang === 'sw' ? 'sw-KE' : 'en-US';
+      utterance.rate = 0.96;
+      utterance.pitch = 1.15; // Natural melodic female pitch
+      utterance.lang = 'en-US';
 
-      // Fallback voice selection
+      // Select high-quality American female voice
       const voices = window.speechSynthesis.getVoices();
-      const matchedVoice = voices.find(v => v.lang.startsWith(lang === 'sw' ? 'sw' : 'en'));
-      if (matchedVoice) {
-        utterance.voice = matchedVoice;
+      const americanFemaleVoice = voices.find(v => 
+        (v.lang === 'en-US' || v.lang.startsWith('en')) &&
+        (v.name.toLowerCase().includes('female') ||
+         v.name.toLowerCase().includes('zira') ||
+         v.name.toLowerCase().includes('samantha') ||
+         v.name.toLowerCase().includes('victoria') ||
+         v.name.toLowerCase().includes('google us english') ||
+         v.name.toLowerCase().includes('jenny') ||
+         v.name.toLowerCase().includes('aria') ||
+         v.name.toLowerCase().includes('karen') ||
+         v.name.toLowerCase().includes('susan') ||
+         v.name.toLowerCase().includes('natural') ||
+         v.name.toLowerCase().includes('woman') ||
+         v.name.toLowerCase().includes('lady'))
+      ) || voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
+
+      if (americanFemaleVoice) {
+        utterance.voice = americanFemaleVoice;
       }
 
       utterance.onend = () => {

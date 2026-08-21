@@ -47,10 +47,35 @@ export const UssdSimulatorModal: React.FC<UssdSimulatorModalProps> = ({ isOpen, 
     setVoicePlaying(true);
     // Simple Web Speech API or synthesized voice simulation
     if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(
-        "Habari Wanjala. Mfumo wa AngaGuard umethibitisha kuwa umechoma kilo sabini na tisa nukta nane za mkaa bora wa biochar. Salio lako la Em-Pesa limetumwa moja kwa moja kwa simu yako."
+        "Hello Wanjala. The AngaGuard dMRV oracle has verified your harvest of 79.8 kilograms of biochar. Your M-Pesa funds have been disbursed directly to your mobile phone."
       );
-      utterance.rate = 0.9;
+      utterance.rate = 0.96;
+      utterance.pitch = 1.15;
+      utterance.lang = 'en-US';
+
+      const voices = window.speechSynthesis.getVoices();
+      const americanFemaleVoice = voices.find(v => 
+        (v.lang === 'en-US' || v.lang.startsWith('en')) &&
+        (v.name.toLowerCase().includes('female') ||
+         v.name.toLowerCase().includes('zira') ||
+         v.name.toLowerCase().includes('samantha') ||
+         v.name.toLowerCase().includes('victoria') ||
+         v.name.toLowerCase().includes('google us english') ||
+         v.name.toLowerCase().includes('jenny') ||
+         v.name.toLowerCase().includes('aria') ||
+         v.name.toLowerCase().includes('karen') ||
+         v.name.toLowerCase().includes('susan') ||
+         v.name.toLowerCase().includes('natural') ||
+         v.name.toLowerCase().includes('woman') ||
+         v.name.toLowerCase().includes('lady'))
+      ) || voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
+
+      if (americanFemaleVoice) {
+        utterance.voice = americanFemaleVoice;
+      }
+
       utterance.onend = () => setVoicePlaying(false);
       utterance.onerror = () => setVoicePlaying(false);
       window.speechSynthesis.speak(utterance);

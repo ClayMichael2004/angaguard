@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Factory, ShieldCheck, Download, Search, Users, Flame, Sparkles, BarChart3, CheckCircle2, Building2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Factory, ShieldCheck, Download, Search, Users, Flame, Sparkles, BarChart3, CheckCircle2, Building2, History } from 'lucide-react';
 import { LedgerExplorerView } from './LedgerExplorerView';
 import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
@@ -18,16 +18,24 @@ export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSe
   });
 
   const [internalView, setInternalView] = useState('overview'); // 'overview', 'outgrowers', 'ledger', 'reports'
-  const activeView = activeSection || internalView;
+  const activeView = (activeSection && ['overview', 'outgrowers', 'ledger', 'reports'].includes(activeSection)) ? activeSection : internalView;
+
   const setActiveView = (viewId) => {
     setInternalView(viewId);
     if (setActiveSection) {
       setActiveSection(viewId);
     }
   };
+
   const [showCertModal, setShowCertModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCrop, setFilterCrop] = useState('all');
+
+  useEffect(() => {
+    if (activeSection === 'reports') {
+      setShowCertModal(true);
+    }
+  }, [activeSection]);
 
   const scope1 = Number(((smeInfo.scope1_diesel_liters * 2.68) / 1000).toFixed(2));
   const scope2 = Number(((smeInfo.scope2_grid_kwh * 0.12) / 1000).toFixed(2));
@@ -68,6 +76,35 @@ export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSe
     return matchesSearch && f.crop.toLowerCase().includes(filterCrop.toLowerCase());
   });
 
+  const smeLedgerBlocks = fundedFarmersRegistry.map((f, i) => ({
+    index: 104 - i,
+    timestamp: new Date(Date.now() - i * 86400000).toISOString(),
+    previous_hash: `8f7a6b5c4d3e2f1a9b0c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f${i}`,
+    block_hash: `9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a9b0c8d7e6f5a4b3c2d1e0f9a${i}`,
+    merkle_root: `1f2e3d4c5b6a7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f${i}`,
+    validator_sig: 'ECDSA-SECP256K1-ORACLE-SIG-KE-NCR-PROD-VALIDATOR-01',
+    asset: {
+      asset_id: `AG-dNFT-2026-KKM-${String(89 - i).padStart(4, '0')}`,
+      batch_id: `BATCH-2026-0819-${String(4 + i).padStart(2, '0')}`,
+      kiln_id: f.kiln,
+      coop_id: 'COOP-KAKAMEGA-01',
+      farmer_phone: f.phone,
+      farmer_name: f.name,
+      biochar_yield_kg: f.biocharKg,
+      gross_co2e_kg: Number((f.creditsTons * 1000).toFixed(1)),
+      net_metric_tons_co2e: f.creditsTons,
+      carbonmark_market_usd: Number((f.creditsTons * 135).toFixed(2)),
+      market_price_per_ton: 135.0,
+      farmer_payout_ksh: f.incentiveKsh,
+      coop_payout_ksh: Number((f.incentiveKsh * 0.2).toFixed(0)),
+      platform_fee_usd: 1.50,
+      kenya_ncr_tracking_id: `KE-NCR-2026-${f.lastReceipt}`,
+      is_validated: true,
+      verification_hash: `5c4d3e2f1a9b0c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c${i}`,
+      created_at: new Date(Date.now() - i * 86400000).toISOString()
+    }
+  }));
+
   return (
     <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-slate-900 dark:text-stone-100">
       
@@ -100,6 +137,32 @@ export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSe
             <span>ISSB / IFRS S2 Pass</span>
           </button>
         </div>
+      </div>
+
+      {/* Navigation Sub-Tabs */}
+      <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-[#2d3f58]/40 pb-3 overflow-x-auto">
+        {[
+          { id: 'overview', label: 'ESG Net-Zero Overview', icon: Factory },
+          { id: 'outgrowers', label: `Funded Outgrowers (${fundedFarmersRegistry.length})`, icon: Users },
+          { id: 'ledger', label: 'SHA-256 Ledger Audit', icon: History },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeView === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveView(tab.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                isActive
+                  ? 'bg-emerald-700 text-white shadow-sm'
+                  : 'bg-white dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58] text-slate-700 dark:text-stone-300 hover:text-emerald-600 dark:hover:text-emerald-400'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {activeView === 'overview' && (
@@ -177,7 +240,7 @@ export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSe
                   </div>
                   <button
                     onClick={() => setActiveView('outgrowers')}
-                    className="text-orange-600 dark:text-orange-400 hover:underline font-bold"
+                    className="text-orange-600 dark:text-orange-400 hover:underline font-bold cursor-pointer"
                   >
                     View All {fundedFarmersRegistry.length} Records &rarr;
                   </button>
@@ -203,7 +266,7 @@ export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSe
                 <span>Scope 3 Agro Insetting: Zero Greenwashing</span>
                 <button
                   onClick={() => setActiveView('outgrowers')}
-                  className="text-emerald-700 dark:text-emerald-400 hover:underline font-bold"
+                  className="text-emerald-700 dark:text-emerald-400 hover:underline font-bold cursor-pointer"
                 >
                   Open Full Outgrower Audit Trail &rarr;
                 </button>
@@ -332,7 +395,7 @@ export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSe
       {/* ========================================================================= */}
       {activeView === 'ledger' && (
         <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl shadow-sm">
-          <LedgerExplorerView blocks={[]} onVerifyChain={() => {}} />
+          <LedgerExplorerView blocks={smeLedgerBlocks} onVerifyChain={() => {}} />
         </div>
       )}
 

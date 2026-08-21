@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ShoppingCart, BarChart2, CheckCircle2, ArrowUpRight, Building2, ShieldCheck, Download, Lock, Smartphone, AlertCircle, X, History, FileText, ArrowLeft, Check, RefreshCw } from 'lucide-react';
+import { ShoppingCart, BarChart2, CheckCircle2, ArrowUpRight, Building2, ShieldCheck, Download, Lock, Smartphone, AlertCircle, X, History, FileText, ArrowLeft, Check, RefreshCw, Layers } from 'lucide-react';
 import { LineGraph } from './LineGraph';
+import { LedgerExplorerView } from './LedgerExplorerView';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 
 export const NonBioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSection }) => {
@@ -12,12 +13,12 @@ export const NonBioSmeDashboard = ({ theme, activeSection = 'overview', setActiv
     retired_credits: 20.0,
   });
 
-  const [internalViewMode, setInternalViewMode] = useState('dashboard'); // 'dashboard' or 'procure'
-  const viewMode = activeSection === 'procure' ? 'procure' : internalViewMode;
+  const [internalViewMode, setInternalViewMode] = useState('dashboard'); // 'dashboard', 'procure', 'ledger'
+  const viewMode = activeSection === 'procure' ? 'procure' : activeSection === 'ledger' ? 'ledger' : internalViewMode;
   const setViewMode = (mode) => {
     setInternalViewMode(mode);
     if (setActiveSection) {
-      setActiveSection(mode === 'procure' ? 'procure' : 'overview');
+      setActiveSection(mode);
     }
   };
 
@@ -299,7 +300,7 @@ export const NonBioSmeDashboard = ({ theme, activeSection = 'overview', setActiv
 
                   <div className="text-left sm:text-right sm:border-l sm:border-[#443028] sm:pl-6 space-y-1">
                     <p className="text-sm font-black text-emerald-400">{rec.tons} Tonnes CO2e</p>
-                    <p className="text-xs text-white">${rec.priceUsd.toLocaleString()} USD (KSh {rec.priceKsh.toLocaleString()})</p>
+                    <p className="text-xs text-white">${(rec.priceUsd || 0).toLocaleString()} USD (KSh ${(rec.priceKsh || 0).toLocaleString()})</p>
                   </div>
                 </div>
               ))}
@@ -761,6 +762,15 @@ export const NonBioSmeDashboard = ({ theme, activeSection = 'overview', setActiv
             </div>
           )}
 
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* VIEW 3: CRYPTOGRAPHIC dMRV LEDGER VIEW                                     */}
+      {/* ========================================================================= */}
+      {viewMode === 'ledger' && (
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl shadow-sm">
+          <LedgerExplorerView onVerifyChain={() => {}} />
         </div>
       )}
 
