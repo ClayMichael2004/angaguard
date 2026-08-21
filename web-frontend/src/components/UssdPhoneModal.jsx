@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Phone, PhoneOff, RotateCcw, Volume2, VolumeX, MessageSquare, ShieldCheck, Sparkles, Flame, CheckCircle2, Globe } from 'lucide-react';
+import {
+  X, Phone, RotateCcw, Volume2, VolumeX, MessageSquare, ShieldCheck,
+  Flame, CheckCircle2, Globe, Play, Pause, Mic, Radio, Headphones
+} from 'lucide-react';
 import { Logo } from './Logo';
 
 export const UssdPhoneModal = ({ isOpen, onClose }) => {
@@ -12,6 +15,12 @@ export const UssdPhoneModal = ({ isOpen, onClose }) => {
   const [backlight, setBacklight] = useState('green'); // 'green', 'amber', 'cyan'
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [smsNotification, setSmsNotification] = useState(null);
+
+  // Voice Assistant state
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const [isVoicePlaying, setIsVoicePlaying] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [voiceTitle, setVoiceTitle] = useState('');
 
   // Farmer profile state in USSD
   const [farmer, setFarmer] = useState({
@@ -27,7 +36,7 @@ export const UssdPhoneModal = ({ isOpen, onClose }) => {
 
   const inputRef = useRef(null);
 
-  // Audio effect generator using Web Audio API
+  // Audio key tone generator using Web Audio API
   const playTone = (freq = 800, duration = 0.05, type = 'sine') => {
     if (!soundEnabled) return;
     try {
@@ -43,8 +52,58 @@ export const UssdPhoneModal = ({ isOpen, onClose }) => {
       osc.start();
       osc.stop(audioCtx.currentTime + duration);
     } catch (e) {
-      // Audio not permitted or context closed
+      // Audio context restricted or unavailable
     }
+  };
+
+  // Web Speech API Voice Synthesis Engine (Swahili & English)
+  const triggerVoiceAssistant = (customText = null, title = null) => {
+    const swahiliText = `Habari ndugu Wanjala Wafula. Huu ni mfumo wa sauti wa AngaGuard dMRV Oracle. Pipa lako la smart kiln nambari KILN-001 limekamilisha mchakato wa kuchoma mkaa wa biochar kwa joto la nyuzi mia tano na sabini na moja selsiyasi. Mavuno yako ya kilo themanini za mkaa yamethibitishwa. Salio lako linalopatikana kutoa kwa M-Pesa ni shilingi elfu kumi na mbili mia nne na hamsini. Piga nyota tatu nane nne nyota hamsini na tano reli kutoa pesa.`;
+    const englishText = `Hello Wanjala Wafula. This is the AngaGuard dMRV Oracle voice assistant. Your smart kiln KILN-001 has successfully completed the pyrolysis burn cycle at 571 degrees Celsius. Your harvest of 80 kilograms of verified biochar has been sealed on the blockchain. Your available M-Pesa balance is 12,450 Kenya Shillings. Dial star 384 star 55 hash to withdraw your funds.`;
+
+    const textToSpeak = customText || (lang === 'sw' ? swahiliText : englishText);
+    const heading = title || (lang === 'sw' ? 'Msaidizi wa Sauti wa AngaGuard (Kiswahili)' : 'AngaGuard AI Voice Assistant (English)');
+
+    setVoiceTranscript(textToSpeak);
+    setVoiceTitle(heading);
+    setIsVoiceActive(true);
+    setIsVoicePlaying(true);
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel(); // Stop ongoing speech
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.rate = 0.92;
+      utterance.pitch = 1.0;
+      utterance.lang = lang === 'sw' ? 'sw-KE' : 'en-US';
+
+      // Fallback voice selection
+      const voices = window.speechSynthesis.getVoices();
+      const matchedVoice = voices.find(v => v.lang.startsWith(lang === 'sw' ? 'sw' : 'en'));
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
+
+      utterance.onend = () => {
+        setIsVoicePlaying(false);
+      };
+      utterance.onerror = () => {
+        setIsVoicePlaying(false);
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      // If Web Speech not supported, simulate playing timer
+      setTimeout(() => {
+        setIsVoicePlaying(false);
+      }, 6000);
+    }
+  };
+
+  const stopVoiceAssistant = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsVoicePlaying(false);
   };
 
   // Build Root Menu String
@@ -79,6 +138,8 @@ export const UssdPhoneModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       resetSession();
+    } else {
+      stopVoiceAssistant();
     }
   }, [isOpen, lang]);
 
@@ -119,7 +180,7 @@ export const UssdPhoneModal = ({ isOpen, onClose }) => {
       const nextSession = sessionText ? `${sessionText}*${rawVal}` : rawVal;
       setSessionText(nextSession);
       evaluateState(nextSession, rawVal);
-    }, 280);
+    }, 250);
   };
 
   const evaluateState = (fullPath, lastInput = '') => {
@@ -129,13 +190,13 @@ export const UssdPhoneModal = ({ isOpen, onClose }) => {
     // ROOT MENU SELECTION
     if (parts.length === 1) {
       if (top === '1') {
-        // 1. Balance & Biochar - Requires 4-Digit M-Pesa PIN Auth
+        // 1. Balance & Biochar
         if (lang === 'sw') {
-          setScreenText(`CON Uthibitisho wa Usalama:
-Ingiza PIN yako ya M-Pesa (tarakimu 4) kutazama salio na mkaa:`);
+          setScreenText(`CON Uthibitisho wa Mfumo:
+Ingiza nenosiri lako la AngaGuard (tarakimu 4) kutazama salio na mkaa:`);
         } else {
-          setScreenText(`CON Security Verification:
-Enter your 4-digit M-Pesa PIN to access wallet & harvest records:`);
+          setScreenText(`CON System Verification:
+Enter your 4-digit AngaGuard Account Passcode to access records:`);
         }
         return;
       }
@@ -202,13 +263,15 @@ You have ${farmer.creditsTons} tCO2e verified.
       }
 
       if (top === '5') {
-        // 5. Voice IVR
+        // 5. Voice IVR - Trigger Active Voice Playback!
         setIsSessionActive(false);
         setScreenText(lang === 'sw'
-          ? `END [AI Voice Assistance]
-Utapokea simu ya maelekezo ya sauti ya Kiswahili kutoka kwa mfumo wa AngaGuard (+254700000000) ndani ya dakika 1.`
-          : `END [AI Voice Assistance]
-You will receive an automated AI Voice call in Swahili/English from AngaGuard within 1 minute.`);
+          ? `END [Msaada wa Sauti Umeanza]
+Simu ya sauti ya Kiswahili inasomwa sasa. Sikiliza maelekezo ya mavuno na malipo kupitia spika ya simu yako.`
+          : `END [Voice Assistance Started]
+AI Voice IVR audio is now playing. Listen to your verified harvest and payout breakdown.`);
+        
+        triggerVoiceAssistant();
         return;
       }
 
@@ -223,7 +286,6 @@ You will receive an automated AI Voice call in Swahili/English from AngaGuard wi
         return;
       }
 
-      // Invalid top choice
       setIsSessionActive(false);
       setScreenText(lang === 'sw'
         ? 'END Chaguo si sahihi. Piga *384*55# tena.'
@@ -232,14 +294,14 @@ You will receive an automated AI Voice call in Swahili/English from AngaGuard wi
     }
 
     // SUB-MENUS (parts.length >= 2)
-    // --- 1. BALANCE & BIOCHAR PIN AUTHENTICATION ---
+    // --- 1. BALANCE & BIOCHAR PASSCODE AUTHENTICATION ---
     if (top === '1') {
       const pin = parts[1]?.trim() || '';
       if (pin.length !== 4 || isNaN(Number(pin))) {
         setIsSessionActive(false);
         setScreenText(lang === 'sw'
-          ? 'END PIN si sahihi! PIN ya M-Pesa lazima iwe na tarakimu 4. Ombi limekataliwa.'
-          : 'END Invalid PIN! M-Pesa PIN must be exactly 4 digits. Request denied.');
+          ? 'END Nenosiri si sahihi! Nenosiri lazima liwe na tarakimu 4. Ombi limekataliwa.'
+          : 'END Invalid Passcode! Must be exactly 4 digits. Request denied.');
         return;
       }
 
@@ -323,7 +385,7 @@ e.g. KILN-008 or KILN-015
       }
     }
 
-    // --- 3. WITHDRAWAL SUB-MENUS & PIN AUTHENTICATION ---
+    // --- 3. WITHDRAWAL SUB-MENUS & SYSTEM PASSCODE AUTHENTICATION ---
     if (top === '3') {
       let amountToWithdraw = farmer.availableKsh;
       let pinStepIndex = 2;
@@ -357,28 +419,28 @@ e.g. 3000
         pinStepIndex = 3;
       }
 
-      // STEP: Prompt for M-Pesa PIN
+      // STEP: Prompt for AngaGuard Account Passcode
       if (parts.length <= pinStepIndex) {
         if (lang === 'sw') {
-          setScreenText(`CON [Uthibitisho wa Usalama]
-Unatoa KSh ${amountToWithdraw.toLocaleString()} kwenda kwa ${farmer.name} (${farmer.phone}).
-Ingiza PIN yako ya M-Pesa (tarakimu 4):`);
+          setScreenText(`CON [Uthibitisho wa Kutoa Pesa]
+Unatuma KSh ${amountToWithdraw.toLocaleString()} kwa simu yako ya M-Pesa (${farmer.phone}).
+Ingiza nenosiri lako la AngaGuard (tarakimu 4):`);
         } else {
-          setScreenText(`CON [Security Authorization]
-Withdrawing KSh ${amountToWithdraw.toLocaleString()} to ${farmer.name} (${farmer.phone}).
-Enter your 4-digit M-Pesa PIN:`);
+          setScreenText(`CON [Disbursal Authorization]
+Disbursing KSh ${amountToWithdraw.toLocaleString()} via M-Pesa to ${farmer.phone}.
+Enter your 4-digit Account Passcode:`);
         }
         return;
       }
 
-      // STEP: PIN Validation & Execution
+      // STEP: Passcode Validation & Execution
       const enteredPin = parts[pinStepIndex];
       if (enteredPin.length !== 4 || isNaN(Number(enteredPin))) {
         setIsSessionActive(false);
         playTone(300, 0.2, 'sawtooth');
         setScreenText(lang === 'sw'
-          ? 'END PIN si sahihi! PIN ya M-Pesa lazima iwe na tarakimu 4. Muamala umekataliwa kwa sababu za usalama.'
-          : 'END Invalid PIN! M-Pesa PIN must be exactly 4 digits. Transaction rejected for security.');
+          ? 'END Nenosiri si sahihi! Lazima liwe na tarakimu 4. Muamala umekataliwa.'
+          : 'END Invalid Passcode! Must be exactly 4 digits. Transaction rejected.');
         return;
       }
 
@@ -426,16 +488,16 @@ SMS confirmation delivered.`);
         setScreenText(lang === 'sw'
           ? `CON [Uthibitisho wa Soko]
 Uza mikopo kwa Ushirika wa Kakamega.
-Ingiza PIN ya M-Pesa kuthibitisha agizo:`
+Ingiza nenosiri lako la AngaGuard kuthibitisha agizo:`
           : `CON [Marketplace Authorization]
 Sell verified credits to Kakamega Coop Pool.
-Enter your 4-digit M-Pesa PIN to sign:`);
+Enter your 4-digit Account Passcode to sign:`);
         return;
       }
       const pin = parts[2];
       if (pin.length !== 4) {
         setIsSessionActive(false);
-        setScreenText(lang === 'sw' ? 'END PIN si sahihi. Agizo limesitishwa.' : 'END Invalid PIN. Trade aborted.');
+        setScreenText(lang === 'sw' ? 'END Nenosiri si sahihi. Agizo limesitishwa.' : 'END Invalid Passcode. Trade aborted.');
         return;
       }
       const tradeRef = `CRD${Math.floor(100000 + Math.random() * 900000)}`;
@@ -466,26 +528,46 @@ Thank you for harvesting clean air!`);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/85 backdrop-blur-md p-4 animate-fadeIn font-mono text-xs">
-      <div className="relative bg-[#1c1512] border border-[#443028] max-w-md w-full p-5 sm:p-6 rounded-3xl space-y-4 shadow-2xl text-stone-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fadeIn font-mono text-xs">
+      <div className="relative bg-[#0f172a] light:bg-[#ffffff] border border-[#2d3f58] light:border-[#cbd5e1] max-w-lg w-full p-5 sm:p-6 rounded-3xl space-y-4 shadow-2xl text-stone-100 light:text-slate-900">
         
         {/* Modal Header & Quick Toggles */}
-        <div className="flex items-center justify-between border-b border-[#443028] pb-3">
+        <div className="flex items-center justify-between border-b border-[#2d3f58] light:border-[#e2e8f0] pb-3">
           <div className="flex items-center space-x-2">
             <Logo size="sm" />
-            <span className="text-[11px] font-bold text-orange-500 bg-orange-950/40 border border-orange-800/40 px-2 py-0.5 rounded-full">
-              2G USSD Gateway
+            <span className="text-[11px] font-bold text-orange-400 light:text-orange-700 bg-orange-950/40 light:bg-orange-100 border border-orange-800/40 px-2.5 py-0.5 rounded-full">
+              2G USSD & Voice Gateway
             </span>
           </div>
 
           <div className="flex items-center space-x-2">
+            {/* Direct Voice Assistant Play Button */}
+            <button
+              onClick={() => {
+                if (isVoicePlaying) {
+                  stopVoiceAssistant();
+                } else {
+                  triggerVoiceAssistant();
+                }
+              }}
+              className={`px-2.5 py-1 rounded-lg border font-bold flex items-center space-x-1 cursor-pointer transition-all ${
+                isVoicePlaying
+                  ? 'bg-orange-600 border-orange-400 text-white animate-pulse'
+                  : 'bg-[#1e293b] light:bg-slate-100 border-[#2d3f58] light:border-[#cbd5e1] text-orange-400 light:text-orange-700 hover:border-orange-500'
+              }`}
+              title="Speak / Listen to AI Voice Assistant (Swahili/English)"
+            >
+              <Headphones className="w-3.5 h-3.5" />
+              <span className="text-[10px]">{isVoicePlaying ? 'Playing Voice...' : 'Voice IVR'}</span>
+            </button>
+
             {/* Language Switch */}
             <button
               onClick={() => {
                 setLang(lang === 'sw' ? 'en' : 'sw');
                 resetSession();
               }}
-              className="px-2 py-1 bg-[#120e0c] border border-[#443028] rounded-lg text-stone-300 hover:text-white flex items-center space-x-1 cursor-pointer"
+              className="px-2 py-1 bg-[#1e293b] light:bg-slate-100 border border-[#2d3f58] light:border-[#cbd5e1] rounded-lg text-stone-300 light:text-slate-700 hover:text-white flex items-center space-x-1 cursor-pointer"
               title="Toggle USSD Language"
             >
               <Globe className="w-3.5 h-3.5 text-emerald-500" />
@@ -495,7 +577,7 @@ Thank you for harvesting clean air!`);
             {/* Sound Toggle */}
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-1 bg-[#120e0c] border border-[#443028] rounded-lg text-stone-300 hover:text-white cursor-pointer"
+              className="p-1 bg-[#1e293b] light:bg-slate-100 border border-[#2d3f58] light:border-[#cbd5e1] rounded-lg text-stone-300 light:text-slate-700 hover:text-white cursor-pointer"
               title="Toggle Keypad Sound"
             >
               {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-500" /> : <VolumeX className="w-3.5 h-3.5 text-stone-500" />}
@@ -514,32 +596,101 @@ Thank you for harvesting clean air!`);
             />
 
             {/* Close Modal */}
-            <button onClick={onClose} className="p-1 rounded-lg border border-[#443028] text-stone-400 hover:text-white cursor-pointer">
+            <button
+              onClick={() => {
+                stopVoiceAssistant();
+                onClose();
+              }}
+              className="p-1 rounded-lg border border-[#2d3f58] light:border-[#cbd5e1] text-stone-400 hover:text-white light:hover:text-black cursor-pointer"
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
+        {/* AI Voice Assistant Active Playback Card */}
+        {isVoiceActive && (
+          <div className="bg-gradient-to-r from-orange-950/80 to-amber-950/80 light:from-orange-50 light:to-amber-50 border-2 border-orange-500/80 p-3.5 rounded-2xl space-y-2 shadow-lg animate-fadeIn">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-7 h-7 rounded-full bg-orange-600 text-white flex items-center justify-center">
+                  <Mic className="w-4 h-4 animate-pulse" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-orange-400 light:text-orange-900">{voiceTitle}</h4>
+                  <p className="text-[10px] text-stone-400 light:text-slate-500">ElevenLabs & Web Speech Synthesis</p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    if (isVoicePlaying) {
+                      stopVoiceAssistant();
+                    } else {
+                      triggerVoiceAssistant(voiceTranscript, voiceTitle);
+                    }
+                  }}
+                  className="p-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white cursor-pointer"
+                  title={isVoicePlaying ? 'Pause Voice' : 'Play Voice'}
+                >
+                  {isVoicePlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                </button>
+                <button
+                  onClick={() => {
+                    stopVoiceAssistant();
+                    setIsVoiceActive(false);
+                  }}
+                  className="p-1 rounded-lg text-stone-400 hover:text-white"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Pulsing Audio Waveform Animation */}
+            {isVoicePlaying && (
+              <div className="flex items-center justify-center space-x-1 py-1">
+                {[40, 75, 100, 60, 90, 45, 80, 100, 70, 50, 85, 30].map((h, i) => (
+                  <span
+                    key={i}
+                    className="w-1 bg-orange-400 rounded-full animate-bounce"
+                    style={{
+                      height: `${h * 0.22}px`,
+                      animationDelay: `${i * 0.08}s`
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Transcript Preview */}
+            <p className="text-[11px] text-stone-300 light:text-slate-800 leading-snug italic bg-black/30 light:bg-white/70 p-2 rounded-xl border border-orange-500/20">
+              "{voiceTranscript}"
+            </p>
+          </div>
+        )}
+
         {/* Real-time Safaricom SMS Toast Popup */}
         {smsNotification && (
-          <div className="animate-slideDown bg-emerald-950/90 border-2 border-emerald-500 text-emerald-200 p-3 rounded-2xl space-y-1 shadow-xl">
-            <div className="flex items-center justify-between text-[10px] uppercase font-bold text-emerald-400 border-b border-emerald-800 pb-1">
+          <div className="animate-slideDown bg-emerald-950/90 light:bg-emerald-50 border-2 border-emerald-500 text-emerald-200 light:text-emerald-900 p-3 rounded-2xl space-y-1 shadow-xl">
+            <div className="flex items-center justify-between text-[10px] uppercase font-bold text-emerald-400 light:text-emerald-700 border-b border-emerald-800 light:border-emerald-200 pb-1">
               <div className="flex items-center space-x-1.5">
-                <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                <MessageSquare className="w-3.5 h-3.5 text-emerald-400 light:text-emerald-600" />
                 <span>M-PESA B2C INBOX ALERT (+254712345678)</span>
               </div>
               <button onClick={() => setSmsNotification(null)} className="text-emerald-400 hover:text-white">
                 <X className="w-3 h-3" />
               </button>
             </div>
-            <p className="text-[10px] leading-tight font-sans text-white">
+            <p className="text-[10px] leading-tight font-sans text-stone-100 light:text-slate-900">
               <strong>{smsNotification.code}</strong> Confirmed. You have received <strong>KSh {smsNotification.amount.toLocaleString()}</strong> from <strong>ANGAGUARD DMRV</strong> on {smsNotification.time}. New M-PESA balance is KSh {smsNotification.balance.toLocaleString()}.
             </p>
           </div>
         )}
 
         {/* 2G Nokia Casing Container */}
-        <div className="bg-[#120e0c] border-4 border-[#443028] rounded-3xl p-4 sm:p-5 space-y-4 shadow-inner">
+        <div className="bg-[#0b1320] light:bg-slate-100 border-4 border-[#2d3f58] light:border-[#cbd5e1] rounded-3xl p-4 sm:p-5 space-y-4 shadow-inner">
           
           {/* LCD Monochromatic Screen */}
           <div
@@ -590,14 +741,14 @@ Thank you for harvesting clean air!`);
             <input
               ref={inputRef}
               type="text"
-              placeholder={isSessionActive ? (lang === 'sw' ? 'Andika jibu hapa...' : 'Type option / PIN...') : (lang === 'sw' ? 'Piga *384*55# tena' : 'Session ended. Click Redial')}
+              placeholder={isSessionActive ? (lang === 'sw' ? 'Andika jibu hapa...' : 'Type option / Passcode...') : (lang === 'sw' ? 'Piga *384*55# tena' : 'Session ended. Click Redial')}
               value={inputVal}
               disabled={!isSessionActive}
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleUssdSubmit();
               }}
-              className="w-full bg-[#1c1512] border border-[#443028] px-3 py-2 rounded-xl text-white font-bold placeholder-stone-600 focus:outline-none focus:border-orange-500 disabled:opacity-50 text-xs"
+              className="w-full bg-[#131e30] light:bg-white border border-[#2d3f58] light:border-[#cbd5e1] px-3 py-2 rounded-xl text-stone-100 light:text-slate-900 font-bold placeholder-stone-500 focus:outline-none focus:border-orange-500 disabled:opacity-50 text-xs"
             />
             <button
               onClick={() => handleUssdSubmit()}
@@ -633,9 +784,9 @@ Thank you for harvesting clean air!`);
                     handleKeypadPress(k.num);
                   }
                 }}
-                className="bg-[#1c1512] hover:bg-[#281e19] active:bg-orange-600 active:text-white border border-[#443028] py-2 px-1 rounded-xl text-center transition-all cursor-pointer shadow-sm group"
+                className="bg-[#131e30] light:bg-white hover:bg-[#1c2a3e] light:hover:bg-slate-50 active:bg-orange-600 active:text-white border border-[#2d3f58] light:border-[#cbd5e1] py-2 px-1 rounded-xl text-center transition-all cursor-pointer shadow-sm group"
               >
-                <div className="font-black text-sm text-stone-200 group-active:text-white">{k.num}</div>
+                <div className="font-black text-sm text-stone-200 light:text-slate-900 group-active:text-white">{k.num}</div>
                 <div className="text-[8px] text-stone-500 font-bold group-active:text-white/80">{k.sub}</div>
               </button>
             ))}
@@ -645,14 +796,14 @@ Thank you for harvesting clean air!`);
           <div className="grid grid-cols-2 gap-2 pt-1">
             <button
               onClick={handleBackspace}
-              className="py-2 px-3 bg-[#1c1512] hover:bg-[#281e19] border border-[#443028] text-stone-400 hover:text-white text-[10px] font-bold rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
+              className="py-2 px-3 bg-[#131e30] light:bg-white hover:bg-[#1c2a3e] light:hover:bg-slate-50 border border-[#2d3f58] light:border-[#cbd5e1] text-stone-400 light:text-slate-600 hover:text-white text-[10px] font-bold rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
             >
               <span>⌫ Clear Char</span>
             </button>
 
             <button
               onClick={resetSession}
-              className="py-2 px-3 bg-gradient-to-r from-orange-700 to-amber-700 hover:from-orange-600 hover:to-amber-600 text-white text-[10px] font-bold rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-md"
+              className="py-2 px-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-[10px] font-bold rounded-xl flex items-center justify-center space-x-1.5 cursor-pointer shadow-md"
             >
               <RotateCcw className="w-3.5 h-3.5 text-white" />
               <span>Redial *384*55#</span>
@@ -662,7 +813,7 @@ Thank you for harvesting clean air!`);
         </div>
 
         {/* Security & Regulatory Footnote */}
-        <div className="flex items-center justify-between text-[10px] text-stone-400 border-t border-[#443028] pt-2 px-1">
+        <div className="flex items-center justify-between text-[10px] text-stone-400 light:text-slate-500 border-t border-[#2d3f58] light:border-[#e2e8f0] pt-2 px-1">
           <span className="flex items-center space-x-1">
             <ShieldCheck className="w-3 h-3 text-emerald-500" />
             <span>Safaricom Daraja B2C Encrypted</span>
@@ -674,3 +825,5 @@ Thank you for harvesting clean air!`);
     </div>
   );
 };
+
+export default UssdPhoneModal;

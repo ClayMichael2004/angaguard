@@ -113,24 +113,24 @@ export const FarmerRecordsPage = ({ onBack, farmerName = 'Wanjala Wafula', farme
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto font-mono text-xs text-stone-900 dark:text-stone-100">
+    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-slate-900 dark:text-stone-100">
       
       {/* Top Header & Back Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-[#443028]/40 light:border-[#b8ad96] gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200 dark:border-[#2d3f58]/40 gap-4">
         <div className="flex items-center space-x-3">
           <button
             onClick={onBack}
-            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-[#443028] light:border-[#b8ad96] bg-[#1c1512] light:bg-[#dad2bd] text-stone-800 dark:text-stone-200 font-bold hover:text-orange-500 transition-all cursor-pointer shadow-sm"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-[#2d3f58] bg-white dark:bg-[#131e30] text-slate-800 dark:text-stone-200 font-bold hover:text-orange-600 dark:hover:text-orange-400 transition-all cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-4 h-4 text-orange-500" />
             <span>Back to Dashboard</span>
           </button>
 
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black font-sans">
+            <h1 className="text-2xl sm:text-3xl font-black font-sans text-slate-900 dark:text-stone-100">
               Past Sales & Biochar Harvest Records
             </h1>
-            <p className="text-stone-700 dark:text-stone-300 text-xs mt-0.5 font-bold">
+            <p className="text-slate-600 dark:text-stone-300 text-xs mt-0.5 font-bold">
               Producer: <strong>{farmerName}</strong> • Verified Kenya EMCA Registry Ledger
             </p>
           </div>
@@ -156,141 +156,115 @@ export const FarmerRecordsPage = ({ onBack, farmerName = 'Wanjala Wafula', farme
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="earthy-box p-6 space-y-2">
-          <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 font-bold">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 space-y-2 rounded-2xl shadow-sm border-l-4 border-l-emerald-500">
+          <div className="flex items-center space-x-2 text-emerald-700 dark:text-emerald-400 font-bold">
             <Flame className="w-4 h-4" />
             <span>Total Biochar Harvested</span>
           </div>
-          <p className="text-3xl font-black">1,420.0 KG</p>
-          <p className="text-stone-700 dark:text-stone-300 text-[11px] font-bold">18 Pyrolysis Burn Cycles</p>
+          <p className="text-3xl font-black text-slate-900 dark:text-stone-100">1,420.0 KG</p>
+          <p className="text-slate-600 dark:text-stone-300 text-[11px] font-bold">18 Pyrolysis Burn Cycles</p>
         </div>
 
-        <div className="earthy-box p-6 space-y-2">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 space-y-2 rounded-2xl shadow-sm border-l-4 border-l-orange-500">
           <div className="flex items-center space-x-2 text-orange-600 dark:text-orange-400 font-bold">
             <History className="w-4 h-4" />
             <span>Carbon Offsets Generated</span>
           </div>
-          <p className="text-3xl font-black">3.89 tCO2e</p>
-          <p className="text-stone-700 dark:text-stone-300 text-[11px] font-bold">Verified dMRV Sensor Data</p>
+          <p className="text-3xl font-black text-slate-900 dark:text-stone-100">3.89 tCO2e</p>
+          <p className="text-slate-600 dark:text-stone-300 text-[11px] font-bold">Verified dMRV Sensor Data</p>
         </div>
 
-        <div className="earthy-box p-6 space-y-2">
-          <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 font-bold">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 space-y-2 rounded-2xl shadow-sm border-l-4 border-l-cyan-500">
+          <div className="flex items-center space-x-2 text-cyan-600 dark:text-cyan-400 font-bold">
             <Wallet className="w-4 h-4" />
             <span>Total M-Pesa Disbursed</span>
           </div>
-          <p className="text-3xl font-black">KSh 34,500.00</p>
-          <p className="text-stone-700 dark:text-stone-300 text-[11px] font-bold">100% Settled Safaricom B2C</p>
+          <p className="text-3xl font-black text-slate-900 dark:text-stone-100">KSh 34,500.00</p>
+          <p className="text-slate-600 dark:text-stone-300 text-[11px] font-bold">100% Settled Safaricom B2C</p>
         </div>
       </div>
 
       {/* Filter Controls & Search */}
-      <div className="earthy-box p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
         {/* Search Bar */}
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 absolute left-3 top-3 text-stone-500" />
+          <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
           <input
             type="text"
             placeholder="Search by ID, Kiln, or M-Pesa Code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#120e0c] light:bg-[#d1c8b3] border border-[#443028] light:border-[#b8ad96] pl-9 pr-4 py-2 rounded-xl text-stone-900 dark:text-white font-bold placeholder-stone-500 focus:outline-none"
+            className="w-full bg-slate-50 dark:bg-[#131e30] border border-slate-300 dark:border-[#2d3f58] pl-9 pr-4 py-2 rounded-xl text-slate-900 dark:text-white font-bold placeholder-slate-400 focus:outline-none focus:border-orange-500 text-xs shadow-sm"
           />
         </div>
 
-        {/* Filter Buttons */}
+        {/* Category Filters */}
         <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-3.5 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-              filter === 'all'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-[#1c1512] light:bg-[#dad2bd] text-stone-800 dark:text-stone-300 border border-[#443028] light:border-[#b8ad96]'
-            }`}
-          >
-            All Sales ({allRecords.length})
-          </button>
-
-          <button
-            onClick={() => setFilter('bio-sme')}
-            className={`px-3.5 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-              filter === 'bio-sme'
-                ? 'bg-emerald-700 text-white shadow-md'
-                : 'bg-[#1c1512] light:bg-[#dad2bd] text-stone-800 dark:text-stone-300 border border-[#443028] light:border-[#b8ad96]'
-            }`}
-          >
-            Bio SME Insetting
-          </button>
-
-          <button
-            onClick={() => setFilter('coop')}
-            className={`px-3.5 py-2 rounded-xl font-bold transition-all cursor-pointer ${
-              filter === 'coop'
-                ? 'bg-amber-700 text-white shadow-md'
-                : 'bg-[#1c1512] light:bg-[#dad2bd] text-stone-800 dark:text-stone-300 border border-[#443028] light:border-[#b8ad96]'
-            }`}
-          >
-            Coop Pool
-          </button>
+          {[
+            { id: 'all', label: 'All Records' },
+            { id: 'bio-sme', label: 'Bio SME Insetting' },
+            { id: 'coop', label: 'Cooperative Pool' },
+          ].map((btn) => (
+            <button
+              key={btn.id}
+              onClick={() => setFilter(btn.id)}
+              className={`flex-1 sm:flex-initial px-3.5 py-2 rounded-xl font-bold transition-all text-xs cursor-pointer ${
+                filter === btn.id
+                  ? 'bg-orange-600 text-white shadow-md'
+                  : 'bg-slate-100 dark:bg-[#131e30] text-slate-700 dark:text-stone-300 hover:bg-slate-200 dark:hover:bg-[#1c2a3e]'
+              }`}
+            >
+              {btn.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Detailed Records Audit Table */}
-      <div className="earthy-box overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse font-mono text-xs">
-            <thead>
-              <tr className="bg-[#1c1512] light:bg-[#dad2bd] border-b border-[#443028] light:border-[#b8ad96] text-stone-800 dark:text-stone-300 font-bold uppercase text-[11px]">
-                <th className="py-3.5 px-4">Record ID & Date</th>
-                <th className="py-3.5 px-4">Pyrolysis Kiln</th>
-                <th className="py-3.5 px-4">Biochar Yield</th>
-                <th className="py-3.5 px-4">Offset Credit</th>
-                <th className="py-3.5 px-4">Channel / Sponsor</th>
-                <th className="py-3.5 px-4">M-Pesa Payout</th>
-                <th className="py-3.5 px-4">SHA-256 Hash</th>
+      {/* Records Table */}
+      <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 rounded-2xl overflow-x-auto shadow-sm">
+        <table className="w-full text-left text-xs">
+          <thead>
+            <tr className="border-b border-slate-200 dark:border-[#2d3f58] text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">
+              <th className="pb-3 px-2">Record ID</th>
+              <th className="pb-3 px-2">Date & Time</th>
+              <th className="pb-3 px-2">Smart Kiln Batch</th>
+              <th className="pb-3 px-2 text-right">Harvest Yield</th>
+              <th className="pb-3 px-2 text-right">Carbon Sequestration</th>
+              <th className="pb-3 px-2">Offtaker Channel</th>
+              <th className="pb-3 px-2 text-right">M-Pesa Payout</th>
+              <th className="pb-3 px-2 text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200 dark:divide-[#2d3f58]/40">
+            {filteredRecords.map((r) => (
+              <tr key={r.id} className="hover:bg-slate-50 dark:hover:bg-[#131e30]/60 transition-colors">
+                <td className="py-4 px-2 font-bold text-slate-900 dark:text-stone-100">{r.id}</td>
+                <td className="py-4 px-2 text-slate-600 dark:text-stone-300">{r.date}</td>
+                <td className="py-4 px-2 text-slate-900 dark:text-stone-100 font-bold">{r.kiln}</td>
+                <td className="py-4 px-2 text-right font-bold text-slate-900 dark:text-stone-100">{r.biocharKg} KG</td>
+                <td className="py-4 px-2 text-right font-bold text-emerald-700 dark:text-emerald-400">{r.co2eTons} tCO2e</td>
+                <td className="py-4 px-2">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58] text-slate-800 dark:text-stone-200">
+                    {r.channel}
+                  </span>
+                </td>
+                <td className="py-4 px-2 text-right">
+                  <p className="font-bold text-emerald-700 dark:text-emerald-400">+KSh {r.payoutKsh.toLocaleString()}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-stone-400">{r.mpesaReceipt}</p>
+                </td>
+                <td className="py-4 px-2 text-center">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300">
+                    {r.status}
+                  </span>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-[#443028]/40 light:divide-[#b8ad96]">
-              {filteredRecords.map((rec) => (
-                <tr key={rec.id} className="hover:bg-[#1c1512]/60 light:hover:bg-[#dad2bd]/60 transition-colors">
-                  <td className="py-4 px-4">
-                    <p className="font-bold text-orange-600 dark:text-orange-400">{rec.id}</p>
-                    <p className="text-stone-700 dark:text-stone-400 text-[11px] font-bold">{rec.date}</p>
-                  </td>
-
-                  <td className="py-4 px-4 font-bold text-stone-900 dark:text-stone-100">
-                    {rec.kiln}
-                  </td>
-
-                  <td className="py-4 px-4 font-bold text-emerald-600 dark:text-emerald-400">
-                    {rec.biocharKg} KG
-                  </td>
-
-                  <td className="py-4 px-4 font-bold text-stone-900 dark:text-stone-100">
-                    {rec.co2eTons} tCO2e
-                  </td>
-
-                  <td className="py-4 px-4 text-stone-800 dark:text-stone-300 font-bold">
-                    {rec.channel}
-                  </td>
-
-                  <td className="py-4 px-4">
-                    <p className="font-bold text-emerald-600 dark:text-emerald-400">+KSh {rec.payoutKsh.toLocaleString()}</p>
-                    <p className="text-[10px] text-stone-700 dark:text-stone-400 font-bold">Ref: {rec.mpesaReceipt}</p>
-                  </td>
-
-                  <td className="py-4 px-4">
-                    <span className="text-[10px] font-mono bg-stone-900 light:bg-stone-300 text-stone-300 light:text-stone-800 px-2 py-1 rounded border border-[#443028] light:border-[#b8ad96]">
-                      {rec.hash}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
     </div>
   );
 };
+
+export default FarmerRecordsPage;

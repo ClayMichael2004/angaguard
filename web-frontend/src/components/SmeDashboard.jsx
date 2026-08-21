@@ -3,15 +3,15 @@ import { BioSmeDashboard } from './BioSmeDashboard';
 import { NonBioSmeDashboard } from './NonBioSmeDashboard';
 import { Factory, Building2 } from 'lucide-react';
 
-export const SmeDashboard = ({ theme, defaultSmeType = 'bio-sme' }) => {
+export const SmeDashboard = ({ theme, activeSection = 'overview', setActiveSection, defaultSmeType = 'bio-sme' }) => {
   // Mode toggle between Bio SME (Supply Insetting) and Non-Bio SME (Marketplace Offsetting)
   const [smeType, setSmeType] = useState(defaultSmeType);
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn w-full">
       {/* Top SME Type Selector Panel */}
-      <div className="earthy-panel p-2 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 max-w-6xl mx-auto font-mono text-xs">
-        <span className="font-bold text-stone-600 dark:text-stone-400 pl-3">
+      <div className="earthy-panel p-2 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 w-full font-mono text-xs">
+        <span className="font-bold text-stone-600 dark:text-stone-400 light:text-slate-600 pl-3">
           SME Corporate ESG Strategy Mode:
         </span>
         
@@ -21,7 +21,7 @@ export const SmeDashboard = ({ theme, defaultSmeType = 'bio-sme' }) => {
             className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center space-x-2 ${
               smeType === 'bio-sme'
                 ? 'bg-emerald-700 text-white shadow-md'
-                : 'bg-transparent text-stone-600 dark:text-stone-400 hover:text-emerald-500'
+                : 'bg-transparent text-stone-600 dark:text-stone-400 light:text-slate-600 hover:text-emerald-500'
             }`}
           >
             <Factory className="w-3.5 h-3.5" />
@@ -33,7 +33,7 @@ export const SmeDashboard = ({ theme, defaultSmeType = 'bio-sme' }) => {
             className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center space-x-2 ${
               smeType === 'non-bio-sme'
                 ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-transparent text-stone-600 dark:text-stone-400 hover:text-orange-500'
+                : 'bg-transparent text-stone-600 dark:text-stone-400 light:text-slate-600 hover:text-orange-500'
             }`}
           >
             <Building2 className="w-3.5 h-3.5" />
@@ -44,10 +44,20 @@ export const SmeDashboard = ({ theme, defaultSmeType = 'bio-sme' }) => {
 
       {/* Render selected SME Portal View */}
       {smeType === 'bio-sme' ? (
-        <BioSmeDashboard theme={theme} />
+        <BioSmeDashboard
+          theme={theme}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
       ) : (
-        <NonBioSmeDashboard theme={theme} />
+        <NonBioSmeDashboard
+          theme={theme}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
       )}
     </div>
   );
 };
+
+export default SmeDashboard;

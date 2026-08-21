@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ShieldCheck, BarChart3, Users, Download, Flame, Search, Filter, CheckCircle2, Building2, FileText, ArrowUpRight, Leaf, Sparkles } from 'lucide-react';
+import { Factory, ShieldCheck, Download, Search, Users, Flame, Sparkles, BarChart3, CheckCircle2, Building2 } from 'lucide-react';
 import { LedgerExplorerView } from './LedgerExplorerView';
 import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 
-export const BioSmeDashboard = ({ theme }) => {
+export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSection }) => {
   const [smeInfo] = useState({
     name: 'Kizito Grain Millers Ltd',
     location: 'Eldoret Industrial Zone, Kenya',
@@ -17,7 +17,14 @@ export const BioSmeDashboard = ({ theme }) => {
     scope2_grid_kwh: 45000,
   });
 
-  const [activeView, setActiveView] = useState('overview'); // 'overview', 'outgrowers', 'ledger'
+  const [internalView, setInternalView] = useState('overview'); // 'overview', 'outgrowers', 'ledger', 'reports'
+  const activeView = activeSection || internalView;
+  const setActiveView = (viewId) => {
+    setInternalView(viewId);
+    if (setActiveSection) {
+      setActiveSection(viewId);
+    }
+  };
   const [showCertModal, setShowCertModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCrop, setFilterCrop] = useState('all');
@@ -62,52 +69,32 @@ export const BioSmeDashboard = ({ theme }) => {
   });
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto font-mono text-xs text-stone-900 dark:text-stone-100">
+    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-slate-900 dark:text-stone-100">
       
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-[#443028]/40 gap-4">
-        <div>
-          <div className="flex items-center space-x-3">
-            <h1 className="text-2xl sm:text-3xl font-black font-sans">
-              Bio SME Corporate Hub
-            </h1>
-            <span className="bg-emerald-950/40 border border-emerald-600/60 text-emerald-400 font-mono text-xs px-3 py-1 rounded-full font-bold">
-              Supply Chain Insetting
-            </span>
-          </div>
-          <p className="text-stone-600 dark:text-stone-400 text-xs mt-1 font-bold">
-            {smeInfo.name} • KRA PIN: <strong>{smeInfo.tax_pin}</strong> • Sponsoring Outgrower Farmers
-          </p>
+      {/* Header Banner & Corner Account Badge */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-slate-200 dark:border-[#2d3f58]/40 gap-4">
+        <div className="flex items-center space-x-3">
+          <h1 className="text-2xl sm:text-3xl font-black font-sans text-slate-900 dark:text-stone-100">
+            Bio SME Corporate Hub
+          </h1>
+          <span className="bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-600/60 text-emerald-800 dark:text-emerald-400 font-mono text-xs px-3 py-1 rounded-full font-bold">
+            Supply Chain Insetting
+          </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveView('overview')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'overview' ? 'bg-orange-600 text-white shadow-md' : 'border border-[#443028] text-stone-400 hover:text-white'
-            }`}
-          >
-            ESG Overview
-          </button>
-          <button
-            onClick={() => setActiveView('outgrowers')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'outgrowers' ? 'bg-emerald-700 text-white shadow-md' : 'border border-[#443028] text-stone-400 hover:text-white'
-            }`}
-          >
-            Funded Outgrowers ({fundedFarmersRegistry.length})
-          </button>
-          <button
-            onClick={() => setActiveView('ledger')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'ledger' ? 'bg-stone-700 text-white shadow-md' : 'border border-[#443028] text-stone-400 hover:text-white'
-            }`}
-          >
-            dMRV Ledger
-          </button>
+        {/* CORNER ACCOUNT BADGE */}
+        <div className="flex items-center space-x-3">
+          <div className="hidden sm:flex items-center space-x-2 bg-white dark:bg-[#131e30] border border-emerald-500/40 dark:border-emerald-600/30 px-3.5 py-1.5 rounded-2xl shadow-sm">
+            <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="text-left">
+              <p className="text-[9px] text-slate-500 dark:text-stone-400 uppercase font-bold">KRA PIN: {smeInfo.tax_pin}</p>
+              <p className="font-extrabold text-slate-900 dark:text-stone-100 text-xs truncate max-w-[200px]">{smeInfo.name}</p>
+            </div>
+          </div>
+
           <button
             onClick={() => setShowCertModal(true)}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold cursor-pointer shadow-md flex items-center space-x-1.5"
+            className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold cursor-pointer shadow-md flex items-center space-x-1.5 text-xs"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>ISSB / IFRS S2 Pass</span>
@@ -119,46 +106,46 @@ export const BioSmeDashboard = ({ theme }) => {
         <>
           {/* Key KPI Cards with Dual Units */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-emerald-500">
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-emerald-500">
               <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-bold uppercase text-[10px]">ESG Insetting Grade</span>
+                <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">ESG Insetting Grade</span>
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
               </div>
-              <p className="text-3xl font-black text-emerald-500">{esgGrade} (AUDITED)</p>
-              <p className="text-stone-500 text-[11px] font-bold">
+              <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{esgGrade} (AUDITED)</p>
+              <p className="text-slate-600 dark:text-stone-400 text-[11px] font-bold">
                 Net Residual: <strong>{net} tCO2e</strong> (Gross: {gross} t)
               </p>
             </div>
 
-            <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-orange-500">
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-orange-500">
               <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-bold uppercase text-[10px]">Sponsored Outgrowers</span>
+                <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">Sponsored Outgrowers</span>
                 <Users className="w-4 h-4 text-orange-500" />
               </div>
-              <p className="text-3xl font-black text-stone-900 dark:text-stone-100">{smeInfo.funded_farmers_count} Farmers</p>
-              <p className="text-orange-500 text-[11px] font-bold">
+              <p className="text-3xl font-black text-slate-900 dark:text-stone-100">{smeInfo.funded_farmers_count} Farmers</p>
+              <p className="text-orange-600 dark:text-orange-400 text-[11px] font-bold">
                 {smeInfo.smart_kilns_sponsored} Smart Kilns Subsidized
               </p>
             </div>
 
-            <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-cyan-500">
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-cyan-500">
               <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-bold uppercase text-[10px]">Farmer Direct Share</span>
+                <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">Farmer Direct Share</span>
                 <Sparkles className="w-4 h-4 text-cyan-500" />
               </div>
-              <p className="text-3xl font-black text-stone-900 dark:text-stone-100">{smeInfo.incentive_payout_pct}% Direct</p>
-              <p className="text-stone-500 text-[11px] font-bold">
+              <p className="text-3xl font-black text-slate-900 dark:text-stone-100">{smeInfo.incentive_payout_pct}% Direct</p>
+              <p className="text-slate-600 dark:text-stone-400 text-[11px] font-bold">
                 Disbursed via Safaricom M-Pesa B2C
               </p>
             </div>
 
-            <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-amber-500">
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-amber-500">
               <div className="flex items-center justify-between">
-                <span className="text-stone-500 font-bold uppercase text-[10px]">Biochar Offsets (Q4)</span>
+                <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">Biochar Offsets (Q4)</span>
                 <Flame className="w-4 h-4 text-amber-500" />
               </div>
-              <p className="text-3xl font-black text-emerald-500">-{smeInfo.current_quarter_offsets} Tons</p>
-              <p className="text-stone-500 text-[11px] font-bold">
+              <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">-{smeInfo.current_quarter_offsets} Tons</p>
+              <p className="text-slate-600 dark:text-stone-400 text-[11px] font-bold">
                 = 11,300 KG Biochar in Local Soils
               </p>
             </div>
@@ -168,29 +155,29 @@ export const BioSmeDashboard = ({ theme }) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Line Graph */}
-            <div className="earthy-box p-6 sm:p-8 space-y-6">
-              <div className="flex items-center justify-between border-b border-[#443028]/40 pb-4">
-                <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100">
-                  <BarChart3 className="w-5 h-5 text-emerald-500" />
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl space-y-6 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-4">
+                <div className="flex items-center space-x-2 font-bold text-slate-900 dark:text-stone-100">
+                  <BarChart3 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   <span>Quarterly Carbon Offsets Line Graph</span>
                 </div>
-                <span className="text-stone-500">Insetting Trend (tCO2e)</span>
+                <span className="text-slate-500 dark:text-stone-400">Insetting Trend (tCO2e)</span>
               </div>
 
               <LineGraph data={offsetLineData} height={180} valuePrefix="-" valueSuffix=" tCO2e" />
             </div>
 
             {/* Funded Outgrower Farmers Preview */}
-            <div className="earthy-box p-6 sm:p-8 space-y-6 flex flex-col justify-between">
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl space-y-6 flex flex-col justify-between shadow-sm">
               <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-[#443028]/40 pb-4">
-                  <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-4">
+                  <div className="flex items-center space-x-2 font-bold text-slate-900 dark:text-stone-100">
                     <Users className="w-5 h-5 text-orange-500" />
                     <span>Sponsored Smallholder Outgrowers</span>
                   </div>
                   <button
                     onClick={() => setActiveView('outgrowers')}
-                    className="text-orange-500 hover:underline font-bold"
+                    className="text-orange-600 dark:text-orange-400 hover:underline font-bold"
                   >
                     View All {fundedFarmersRegistry.length} Records &rarr;
                   </button>
@@ -198,25 +185,25 @@ export const BioSmeDashboard = ({ theme }) => {
 
                 <div className="space-y-3">
                   {fundedFarmersRegistry.slice(0, 3).map((f) => (
-                    <div key={f.id} className="p-4 rounded-xl bg-[#1c1512] border border-[#443028] flex justify-between items-center">
+                    <div key={f.id} className="p-4 rounded-xl bg-slate-50 dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58] flex justify-between items-center">
                       <div>
-                        <p className="font-bold text-white">{f.name}</p>
-                        <p className="text-stone-400 text-[11px] font-bold">{f.crop} • {f.kiln}</p>
+                        <p className="font-bold text-slate-900 dark:text-stone-100">{f.name}</p>
+                        <p className="text-slate-500 dark:text-stone-400 text-[11px] font-bold">{f.crop} • {f.kiln}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-emerald-400">{f.biocharKg} KG ({f.creditsTons} tCO2e)</p>
-                        <p className="text-stone-400 text-[11px]">KSh {f.incentiveKsh.toLocaleString()} (${f.incentiveUsd})</p>
+                        <p className="font-bold text-emerald-700 dark:text-emerald-400">{f.biocharKg} KG ({f.creditsTons} tCO2e)</p>
+                        <p className="text-slate-500 dark:text-stone-400 text-[11px]">KSh {f.incentiveKsh.toLocaleString()} (${f.incentiveUsd})</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-600/30 text-stone-400 text-[11px] flex justify-between items-center">
+              <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-600/30 text-slate-700 dark:text-stone-400 text-[11px] flex justify-between items-center">
                 <span>Scope 3 Agro Insetting: Zero Greenwashing</span>
                 <button
                   onClick={() => setActiveView('outgrowers')}
-                  className="text-emerald-400 hover:underline font-bold"
+                  className="text-emerald-700 dark:text-emerald-400 hover:underline font-bold"
                 >
                   Open Full Outgrower Audit Trail &rarr;
                 </button>
@@ -234,8 +221,8 @@ export const BioSmeDashboard = ({ theme }) => {
         <div className="space-y-6 animate-fadeIn">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Funded Outgrowers & Supply-Chain Insetting Trail</h3>
-              <p className="text-stone-500 text-xs">Direct audit record of smallholders sponsored by {smeInfo.name} for biochar pyrolysis</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-stone-100">Funded Outgrowers & Supply-Chain Insetting Trail</h3>
+              <p className="text-slate-500 dark:text-stone-400 text-xs">Direct audit record of smallholders sponsored by {smeInfo.name} for biochar pyrolysis</p>
             </div>
             <button
               onClick={() => {
@@ -266,20 +253,20 @@ export const BioSmeDashboard = ({ theme }) => {
           {/* Search & Filter Controls */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2 relative">
-              <Search className="w-4 h-4 absolute left-3 top-3 text-stone-500" />
+              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search outgrower by name, phone, kiln, or location..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#1c1512] border border-[#443028] pl-9 pr-3 py-2.5 rounded-xl text-white font-bold text-xs focus:outline-none focus:border-orange-500"
+                className="w-full bg-white dark:bg-[#131e30] border border-slate-300 dark:border-[#2d3f58] pl-9 pr-3 py-2.5 rounded-xl text-slate-900 dark:text-stone-100 font-bold text-xs focus:outline-none focus:border-orange-500 shadow-sm"
               />
             </div>
             <div>
               <select
                 value={filterCrop}
                 onChange={(e) => setFilterCrop(e.target.value)}
-                className="w-full bg-[#1c1512] border border-[#443028] px-3 py-2.5 rounded-xl text-white font-bold text-xs focus:outline-none focus:border-orange-500 cursor-pointer"
+                className="w-full bg-white dark:bg-[#131e30] border border-slate-300 dark:border-[#2d3f58] px-3 py-2.5 rounded-xl text-slate-900 dark:text-stone-100 font-bold text-xs focus:outline-none focus:border-orange-500 cursor-pointer shadow-sm"
               >
                 <option value="all">All Crop Residue Feedstocks</option>
                 <option value="Maize">Maize Stover & Cobs</option>
@@ -292,10 +279,10 @@ export const BioSmeDashboard = ({ theme }) => {
           </div>
 
           {/* Outgrowers Audit Table */}
-          <div className="earthy-box p-4 overflow-x-auto">
+          <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-4 rounded-2xl overflow-x-auto shadow-sm">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-[#443028] text-stone-400 font-bold uppercase text-[10px]">
+                <tr className="border-b border-slate-200 dark:border-[#2d3f58] text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">
                   <th className="pb-3 px-2">Outgrower Farmer</th>
                   <th className="pb-3 px-2">Location & Feedstock</th>
                   <th className="pb-3 px-2">Sponsored Kiln</th>
@@ -305,30 +292,30 @@ export const BioSmeDashboard = ({ theme }) => {
                   <th className="pb-3 px-2 text-center">Status & Receipt</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#443028]/40">
+              <tbody className="divide-y divide-slate-200 dark:divide-[#2d3f58]/40">
                 {filteredOutgrowers.map((f) => (
-                  <tr key={f.id} className="hover:bg-[#1c1512]/60 transition-colors">
+                  <tr key={f.id} className="hover:bg-slate-50 dark:hover:bg-[#131e30]/60 transition-colors">
                     <td className="py-3.5 px-2">
-                      <p className="font-bold text-white">{f.name}</p>
-                      <span className="text-[10px] text-stone-400">{f.phone}</span>
+                      <p className="font-bold text-slate-900 dark:text-stone-100">{f.name}</p>
+                      <span className="text-[10px] text-slate-500 dark:text-stone-400">{f.phone}</span>
                     </td>
-                    <td className="py-3.5 px-2 text-stone-300">
-                      <p className="font-bold text-emerald-400">{f.crop}</p>
-                      <span className="text-[10px] text-stone-500">{f.location}</span>
+                    <td className="py-3.5 px-2 text-slate-700 dark:text-stone-300">
+                      <p className="font-bold text-emerald-700 dark:text-emerald-400">{f.crop}</p>
+                      <span className="text-[10px] text-slate-500 dark:text-stone-500">{f.location}</span>
                     </td>
-                    <td className="py-3.5 px-2 font-bold text-orange-400">{f.kiln}</td>
-                    <td className="py-3.5 px-2 text-right font-bold text-white">
+                    <td className="py-3.5 px-2 font-bold text-orange-600 dark:text-orange-400">{f.kiln}</td>
+                    <td className="py-3.5 px-2 text-right font-bold text-slate-900 dark:text-stone-100">
                       {f.biocharKg.toLocaleString()} KG
                     </td>
-                    <td className="py-3.5 px-2 text-right font-bold text-emerald-400">
+                    <td className="py-3.5 px-2 text-right font-bold text-emerald-700 dark:text-emerald-400">
                       {f.creditsTons} tCO2e
                     </td>
                     <td className="py-3.5 px-2 text-right">
-                      <p className="font-bold text-white">KSh {f.incentiveKsh.toLocaleString()}</p>
-                      <span className="text-[10px] text-stone-400">${f.incentiveUsd} USD</span>
+                      <p className="font-bold text-slate-900 dark:text-stone-100">KSh {f.incentiveKsh.toLocaleString()}</p>
+                      <span className="text-[10px] text-slate-500 dark:text-stone-400">${f.incentiveUsd} USD</span>
                     </td>
                     <td className="py-3.5 px-2 text-center">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 border border-emerald-600 text-emerald-300">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-600 text-emerald-800 dark:text-emerald-300">
                         {f.lastReceipt}
                       </span>
                     </td>
@@ -344,72 +331,73 @@ export const BioSmeDashboard = ({ theme }) => {
       {/* TAB: CRYPTOGRAPHIC dMRV LEDGER VIEW                                       */}
       {/* ========================================================================= */}
       {activeView === 'ledger' && (
-        <div className="earthy-box p-6 sm:p-8">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl shadow-sm">
           <LedgerExplorerView blocks={[]} onVerifyChain={() => {}} />
         </div>
       )}
 
       {/* ISSB / IFRS S2 Pass Certificate Modal */}
       {showCertModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/85 backdrop-blur-md p-4 animate-fadeIn">
-          <div className="bg-[#1c1512] border-2 border-emerald-600 max-w-md w-full p-6 sm:p-7 rounded-3xl space-y-4 text-white font-mono shadow-2xl">
-            <div className="flex items-center space-x-3 border-b border-[#443028] pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-white dark:bg-[#131e30] border-2 border-emerald-600 max-w-md w-full p-6 sm:p-7 rounded-3xl space-y-4 text-slate-900 dark:text-stone-100 font-mono shadow-2xl">
+            <div className="flex items-center space-x-3 border-b border-slate-200 dark:border-[#2d3f58] pb-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black">
                 ✓
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Kenya EMCA 2026 ESG Audit Pass</h3>
-                <p className="text-[11px] text-stone-400">ISSB IFRS S2 Climate Disclosure Standard</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-stone-100">Kenya EMCA 2026 ESG Audit Pass</h3>
+                <p className="text-[11px] text-slate-500 dark:text-stone-400">ISSB IFRS S2 Climate Disclosure Standard</p>
               </div>
             </div>
 
-            <div className="space-y-2 text-xs bg-[#120e0c] p-4 rounded-2xl border border-[#443028]">
+            <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-stone-400">Entity:</span>
-                <strong className="text-white">{smeInfo.name}</strong>
+                <span className="text-slate-500 dark:text-stone-400">Corporate Entity:</span>
+                <span className="font-bold">{smeInfo.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-stone-400">Scope 1 & 2 Gross:</span>
-                <span className="text-stone-200">{gross} Metric Tons CO2e</span>
+                <span className="text-slate-500 dark:text-stone-400">KRA Tax PIN:</span>
+                <span>{smeInfo.tax_pin}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-stone-400">Biochar Insets Applied:</span>
-                <strong className="text-emerald-400">-{smeInfo.current_quarter_offsets} Metric Tons CO2e</strong>
-              </div>
-              <div className="flex justify-between border-t border-[#443028] pt-2">
-                <span className="text-stone-400">Net Residual:</span>
-                <strong className="text-white">{net} Metric Tons CO2e</strong>
+                <span className="text-slate-500 dark:text-stone-400">Scope 1 & 2 Emissions:</span>
+                <span>{gross} tCO2e / Quarter</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-stone-400">ESG Compliance Grade:</span>
-                <strong className="text-emerald-400 text-sm font-black">{esgGrade} (APPROVED)</strong>
+                <span className="text-slate-500 dark:text-stone-400">Biochar Inset Retirement:</span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400">-{smeInfo.current_quarter_offsets} tCO2e</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 dark:text-stone-400">Net Residual Carbon:</span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400">{net} tCO2e</span>
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-2">
+            <div className="flex justify-between pt-2">
               <button
                 onClick={() => {
-                  downloadCertificateDocument(`${smeInfo.name.toLowerCase().replace(/\s+/g, '_')}_issb_esg_pass`, {
-                    title: 'ISSB IFRS S2 Climate Disclosure & ESG Insetting Pass',
+                  downloadCertificateDocument(`issb_esg_pass_${smeInfo.tax_pin}`, {
+                    title: 'ISSB IFRS S2 Corporate Scope 1-3 Compliance Passport',
                     tonnage: String(smeInfo.current_quarter_offsets),
                     biocharKg: String((smeInfo.current_quarter_offsets * 456.6).toFixed(1)),
-                    certId: `KE-NCR-2026-ISSB-${Math.floor(100000 + Math.random() * 900000)}`,
-                    entity: `${smeInfo.name} (KRA PIN: ${smeInfo.tax_pin})`,
+                    certId: `KE-NCR-2026-ISSB-${smeInfo.tax_pin}`,
+                    entity: smeInfo.name,
                     location: smeInfo.location,
-                    kilns: `${smeInfo.smart_kilns_sponsored} Subsidized Smart Kilns (Outgrower Network)`,
-                    value: `ESG Grade: ${esgGrade} • Net Footprint: ${net} tCO2e (Gross: ${gross} tCO2e)`,
-                    date: new Date().toLocaleString('en-KE')
+                    kilns: '25 Subsidized Smart Kilns (Western Kenya Biomass Hub)',
+                    value: `Scorecard Grade: ${esgGrade} (AUDITED)`,
+                    date: new Date().toLocaleDateString('en-KE')
                   });
                 }}
-                className="px-4 py-2 bg-[#120e0c] hover:bg-[#281e19] border border-[#443028] rounded-xl text-stone-300 font-bold hover:text-white cursor-pointer"
+                className="px-4 py-2 bg-slate-100 dark:bg-[#1c2a3e] hover:bg-slate-200 dark:hover:bg-[#283850] border border-slate-300 dark:border-[#2d3f58] text-slate-800 dark:text-stone-200 font-bold rounded-xl flex items-center space-x-1.5 cursor-pointer text-xs"
               >
-                Download Official Certificate
+                <Download className="w-3.5 h-3.5" />
+                <span>Export PDF Certificate</span>
               </button>
               <button
                 onClick={() => setShowCertModal(false)}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-white font-bold cursor-pointer"
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl cursor-pointer text-xs"
               >
-                Close
+                Done
               </button>
             </div>
           </div>
@@ -420,3 +408,4 @@ export const BioSmeDashboard = ({ theme }) => {
   );
 };
 
+export default BioSmeDashboard;
