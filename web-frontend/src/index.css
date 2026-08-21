@@ -2,11 +2,133 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Modern Emerald & Slate Charcoal Palette (Clean Eco-Tech) */
+:root {
+  --bg-main: #0b1320;         /* Deep Midnight Slate Charcoal */
+  --bg-panel: #131e30;        /* Dark Slate Panel */
+  --bg-card: #1c2a3e;         /* Slate Charcoal Card */
+  --text-main: #f8fafc;       /* Crisp Ice Sand Text */
+  --text-muted: #94a3b8;      /* Muted Slate Text */
+  --border-earth: #2d3f58;    /* Defined Slate Border */
+  --accent-green: #10b981;    /* Vibrant Eco Emerald Green */
+  --accent-orange: #f97316;   /* Clean Solar Amber/Orange */
+  --accent-brown: #0284c7;    /* Slate Blue Accent */
+}
+
+/* Light Theme: Soft Slate Ice Sand (Zero Bright White Glare) */
+.light {
+  --bg-main: #f1f5f9;         /* Soft Slate Ice Sand */
+  --bg-panel: #e2e8f0;        /* Warm Muted Slatestone */
+  --bg-card: #edf2f7;         /* Calm Muted Slate Card (Gentle on the eyes) */
+  --text-main: #0f172a;       /* Deep Slate Charcoal High-Contrast Text */
+  --text-muted: #334155;      /* Crisp Dark Slate Muted Text */
+  --border-earth: #cbd5e1;    /* Defined Slatestone Border */
+  --accent-green: #047857;    /* Deep Eco Emerald */
+  --accent-orange: #c2410c;   /* Terracotta Orange */
+  --accent-brown: #0369a1;    /* Deep Slate Blue */
+}
+
+/* High Contrast & Muted Overrides for Light Mode */
+.light .text-stone-400,
+.light .text-stone-500,
+.light .text-stone-600 {
+  color: #334155 !important;
+}
+
+.light .text-stone-300,
+.light .text-stone-200,
+.light .text-stone-100 {
+  color: #0f172a !important;
+}
+
+.light .bg-\[\#1c1512\] {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light .bg-\[\#120e0c\] {
+  background-color: #cbd5e1 !important;
+  border-color: #94a3b8 !important;
+}
+
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    position: relative;
   }
+
+  /* Photorealistic Clean Environment Sky Background Layer */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -10;
+    background-image: linear-gradient(to bottom, rgba(11, 19, 32, 0.86), rgba(19, 30, 48, 0.90)), url('/assets/clean_environment_hero.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    filter: blur(16px);
+    transform: scale(1.06);
+    transition: background-image 0.5s ease-in-out;
+  }
+
+  .light body::before {
+    background-image: linear-gradient(to bottom, rgba(241, 245, 249, 0.88), rgba(226, 232, 240, 0.92)), url('/assets/clean_environment_hero.jpg');
+    filter: blur(16px);
+  }
+}
+
+/* Minimalist Eco-Tech Cards with Subtle Glassmorphism */
+.earthy-box {
+  background-color: rgba(28, 42, 62, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-earth);
+  border-radius: 1.25rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.light .earthy-box {
+  background-color: rgba(237, 242, 247, 0.95);
+  backdrop-filter: blur(12px);
+  border-color: #cbd5e1;
+}
+
+.earthy-box-hover:hover {
+  border-color: var(--accent-green);
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.20);
+}
+
+.earthy-panel {
+  background-color: rgba(19, 30, 48, 0.90);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-earth);
+}
+
+.light .earthy-panel {
+  background-color: rgba(226, 232, 240, 0.96);
+  backdrop-filter: blur(12px);
+  border-color: #cbd5e1;
+}
+
+/* Eco Emerald Accent Utility Badges & Headers */
+.green-pill {
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+
+.light .green-pill {
+  background-color: rgba(4, 120, 87, 0.15);
+  border: 1px solid rgba(4, 120, 87, 0.4);
+  color: #047857;
 }
 
 /* Custom Scrollbar */
@@ -16,28 +138,38 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: rgba(16, 185, 129, 0.4);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: rgba(16, 185, 129, 0.75);
 }
 
-/* Pulsing heat aura for active pyrolysis */
-@keyframes heatPulse {
-  0%, 100% {
-    box-shadow: 0 0 15px rgba(249, 115, 22, 0.3), inset 0 0 15px rgba(249, 115, 22, 0.2);
+/* Minimal Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
-  50% {
-    box-shadow: 0 0 35px rgba(239, 68, 68, 0.6), inset 0 0 25px rgba(239, 68, 68, 0.4);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.heat-glow {
-  animation: heatPulse 3s infinite ease-in-out;
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

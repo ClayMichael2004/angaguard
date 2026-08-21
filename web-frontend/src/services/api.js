@@ -1,9 +1,7 @@
-import { ESGScorecard, LedgerBlock, MintResult, OracleStats, TelemetryPacket, Cooperative, FarmerAccount, PayoutRecord } from '../types';
-
 const API_BASE = 'http://localhost:8080/api';
 
 export const api = {
-  async getStats(): Promise<OracleStats> {
+  async getStats() {
     try {
       const res = await fetch(`${API_BASE}/stats`);
       if (!res.ok) throw new Error('API error');
@@ -23,7 +21,7 @@ export const api = {
     }
   },
 
-  async getSMEScorecard(smeId: string = 'SME-KIZITO-ELDORET'): Promise<ESGScorecard> {
+  async getSMEScorecard(smeId = 'SME-KIZITO-ELDORET') {
     try {
       const res = await fetch(`${API_BASE}/sme/${smeId}/scorecard`);
       if (!res.ok) throw new Error('API error');
@@ -55,7 +53,7 @@ export const api = {
     }
   },
 
-  async updateSMEMetrics(smeId: string, data: { scope1_diesel_liters: number; scope2_grid_kwh: number; scope3_offsets_tons: number }): Promise<ESGScorecard> {
+  async updateSMEMetrics(smeId, data) {
     const res = await fetch(`${API_BASE}/sme/${smeId}/update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -64,7 +62,7 @@ export const api = {
     return await res.json();
   },
 
-  async getLedgerBlocks(): Promise<{ blocks: LedgerBlock[]; count: number }> {
+  async getLedgerBlocks() {
     try {
       const res = await fetch(`${API_BASE}/ledger/blocks`);
       if (!res.ok) throw new Error('API error');
@@ -103,7 +101,7 @@ export const api = {
     }
   },
 
-  async verifyLedgerChain(): Promise<{ is_valid: boolean; message?: string; error?: string }> {
+  async verifyLedgerChain() {
     try {
       const res = await fetch(`${API_BASE}/ledger/verify`);
       return await res.json();
@@ -112,7 +110,7 @@ export const api = {
     }
   },
 
-  async submitTelemetry(packet: TelemetryPacket): Promise<{ status: string; asset?: MintResult; block_index?: number; block_hash?: string; error?: string; payouts?: PayoutRecord[] }> {
+  async submitTelemetry(packet) {
     const res = await fetch(`${API_BASE}/telemetry`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -121,7 +119,7 @@ export const api = {
     return await res.json();
   },
 
-  async sendUSSD(phoneNumber: string, text: string): Promise<string> {
+  async sendUSSD(phoneNumber, text) {
     try {
       const res = await fetch(`${API_BASE}/ussd`, {
         method: 'POST',
@@ -140,7 +138,7 @@ export const api = {
     }
   },
 
-  async getCooperatives(): Promise<{ cooperatives: Cooperative[] }> {
+  async getCooperatives() {
     try {
       const res = await fetch(`${API_BASE}/cooperatives`);
       return await res.json();
@@ -165,7 +163,7 @@ export const api = {
     }
   },
 
-  async getFarmers(): Promise<{ farmers: FarmerAccount[] }> {
+  async getFarmers() {
     try {
       const res = await fetch(`${API_BASE}/farmers`);
       return await res.json();
@@ -190,7 +188,7 @@ export const api = {
     }
   },
 
-  async getPayouts(): Promise<{ payouts: PayoutRecord[] }> {
+  async getPayouts() {
     try {
       const res = await fetch(`${API_BASE}/payouts`);
       return await res.json();
