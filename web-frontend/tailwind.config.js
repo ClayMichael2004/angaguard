@@ -20,8 +20,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['Calibri', 'Carlito', 'Candara', 'Segoe UI', 'system-ui', 'sans-serif'],
+        mono: ['Calibri', 'Carlito', 'Candara', 'Segoe UI', 'Consolas', 'monospace'],
+        calibri: ['Calibri', 'Carlito', 'Candara', 'Segoe UI', 'sans-serif'],
       }
     },
   },

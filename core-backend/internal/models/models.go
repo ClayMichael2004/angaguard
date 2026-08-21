@@ -133,3 +133,73 @@ type USSDSession struct {
 	ServiceCode string `json:"service_code"`
 	Text        string `json:"text"`
 }
+
+// User represents an authenticated account in the AngaGuard ecosystem.
+type User struct {
+	ID          string    `json:"id"`
+	Identifier  string    `json:"identifier"` // Phone number or Org ID
+	Name        string    `json:"name"`
+	Role        string    `json:"role"`        // "farmer", "cooperative", "sme"
+	SubType     string    `json:"sub_type"`    // "bio-sme", "non-bio-sme", "outgrower", "coop-manager"
+	Affiliation string    `json:"affiliation"`
+	PIN         string    `json:"pin"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
+// Kiln represents a physical smart pyrolysis kiln with live IoT telemetry state.
+type Kiln struct {
+	ID            string    `json:"id"`
+	CoopID        string    `json:"coop_id"`
+	FarmerPhone   string    `json:"farmer_phone"`
+	FarmerName    string    `json:"farmer_name"`
+	Location      string    `json:"location"`
+	Status        string    `json:"status"` // "ACTIVE", "COOLING", "STANDBY"
+	SkinTempC     float64   `json:"skin_temp_c"`
+	CoreTempC     float64   `json:"core_temp_c"`
+	CharDepthCM   float64   `json:"char_depth_cm"`
+	InitialDepth  float64   `json:"initial_depth_cm"`
+	BatteryPct    int       `json:"battery_pct"`
+	LastYieldKG   float64   `json:"last_yield_kg"`
+	LastYieldTons float64   `json:"last_yield_tons"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
+// SMEBuyer represents an off-taker purchasing pooled biochar credits.
+type SMEBuyer struct {
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	Location      string  `json:"location"`
+	Industry      string  `json:"industry"`
+	PurchasedTons float64 `json:"purchased_tons"`
+	ValueUSD      float64 `json:"value_usd"`
+	ValueKSh      float64 `json:"value_ksh"`
+	Status        string  `json:"status"` // "CONTRACT ACTIVE", "SETTLED"
+	NcrCert       string  `json:"ncr_cert"`
+	Contact       string  `json:"contact"`
+}
+
+// CooperativeTransaction represents an audited dMRV batch settlement.
+type CooperativeTransaction struct {
+	ID              string    `json:"id"`
+	Date            string    `json:"date"`
+	Type            string    `json:"type"` // "MINT & DISBURSE", "MARKET SALE"
+	KilnID          string    `json:"kiln_id"`
+	FarmerName      string    `json:"farmer_name"`
+	MassKG          float64   `json:"mass_kg"`
+	CO2eTons        float64   `json:"co2e_tons"`
+	FarmerPayoutKSh float64   `json:"farmer_payout_ksh"`
+	CoopStipendKSh  float64   `json:"coop_stipend_ksh"`
+	Receipt         string    `json:"receipt"`
+	NcrID           string    `json:"ncr_id"`
+	Timestamp       time.Time `json:"timestamp"`
+}
+
+// TradeExecutionRequest represents a request to execute a pooled carbon credit sale.
+type TradeExecutionRequest struct {
+	CoopID   string  `json:"coop_id"`
+	BuyerID  string  `json:"buyer_id"`
+	Tonnage  float64 `json:"tonnage"`
+	PriceUSD float64 `json:"price_usd"`
+	CoopPIN  string  `json:"coop_pin"`
+}
+

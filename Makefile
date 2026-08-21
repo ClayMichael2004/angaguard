@@ -26,6 +26,10 @@ dev: run-all
 run-all:
 	@./start.sh
 
+setup-db:
+	@echo "==> Setting up AngaGuard SQLite Database & Seeding >= 10 Users..."
+	./scripts/setup_db.sh
+
 # Individual service launchers
 run-backend:
 	@echo "==> Starting AngaGuard Go Core Backend on :8080..."
@@ -33,7 +37,8 @@ run-backend:
 
 run-bridge:
 	@echo "==> Starting Python AI & Telephony Bridge on :5000..."
-	cd ai-telephony-bridge && uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+	cd ai-telephony-bridge && (./venv/bin/uvicorn main:app --host 0.0.0.0 --port 5000 --reload || uvicorn main:app --host 0.0.0.0 --port 5000 --reload)
+
 
 run-frontend:
 	@echo "==> Starting React Web Frontend on :3000..."
