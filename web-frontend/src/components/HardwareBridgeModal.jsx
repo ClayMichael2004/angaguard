@@ -116,8 +116,15 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
 
   const forwardPayload = async (payload) => {
     try {
-      addLog('Piping telemetry packet to ' + backendUrl + '...', 'info');
-      const res = await fetch(backendUrl, {
+      let cleanUrl = backendUrl.trim();
+      // Auto-correct double slashes e.g. https://angaguard.onrender.com//api/telemetry -> https://angaguard.onrender.com/api/telemetry
+      cleanUrl = cleanUrl.replace(/([^:])\/+/g, '$1/');
+      if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://') && !cleanUrl.startsWith('/')) {
+        cleanUrl = '/' + cleanUrl;
+      }
+
+      addLog('Piping telemetry packet to ' + cleanUrl + '...', 'info');
+      const res = await fetch(cleanUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
