@@ -10,7 +10,7 @@ import (
 	"github.com/angaguard/core-backend/internal/models"
 )
 
-// SplitEngine orchestrates automated Safaricom Daraja B2C payouts.
+// SplitEngine orchestrates automated Safaricom Daraja B2C payouts aligned with Kenya Carbon Markets Regulations 2024.
 type SplitEngine struct {
 	mu            sync.RWMutex
 	PayoutRecords []models.PayoutRecord
@@ -39,7 +39,12 @@ func generateMpesaReceipt() string {
 	return string(result)
 }
 
-// ExecuteB2CSplit processes immediate disbursements upon verified block minting.
+// ExecuteB2CSplit processes statutory disbursements upon verified block minting.
+// In strict compliance with Section 24 of the Climate Change (Carbon Markets) Regulations 2024:
+// - 40.0% Community Development Trust Fund (Statutory Land-Based Requirement)
+// - 37.0% Smallholder Farmer Direct M-Pesa Disbursal
+// - 14.8% Cooperative Operational & Kiln Maintenance Stipend
+// - 8.2% Platform dMRV & Consolidated Fund Levy
 func (se *SplitEngine) ExecuteB2CSplit(asset models.MintResult, coopName string) ([]models.PayoutRecord, error) {
 	se.mu.Lock()
 	defer se.mu.Unlock()
@@ -47,10 +52,27 @@ func (se *SplitEngine) ExecuteB2CSplit(asset models.MintResult, coopName string)
 	payouts := make([]models.PayoutRecord, 0)
 	now := time.Now()
 
-	// 1. Smallholder Farmer Payout (37.0% of $135 standard credit = $50/ton equivalent)
+	// 1. Statutory Community Development Trust Fund (40.0% = $54/ton equivalent)
+	communityAmountKSh := asset.NetMetricTonsCO2e * 54.0 * se.ExchangeRate
+	if communityAmountKSh > 0 {
+		communityPayout := models.PayoutRecord{
+			TransactionID: fmt.Sprintf("B2C-COMMUNITY-%d", now.UnixNano()),
+			AssetID:       asset.AssetID,
+			Recipient:     fmt.Sprintf("TRUST-COMMUNITY-%s", asset.CoopID),
+			RecipientType: "COMMUNITY_TRUST_FUND",
+			AmountKSh:     communityAmountKSh,
+			Status:        "SUCCESS",
+			MpesaReceipt:  generateMpesaReceipt(),
+			Timestamp:     now,
+		}
+		se.PayoutRecords = append(se.PayoutRecords, communityPayout)
+		payouts = append(payouts, communityPayout)
+	}
+
+	// 2. Smallholder Farmer Direct Payout (37.0% = $50/ton equivalent)
 	if asset.FarmerPayoutKSh > 0 && asset.FarmerPhone != "" {
 		farmerPayout := models.PayoutRecord{
-			TransactionID: fmt.Sprintf("B2C-FARM-%d", now.UnixNano()),
+			TransactionID: fmt.Sprintf("B2C-FARM-%d", now.UnixNano()+1),
 			AssetID:       asset.AssetID,
 			Recipient:     asset.FarmerPhone,
 			RecipientType: "FARMER",
@@ -63,11 +85,11 @@ func (se *SplitEngine) ExecuteB2CSplit(asset models.MintResult, coopName string)
 		payouts = append(payouts, farmerPayout)
 	}
 
-	// 2. Cooperative Operational Stipend (14.8% of $135 standard credit = $20/ton equivalent)
+	// 3. Cooperative Operational Stipend (14.8% = $20/ton equivalent)
 	if asset.CoopPayoutKSh > 0 {
 		coopRecipient := fmt.Sprintf("PAYBILL-COOP-%s", asset.CoopID)
 		coopPayout := models.PayoutRecord{
-			TransactionID: fmt.Sprintf("B2C-COOP-%d", now.UnixNano()+1),
+			TransactionID: fmt.Sprintf("B2C-COOP-%d", now.UnixNano()+2),
 			AssetID:       asset.AssetID,
 			Recipient:     coopRecipient,
 			RecipientType: "COOPERATIVE",

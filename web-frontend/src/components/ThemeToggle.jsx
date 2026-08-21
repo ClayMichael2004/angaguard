@@ -9,24 +9,26 @@ export const ThemeToggle = ({ theme, setTheme }) => {
   return (
     <button
       onClick={toggleTheme}
-      className={`px-3 py-2 rounded-xl border text-xs font-mono flex items-center space-x-2 transition-all cursor-pointer ${
+      className={`px-3 py-1.5 rounded-xl border text-xs font-mono flex items-center space-x-1.5 transition-all cursor-pointer shadow-sm ${
         theme === 'dark'
-          ? 'bg-[#1c1512] border-[#443028] text-amber-400 hover:border-orange-500'
-          : 'bg-[#f5efe6] border-[#e7dfd5] text-amber-900 hover:border-orange-600'
+          ? 'bg-[#131e30] border-[#2d3f58] text-amber-400 hover:border-amber-500'
+          : 'bg-slate-100 border-slate-300 text-slate-800 hover:border-slate-400'
       }`}
-      title="Toggle Light / Dark Earthy Theme"
+      title="Toggle Light / Dark Theme"
     >
       {theme === 'dark' ? (
         <>
-          <Sun className="w-4 h-4 text-amber-400" />
+          <Sun className="w-3.5 h-3.5 text-amber-400" />
           <span className="font-bold">Light</span>
         </>
       ) : (
         <>
-          <Moon className="w-4 h-4 text-amber-900" />
+          <Moon className="w-3.5 h-3.5 text-slate-700" />
           <span className="font-bold">Dark</span>
         </>
       )}
     </button>
   );
 };
+
+export default ThemeToggle;

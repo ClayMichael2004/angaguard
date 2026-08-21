@@ -14,26 +14,26 @@ export const Navbar = ({
   activeSectionTitle = 'Dashboard'
 }) => {
   return (
-    <header className="sticky top-0 z-20 border-b border-[#2d3f58]/50 light:border-[#e2e8f0] bg-[#0b1320]/90 light:bg-[#ffffff]/90 backdrop-blur-xl transition-all font-mono text-xs">
+    <header className="sticky top-0 z-20 border-b border-slate-200 dark:border-[#2d3f58]/50 bg-white/95 dark:bg-[#0b1320]/90 backdrop-blur-xl transition-all font-mono text-xs shadow-sm">
       {/* Top Protocol Ticker Bar */}
-      <div className="bg-[#131e30] light:bg-[#f1f5f9] border-b border-[#2d3f58]/40 light:border-[#e2e8f0] px-4 py-1.5 text-[11px] text-stone-300 light:text-slate-700 font-bold">
+      <div className="bg-slate-100 dark:bg-[#131e30] border-b border-slate-200 dark:border-[#2d3f58]/40 px-4 py-1.5 text-[11px] text-slate-700 dark:text-stone-300 font-bold">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <span className="flex items-center space-x-1.5 text-emerald-400 light:text-emerald-700 font-bold px-2 py-0.5 rounded-full bg-emerald-950/40 light:bg-emerald-100 border border-emerald-500/40">
+            <span className="flex items-center space-x-1.5 text-emerald-800 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-500/40">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
               <span>GRID ONLINE</span>
             </span>
-            <span className="hidden sm:inline text-stone-500 light:text-slate-400">•</span>
+            <span className="hidden sm:inline text-slate-400 dark:text-stone-500">•</span>
             <span className="hidden sm:inline">Republic of Kenya Carbon Registry (EMCA 2026 / NEMA)</span>
           </div>
 
           <div className="flex items-center space-x-4">
             <span className="flex items-center space-x-1">
-              <Leaf className="w-3.5 h-3.5 text-emerald-400 light:text-emerald-600" />
-              <span>Kenya Spot Index: <strong className="text-orange-400 light:text-orange-600">$135.00 / tCO2e</strong></span>
+              <Leaf className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Kenya Spot Index: <strong className="text-orange-600 dark:text-orange-400">$135.00 / tCO2e</strong></span>
             </span>
-            <span className="hidden md:inline text-stone-500 light:text-slate-400">•</span>
-            <span className="hidden md:inline">Active Smart Kilns: <strong className="text-emerald-400 light:text-emerald-600">18 Units</strong></span>
+            <span className="hidden md:inline text-slate-400 dark:text-stone-500">•</span>
+            <span className="hidden md:inline">Active Smart Kilns: <strong className="text-emerald-700 dark:text-emerald-400">18 Units</strong></span>
           </div>
         </div>
       </div>
@@ -47,17 +47,17 @@ export const Navbar = ({
             {/* Mobile Hamburger Button */}
             <button
               onClick={onToggleSidebar}
-              className="lg:hidden p-2 rounded-xl bg-[#1c2a3e] light:bg-slate-100 border border-[#2d3f58] light:border-[#cbd5e1] text-stone-200 light:text-slate-800 hover:text-emerald-400 cursor-pointer transition-colors"
+              className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-[#1c2a3e] border border-slate-300 dark:border-[#2d3f58] text-slate-800 dark:text-stone-200 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors"
               title="Open Navigation Menu"
             >
-              <Menu className="w-5 h-5 text-emerald-400 light:text-emerald-600" />
+              <Menu className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </button>
 
             {/* Back Button */}
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#2d3f58] light:border-[#cbd5e1] bg-[#131e30] light:bg-slate-100 text-stone-200 light:text-slate-800 font-bold hover:text-orange-400 cursor-pointer transition-all"
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-[#2d3f58] bg-slate-100 dark:bg-[#131e30] text-slate-800 dark:text-stone-200 font-bold hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer transition-all shadow-sm"
                 title="Switch Account / Back to Options"
               >
                 <ArrowLeft className="w-4 h-4 text-orange-500" />
@@ -71,9 +71,9 @@ export const Navbar = ({
             </div>
 
             {/* Active View / Breadcrumb indicator */}
-            <div className="hidden lg:flex items-center space-x-2 text-stone-400 light:text-slate-500 font-bold text-xs">
-              <span className="text-stone-500 light:text-slate-400">Portal /</span>
-              <span className="text-stone-100 light:text-slate-900 font-black">{activeSectionTitle}</span>
+            <div className="hidden lg:flex items-center space-x-2 text-slate-500 dark:text-stone-400 font-bold text-xs">
+              <span className="text-slate-400 dark:text-stone-500">Portal /</span>
+              <span className="text-slate-900 dark:text-stone-100 font-black">{activeSectionTitle}</span>
             </div>
           </div>
 

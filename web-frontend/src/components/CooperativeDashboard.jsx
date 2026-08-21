@@ -284,7 +284,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
         <div className="space-y-8 animate-fadeIn">
           {/* Line Graph: Market Carbon Credit Trend */}
           <div className="earthy-box p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-[#443028]/40 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-4">
               <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100">
                 <BarChart2 className="w-5 h-5 text-orange-500" />
                 <span>Coop Carbon Credit Market Value Trend ($/tCO2e)</span>
@@ -940,77 +940,96 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
             {sellStep === 3 && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
-                  <h4 className="text-sm font-bold text-white uppercase tracking-wide">
-                    Automated 3-Way Revenue Distribution
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-stone-100 uppercase tracking-wide">
+                    Kenya Carbon Regulations 2024 Statutory Revenue Allocation
                   </h4>
-                  <p className="text-xs text-stone-400 mt-0.5">
-                    Gross proceeds of <strong>${(sellTonnage * 135).toFixed(2)} USD (KSh {(sellTonnage * 135 * 130).toLocaleString()})</strong> split automatically via oracle.
+                  <p className="text-xs text-slate-600 dark:text-stone-400 mt-0.5">
+                    Gross spot proceeds of <strong>${(sellTonnage * 135).toFixed(2)} USD (KSh {(sellTonnage * 135 * 130).toLocaleString()})</strong> allocated automatically via dMRV oracle.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Share 1: Farmers */}
-                  <div className="p-5 rounded-2xl bg-emerald-950/40 border border-emerald-700/80 space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* Share 1: Statutory Community Trust Fund (40%) */}
+                  <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-700/80 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-emerald-300">Smallholder Pool</span>
-                      <span className="text-xs font-black bg-emerald-800 text-white px-2 py-0.5 rounded-md">37.0%</span>
+                      <span className="text-xs font-bold text-blue-800 dark:text-blue-300">Community Trust</span>
+                      <span className="text-[10px] font-black bg-blue-700 text-white px-2 py-0.5 rounded-md">40.0%</span>
                     </div>
                     <div>
-                      <p className="text-2xl font-black text-emerald-400 font-mono">
-                        KSh {(sellTonnage * 50 * 130).toLocaleString()}
+                      <p className="text-xl font-black text-blue-900 dark:text-blue-400 font-mono">
+                        KSh {(sellTonnage * 54 * 130).toLocaleString()}
                       </p>
-                      <p className="text-[11px] text-emerald-300/80 font-mono mt-0.5">
-                        ${(sellTonnage * 50).toFixed(2)} USD ($50.00 / tCO2e)
+                      <p className="text-[10px] text-blue-700 dark:text-blue-300 font-mono mt-0.5">
+                        ${(sellTonnage * 54).toFixed(2)} USD ($54.00 / t)
                       </p>
                     </div>
-                    <p className="text-[11px] text-stone-300 leading-relaxed border-t border-emerald-800/60 pt-2">
-                      Disbursed directly to participating smallholder M-Pesa wallets across 18 smart kiln clusters.
+                    <p className="text-[10px] text-slate-600 dark:text-stone-300 leading-relaxed border-t border-blue-200 dark:border-blue-800/60 pt-1.5">
+                      Statutory 40% escrow for Kakamega community schools, water boreholes & road repairs (EMCA 2026).
                     </p>
                   </div>
 
-                  {/* Share 2: Coop Operations */}
-                  <div className="p-5 rounded-2xl bg-orange-950/40 border border-orange-700/80 space-y-3">
+                  {/* Share 2: Farmers (37%) */}
+                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-700/80 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-orange-300">Coop Operations</span>
-                      <span className="text-xs font-black bg-orange-800 text-white px-2 py-0.5 rounded-md">14.8%</span>
+                      <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">Farmer M-Pesa</span>
+                      <span className="text-[10px] font-black bg-emerald-700 text-white px-2 py-0.5 rounded-md">37.0%</span>
                     </div>
                     <div>
-                      <p className="text-2xl font-black text-orange-400 font-mono">
-                        KSh {(sellTonnage * 20 * 130).toLocaleString()}
+                      <p className="text-xl font-black text-emerald-900 dark:text-emerald-400 font-mono">
+                        KSh {(sellTonnage * 50 * 130).toLocaleString()}
                       </p>
-                      <p className="text-[11px] text-orange-300/80 font-mono mt-0.5">
-                        ${(sellTonnage * 20).toFixed(2)} USD ($20.00 / tCO2e)
+                      <p className="text-[10px] text-emerald-700 dark:text-emerald-300 font-mono mt-0.5">
+                        ${(sellTonnage * 50).toFixed(2)} USD ($50.00 / t)
                       </p>
                     </div>
-                    <p className="text-[11px] text-stone-300 leading-relaxed border-t border-orange-800/60 pt-2">
+                    <p className="text-[10px] text-slate-600 dark:text-stone-300 leading-relaxed border-t border-emerald-200 dark:border-emerald-800/60 pt-1.5">
+                      Disbursed directly to participating smallholder Safaricom M-Pesa wallets across 18 smart kiln clusters.
+                    </p>
+                  </div>
+
+                  {/* Share 3: Coop Operations (14.8%) */}
+                  <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-700/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-orange-800 dark:text-orange-300">Coop Operations</span>
+                      <span className="text-[10px] font-black bg-orange-700 text-white px-2 py-0.5 rounded-md">14.8%</span>
+                    </div>
+                    <div>
+                      <p className="text-xl font-black text-orange-900 dark:text-orange-400 font-mono">
+                        KSh {(sellTonnage * 20 * 130).toLocaleString()}
+                      </p>
+                      <p className="text-[10px] text-orange-700 dark:text-orange-300 font-mono mt-0.5">
+                        ${(sellTonnage * 20).toFixed(2)} USD ($20.00 / t)
+                      </p>
+                    </div>
+                    <p className="text-[10px] text-slate-600 dark:text-stone-300 leading-relaxed border-t border-orange-200 dark:border-orange-800/60 pt-1.5">
                       Retained for kiln maintenance, field extension officers, biomass hauling, and member dividends.
                     </p>
                   </div>
 
-                  {/* Share 3: Platform Clearing */}
-                  <div className="p-5 rounded-2xl bg-[#120e0c] border border-[#443028] space-y-3">
+                  {/* Share 4: Platform & Consolidated Levy (8.2%) */}
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#120e0c] border border-slate-200 dark:border-[#2d3f58] space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-stone-400">Platform & Audit</span>
-                      <span className="text-xs font-black bg-stone-800 text-stone-300 px-2 py-0.5 rounded-md">48.2%</span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-stone-400">dMRV & Levy</span>
+                      <span className="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded-md">8.2%</span>
                     </div>
                     <div>
-                      <p className="text-2xl font-black text-stone-300 font-mono">
-                        KSh {(sellTonnage * 65 * 130).toLocaleString()}
+                      <p className="text-xl font-black text-slate-900 dark:text-stone-300 font-mono">
+                        KSh {(sellTonnage * 11 * 130).toLocaleString()}
                       </p>
-                      <p className="text-[11px] text-stone-500 font-mono mt-0.5">
-                        ${(sellTonnage * 65).toFixed(2)} USD ($65.00 / tCO2e)
+                      <p className="text-[10px] text-slate-500 dark:text-stone-500 font-mono mt-0.5">
+                        ${(sellTonnage * 11).toFixed(2)} USD ($11.00 / t)
                       </p>
                     </div>
-                    <p className="text-[11px] text-stone-400 leading-relaxed border-t border-[#443028] pt-2">
-                      Covers dMRV IoT telemetry bandwidth, Kenya NCR registry fees, and Carbonmark market clearing.
+                    <p className="text-[10px] text-slate-500 dark:text-stone-400 leading-relaxed border-t border-slate-200 dark:border-[#2d3f58] pt-1.5">
+                      Covers IoT bandwidth, Kenya NCR registry fees, and statutory Consolidated Fund contribution.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-3 border-t border-[#443028]">
+                <div className="flex justify-between pt-3 border-t border-slate-200 dark:border-[#2d3f58]">
                   <button
                     onClick={() => setSellStep(2)}
-                    className="px-5 py-2.5 rounded-xl border border-[#443028] text-stone-400 hover:text-white font-bold cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-[#2d3f58] text-slate-700 dark:text-stone-400 hover:text-slate-900 dark:hover:text-white font-bold cursor-pointer"
                   >
                     &larr; Back to Quality Audit
                   </button>
@@ -1018,7 +1037,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                     onClick={() => setSellStep(4)}
                     className="px-6 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl flex items-center space-x-2 cursor-pointer shadow-md"
                   >
-                    <span>Proceed to PIN Authorization &rarr;</span>
+                    <span>Proceed to Auth Sign-Off &rarr;</span>
                   </button>
                 </div>
               </div>

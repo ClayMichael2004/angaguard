@@ -1,10 +1,9 @@
 import React from 'react';
 import {
-  X, LogOut, PhoneCall, Home, Flame, Users, History,
-  Building2, Wallet, Layers, ShieldCheck, ArrowDownToLine,
-  TrendingUp, FileText, ShoppingBag, Radio, Sparkles, Volume2, User
+  Flame, LayoutDashboard, Wallet, Users, History, TrendingUp,
+  Building2, ShieldCheck, FileText, PhoneCall, Volume2, Moon, Sun,
+  LogOut, X, ChevronRight, CheckCircle2, Factory, Sparkles, Layers, User
 } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
 import { Logo } from './Logo';
 
 export const Sidebar = ({
@@ -16,47 +15,42 @@ export const Sidebar = ({
   onOpenVoiceAssistant,
   theme,
   setTheme,
-  activeSection,
-  setActiveSection,
+  activeSection = 'overview',
+  setActiveSection
 }) => {
-  // Navigation items based on user role
+  if (!user) return null;
+
+  const role = user.role || 'farmer';
+
+  // Navigation Links based on active Persona Role
   const getNavSections = () => {
-    if (!user) return [];
-
-    if (user.role === 'farmer') {
+    if (role === 'farmer') {
       return [
-        { id: 'overview', label: 'Harvest & Overview', icon: Home },
-        { id: 'cashout', label: 'M-Pesa Cashout', icon: Wallet },
-        { id: 'kiln', label: '3D Kiln Digital Twin', icon: Flame },
-        { id: 'market', label: 'Spot Price Index', icon: TrendingUp },
-        { id: 'records', label: 'Sales & Audit Records', icon: History },
+        { id: 'overview', label: 'Overview & Metrics', icon: LayoutDashboard },
+        { id: 'cashout', label: 'M-Pesa Disbursals', icon: Wallet, badge: 'Direct' },
+        { id: 'kiln', label: '3D Smart Kiln Twin', icon: Flame },
+        { id: 'market', label: 'Carbon Spot Index', icon: TrendingUp },
+        { id: 'records', label: 'Audit Records Trail', icon: History },
       ];
     }
-
-    if (user.role === 'cooperative') {
+    if (role === 'cooperative') {
       return [
-        { id: 'overview', label: 'Coop Hub Overview', icon: Home },
-        { id: 'kilns', label: 'Smart Kilns Fleet (18)', icon: Flame },
+        { id: 'overview', label: 'Overview & 3D Kilns', icon: LayoutDashboard },
+        { id: 'kilns', label: 'Smart Kilns Fleet (18)', icon: Flame, badge: 'Live' },
         { id: 'members', label: 'Smallholders (148)', icon: Users },
-        { id: 'sell', label: 'Sell Pooled Credits', icon: ShoppingBag },
-        { id: 'transactions', label: 'Transactions Audit', icon: History },
-        { id: 'smes', label: 'Corporate SME Buyers', icon: Building2 },
+        { id: 'transactions', label: 'Transactions & Audit', icon: History },
+        { id: 'smes', label: 'Corporate Offtakers', icon: Building2 },
       ];
     }
-
-    if (user.role === 'sme') {
+    if (role === 'sme') {
       return [
-        { id: 'overview', label: 'ESG Footprint & Scopes', icon: Home },
-        { id: 'outgrowers', label: 'Funded Outgrowers', icon: Users },
-        { id: 'kilns', label: 'Smart Kilns Twin', icon: Flame },
-        { id: 'ledger', label: 'Cryptographic Ledger', icon: ShieldCheck },
-        { id: 'reports', label: 'ISSB / CSRD Reports', icon: FileText },
+        { id: 'overview', label: 'ESG Net-Zero Overview', icon: LayoutDashboard },
+        { id: 'outgrowers', label: 'Funded Outgrowers (35)', icon: Factory, badge: 'Insetting' },
+        { id: 'ledger', label: 'SHA-256 Ledger Audit', icon: History },
+        { id: 'reports', label: 'ISSB / IFRS S2 Reports', icon: FileText },
       ];
     }
-
-    return [
-      { id: 'overview', label: 'Dashboard', icon: Home },
-    ];
+    return [{ id: 'overview', label: 'Overview', icon: LayoutDashboard }];
   };
 
   const navSections = getNavSections();
@@ -65,33 +59,58 @@ export const Sidebar = ({
     if (setActiveSection) {
       setActiveSection(sectionId);
     }
-    // Close on mobile
-    if (setIsOpen && window.innerWidth < 1024) {
+    if (setIsOpen) {
       setIsOpen(false);
     }
   };
 
-  const sidebarContent = (
-    <div className="flex flex-col justify-between h-full p-5 font-mono text-xs select-none">
-      {/* Top Header & Logo */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-[#2d3f58]/60 light:border-[#e2e8f0] pb-4">
-          <Logo size="sm" />
-          <button
-            onClick={() => setIsOpen && setIsOpen(false)}
-            className="lg:hidden p-1.5 rounded-xl border border-[#2d3f58] light:border-[#cbd5e1] text-stone-400 light:text-slate-600 hover:text-white light:hover:text-black cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+  return (
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden animate-fadeIn"
+        />
+      )}
 
-        {/* Navigation Sections */}
-        <div className="space-y-1.5">
-          <div className="text-[10px] uppercase font-extrabold tracking-wider text-emerald-500 light:text-emerald-700 px-3 pb-1">
-            Sections & Controls
+      {/* Sidebar Container */}
+      <aside
+        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-white dark:bg-[#0b1320] border-r border-slate-200 dark:border-[#2d3f58] flex flex-col justify-between transition-transform duration-300 ease-in-out font-mono text-xs shadow-xl lg:shadow-none lg:static lg:translate-x-0 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Top Header & Branding */}
+        <div className="p-5 border-b border-slate-200 dark:border-[#2d3f58]/60 space-y-4">
+          <div className="flex items-center justify-between">
+            <Logo size="md" />
+            <button
+              onClick={() => setIsOpen(false)}
+              className="lg:hidden p-1.5 rounded-lg border border-slate-200 dark:border-[#2d3f58] text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
-          <nav className="space-y-1">
+          {/* System Protocol Status Badge */}
+          <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58]/60 flex items-center justify-between text-[11px]">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-bold text-slate-700 dark:text-stone-300">dMRV Oracle v2.6</span>
+            </div>
+            <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/50">
+              KENYA NCR
+            </span>
+          </div>
+        </div>
+
+        {/* Middle Navigation Section */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] uppercase font-bold text-slate-400 dark:text-stone-500 tracking-wider">
+              {role === 'farmer' ? 'Smallholder Hub' : role === 'cooperative' ? 'Cooperative Management' : 'Corporate ESG Hub'}
+            </p>
+
             {navSections.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
@@ -99,125 +118,112 @@ export const Sidebar = ({
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl font-bold transition-all cursor-pointer text-left ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold transition-all text-left cursor-pointer ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md border border-emerald-400/40'
-                      : 'text-stone-300 light:text-slate-700 hover:bg-[#1c2a3e] light:hover:bg-slate-100 hover:text-white light:hover:text-black'
+                      ? 'bg-emerald-600 dark:bg-emerald-600 text-white shadow-md'
+                      : 'text-slate-700 dark:text-stone-300 hover:bg-slate-100 dark:hover:bg-[#1c2a3e] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-emerald-400 light:text-emerald-600'}`} />
-                  <span className="truncate">{item.label}</span>
+                  <div className="flex items-center space-x-2.5">
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-emerald-600 dark:text-emerald-400'}`} />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.badge && (
+                    <span
+                      className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
+                        isActive
+                          ? 'bg-white/20 text-white'
+                          : 'bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-400 border border-orange-300 dark:border-orange-700'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
-          </nav>
-        </div>
-
-        {/* Telephony & Oracle Utilities */}
-        <div className="space-y-1.5 pt-2 border-t border-[#2d3f58]/40 light:border-[#e2e8f0]">
-          <div className="text-[10px] uppercase font-extrabold tracking-wider text-orange-500 light:text-orange-700 px-3 pb-1">
-            Telephony & Oracle Tools
           </div>
 
-          <button
-            onClick={() => {
-              onOpenUssd();
-              if (setIsOpen && window.innerWidth < 1024) setIsOpen(false);
-            }}
-            className="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl bg-[#131e30] light:bg-slate-50 border border-[#2d3f58] light:border-[#e2e8f0] text-emerald-400 light:text-emerald-700 hover:border-emerald-500 font-bold cursor-pointer transition-all"
-            title="Launch 2G USSD (*384*55#) simulator"
-          >
-            <PhoneCall className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-            <span className="truncate">2G USSD (*384*55#)</span>
-          </button>
+          {/* Quick Telephony & Voice Tools */}
+          <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-[#2d3f58]/40">
+            <p className="px-3 text-[10px] uppercase font-bold text-slate-400 dark:text-stone-500 tracking-wider">
+              Hardware & Offline Tools
+            </p>
 
-          {onOpenVoiceAssistant && (
             <button
               onClick={() => {
-                onOpenVoiceAssistant();
-                if (setIsOpen && window.innerWidth < 1024) setIsOpen(false);
+                if (onOpenVoiceAssistant) onOpenVoiceAssistant();
+                if (setIsOpen) setIsOpen(false);
               }}
-              className="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl bg-[#131e30] light:bg-slate-50 border border-[#2d3f58] light:border-[#e2e8f0] text-orange-400 light:text-orange-700 hover:border-orange-500 font-bold cursor-pointer transition-all"
-              title="Listen to Swahili / English AI Voice Assistant"
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-900/40 border border-orange-200 dark:border-orange-800/40 text-orange-900 dark:text-orange-300 font-bold transition-all cursor-pointer"
             >
-              <Volume2 className="w-4 h-4 text-orange-500 flex-shrink-0" />
-              <span className="truncate">Voice Assistant (IVR)</span>
+              <div className="flex items-center space-x-2">
+                <Volume2 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                <span>AI Voice IVR</span>
+              </div>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-200 dark:bg-orange-900 text-orange-900 dark:text-orange-200 font-black">Swahili/En</span>
             </button>
-          )}
-        </div>
-      </div>
 
-      {/* Bottom Area: Account Corner Badge, Theme, and Logout */}
-      <div className="space-y-3 pt-4 border-t border-[#2d3f58]/60 light:border-[#e2e8f0]">
-        
-        {/* CORNER ACCOUNT BADGE */}
-        {user && (
-          <div className="p-3 rounded-2xl bg-[#131e30] light:bg-slate-50 border border-emerald-500/40 light:border-emerald-600/40 space-y-1 shadow-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 rounded-full bg-emerald-600/30 border border-emerald-500 flex items-center justify-center text-emerald-400 font-black text-xs">
-                <User className="w-3.5 h-3.5" />
+            <button
+              onClick={() => {
+                if (onOpenUssd) onOpenUssd();
+                if (setIsOpen) setIsOpen(false);
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#131e30] hover:bg-slate-100 dark:hover:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] text-slate-700 dark:text-stone-300 font-bold transition-all cursor-pointer"
+            >
+              <div className="flex items-center space-x-2">
+                <PhoneCall className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>2G USSD (*384*55#)</span>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-stone-400 light:text-slate-500 uppercase font-extrabold tracking-wide">
-                  Active Account
-                </p>
-                <p className="font-extrabold text-stone-100 light:text-slate-900 text-xs truncate" title={user.name}>
-                  {user.name}
-                </p>
-              </div>
+              <span className="text-[9px] text-slate-400 dark:text-stone-500 font-bold">Offline</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Corner Account & System Actions */}
+        <div className="p-4 border-t border-slate-200 dark:border-[#2d3f58]/60 space-y-3 bg-slate-50 dark:bg-[#0b1320]">
+          
+          {/* Active Account Identity Card */}
+          <div className="p-3 rounded-2xl bg-white dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58] flex items-center space-x-3 shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-600/60 flex items-center justify-center text-emerald-700 dark:text-emerald-400 font-bold flex-shrink-0">
+              <User className="w-4 h-4" />
             </div>
-            <div className="flex items-center justify-between text-[10px] pt-1 border-t border-[#2d3f58]/40 light:border-slate-200">
-              <span className="text-emerald-500 font-bold uppercase">
-                {user.role === 'farmer' ? (user.farmerType === 'bio-sme' ? 'Bio SME Outgrower' : 'Coop Member') : user.role.toUpperCase()}
-              </span>
-              <span className="text-stone-400 light:text-slate-500 truncate max-w-[100px]" title={user.affiliation}>
-                {user.affiliation || 'Kenya NCR'}
-              </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-stone-400 uppercase tracking-wide truncate">
+                {role === 'farmer' ? 'Smallholder Account' : role === 'cooperative' ? 'Cooperative Union' : 'Corporate Buyer'}
+              </p>
+              <p className="font-extrabold text-slate-900 dark:text-stone-100 text-xs truncate">
+                {user.name || 'Wanjala Wafula'}
+              </p>
             </div>
           </div>
-        )}
 
-        {/* Theme Mode Switcher */}
-        <div className="flex items-center justify-between px-1 py-1">
-          <span className="text-[11px] text-stone-400 light:text-slate-600 font-bold">Theme Mode:</span>
-          <ThemeToggle theme={theme} setTheme={setTheme} />
+          {/* Theme Switcher & Logout */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="flex-1 py-2 px-3 rounded-xl border border-slate-200 dark:border-[#2d3f58] bg-white dark:bg-[#131e30] text-slate-700 dark:text-stone-300 hover:text-slate-900 dark:hover:text-white font-bold flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm"
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-slate-600" />}
+              <span className="text-[11px]">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+            </button>
+
+            <button
+              onClick={onLogout}
+              className="py-2 px-3 rounded-xl border border-slate-200 dark:border-[#2d3f58] bg-white dark:bg-[#131e30] text-slate-600 dark:text-stone-400 hover:text-rose-600 dark:hover:text-rose-400 font-bold flex items-center justify-center cursor-pointer shadow-sm"
+              title="Switch Account"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between text-[9px] text-slate-400 dark:text-stone-500 pt-1 px-1">
+            <span>Republic of Kenya NCR</span>
+            <span>EMCA 2026</span>
+          </div>
         </div>
-
-        {/* Logout Button */}
-        <button
-          onClick={() => {
-            onLogout();
-            if (setIsOpen && window.innerWidth < 1024) setIsOpen(false);
-          }}
-          className="w-full py-2.5 px-3 rounded-xl bg-red-950/40 light:bg-red-50 border border-red-800/60 light:border-red-200 text-red-300 light:text-red-700 font-bold flex items-center justify-center space-x-2 cursor-pointer hover:bg-red-900/60 light:hover:bg-red-100 transition-all text-xs"
-        >
-          <LogOut className="w-4 h-4 text-red-400 light:text-red-600 flex-shrink-0" />
-          <span>Exit / Change Account</span>
-        </button>
-
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      {/* Desktop Persistent Left Sidebar (Visible on lg and above) */}
-      <aside className="hidden lg:flex flex-col w-72 h-screen sticky top-0 bg-[#0f172a]/95 light:bg-[#ffffff] border-r border-[#2d3f58] light:border-[#e2e8f0] shadow-xl z-30 flex-shrink-0">
-        {sidebarContent}
       </aside>
-
-      {/* Mobile Drawer (Visible on screens < lg when isOpen is true) */}
-      {isOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex animate-fadeIn">
-          <div
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm"
-            onClick={() => setIsOpen(false)}
-          />
-          <aside className="relative w-80 bg-[#0f172a] light:bg-[#ffffff] border-r border-[#2d3f58] light:border-[#e2e8f0] h-full z-10 shadow-2xl">
-            {sidebarContent}
-          </aside>
-        </div>
-      )}
     </>
   );
 };
