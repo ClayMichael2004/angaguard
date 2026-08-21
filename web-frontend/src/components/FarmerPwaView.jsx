@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Smartphone, CheckCircle2, ArrowDownToLine, Flame, Sparkles, Shield, Wallet, Clock, Check, AlertCircle } from 'lucide-react';
-import { FarmerAccount, PayoutRecord } from '../types';
+import { CheckCircle2, ArrowDownToLine, Flame, Sparkles, Wallet, Clock, Check } from 'lucide-react';
 
-export const FarmerPwaView: React.FC = () => {
-  const [farmer, setFarmer] = useState<FarmerAccount>({
+export const FarmerPwaView = () => {
+  const [farmer, setFarmer] = useState({
     phone: '+254712345678',
     name: 'Wanjala Wafula',
     national_id: '28491024',
@@ -17,7 +16,7 @@ export const FarmerPwaView: React.FC = () => {
     created_at: new Date().toISOString(),
   });
 
-  const [payouts, setPayouts] = useState<PayoutRecord[]>([
+  const [payouts, setPayouts] = useState([
     {
       transaction_id: 'B2C-FARM-994102',
       asset_id: 'AG-CORC-7f8a9c',
@@ -40,8 +39,8 @@ export const FarmerPwaView: React.FC = () => {
     },
   ]);
 
-  const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
-  const [successReceipt, setSuccessReceipt] = useState<string | null>(null);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [successReceipt, setSuccessReceipt] = useState(null);
 
   const handleWithdrawMpesa = () => {
     if (farmer.available_ksh <= 0) return;
@@ -51,7 +50,7 @@ export const FarmerPwaView: React.FC = () => {
       const receipt = `QHK${Math.floor(1000000 + Math.random() * 9000000)}`;
       const amountWithdrawn = farmer.available_ksh;
 
-      const newPayout: PayoutRecord = {
+      const newPayout = {
         transaction_id: `B2C-FARM-${Date.now()}`,
         asset_id: 'AG-CORC-INSTANT',
         recipient: farmer.phone,
