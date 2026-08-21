@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
-import { X, Usb, CheckCircle2, AlertTriangle, Terminal, Zap, RefreshCw, Radio } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Usb, AlertTriangle, Zap } from 'lucide-react';
 
 export const HardwareBridgeModal = ({ isOpen, onClose }) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -66,7 +66,7 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
       keepReadingRef.current = true;
       startReading(port);
     } catch (err) {
-      addLog(Failed to connect: , 'error');
+      addLog('Failed to connect: ' + err.message, 'error');
       setIsConnected(false);
       setStatusText('Connection Failed');
     }
@@ -96,19 +96,19 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
             if (line.startsWith('{') && line.endsWith('}')) {
               try {
                 const payload = JSON.parse(line);
-                addLog([WaziDev Packet] Temp: °C | InitH: cm | FinalH: cm, 'success');
+                addLog('[WaziDev Packet] Temp: ' + payload.peak_outer_temp_c + '°C | InitH: ' + payload.initial_height_cm + 'cm | FinalH: ' + payload.final_height_cm + 'cm', 'success');
                 await forwardPayload(payload);
               } catch (e) {
-                addLog([Serial Line] , 'info');
+                addLog('[Serial Line] ' + line, 'info');
               }
             } else {
-              addLog([Arduino] , 'info');
+              addLog('[Arduino] ' + line, 'info');
             }
           }
         }
       }
     } catch (err) {
-      addLog(Stream reading stopped: , 'warn');
+      addLog('Stream reading stopped: ' + err.message, 'warn');
     } finally {
       reader.releaseLock();
     }
@@ -116,7 +116,7 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
 
   const forwardPayload = async (payload) => {
     try {
-      addLog(Piping telemetry packet to ..., 'info');
+      addLog('Piping telemetry packet to ' + backendUrl + '...', 'info');
       const res = await fetch(backendUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -125,12 +125,12 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
       const data = await res.json();
       if (res.ok) {
         setForwardedCount((prev) => prev + 1);
-        addLog([Cloud 200 OK] Biochar: kg | CORC:  | Payout: KSh , 'success');
+        addLog('[Cloud 200 OK] Biochar: ' + (data.biochar_yield_kg || 'Validated') + 'kg | CORC: ' + (data.corc_mint_id || 'MINTED') + ' | Payout: KSh ' + (data.farmer_payout_ksh || '6,450'), 'success');
       } else {
-        addLog([Cloud  Error] , 'error');
+        addLog('[Cloud ' + res.status + ' Error] ' + JSON.stringify(data), 'error');
       }
     } catch (e) {
-      addLog(Network dispatch failed: , 'error');
+      addLog('Network dispatch failed: ' + e.message, 'error');
     }
   };
 
@@ -155,105 +155,117 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className=fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm>
-      <div className=relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden font-mono text-xs text-slate-100>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden font-mono text-xs text-slate-100">
         
         {/* Header */}
-        <div className=flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-slate-950>
-          <div className=flex items-center space-x-2.5>
-            <div className=p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400>
-              <Usb className=w-4 h-4 />
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-slate-950">
+          <div className="flex items-center space-x-2.5">
+            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+              <Usb className="w-4 h-4" />
             </div>
             <div>
-              <h2 className=text-sm font-bold text-slate-100>WaziDev Live Hardware Bridge</h2>
-              <p className=text-[11px] text-slate-400>Direct In-Browser Web Serial to Render Cloud Relay</p>
+              <h2 className="text-sm font-bold text-slate-100">WaziDev Live Hardware Bridge</h2>
+              <p className="text-[11px] text-slate-400">Direct In-Browser Web Serial to Render Cloud Relay</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className=p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors cursor-pointer
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors cursor-pointer"
           >
-            <X className=w-4 h-4 />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Body Content */}
-        <div className=p-5 space-y-4>
+        <div className="p-5 space-y-4">
           {!isSupported && (
-            <div className=p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 flex items-start space-x-2.5>
-              <AlertTriangle className=w-4 h-4 text-rose-400 shrink-0 mt-0.5 />
+            <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 flex items-start space-x-2.5">
+              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
               <div>
-                <strong className=block font-bold text-xs>Web Serial Not Supported</strong>
+                <strong className="block font-bold text-xs">Web Serial Not Supported</strong>
                 <span>Please open this page in Google Chrome or Microsoft Edge to connect to the WaziDev USB port.</span>
               </div>
             </div>
           )}
 
           {/* Status & Control Row */}
-          <div className=flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800>
-            <div className=flex items-center space-x-2>
-              <span className={w-2.5 h-2.5 rounded-full } />
-              <span className=text-slate-300 font-bold>Status:</span>
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <div className="flex items-center space-x-2">
+              <span className={'w-2.5 h-2.5 rounded-full ' + (isConnected ? 'bg-emerald-400 animate-ping' : 'bg-amber-400')} />
+              <span className="text-slate-300 font-bold">Status:</span>
               <span className={isConnected ? 'text-emerald-400 font-bold' : 'text-amber-400'}>{statusText}</span>
             </div>
 
-            <div className=text-slate-400>
-              Forwarded: <strong className=text-emerald-400 font-bold>{forwardedCount}</strong> packets
+            <div className="text-slate-400">
+              Forwarded: <strong className="text-emerald-400 font-bold">{forwardedCount}</strong> packets
             </div>
           </div>
 
           {/* Endpoint Selector */}
           <div>
-            <label className=block text-[11px] text-slate-400 mb-1 font-bold>Target Backend API Endpoint:</label>
+            <label className="block text-[11px] text-slate-400 mb-1 font-bold">Target Backend API Endpoint:</label>
             <input
-              type=text
+              type="text"
               value={backendUrl}
               onChange={(e) => setBackendUrl(e.target.value)}
-              className=w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-emerald-300 focus:outline-none focus:border-emerald-500
-              placeholder=/api/telemetry
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-emerald-300 focus:outline-none focus:border-emerald-500"
+              placeholder="/api/telemetry"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className=flex flex-wrap gap-2.5>
+          <div className="flex flex-wrap gap-2.5">
             <button
               onClick={handleToggleConnect}
               disabled={!isSupported}
-              className={lex-1 flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl font-bold transition-all shadow-md cursor-pointer }
+              className={'flex-1 flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl font-bold transition-all shadow-md cursor-pointer ' + (
+                isConnected
+                  ? 'bg-rose-700 hover:bg-rose-600 text-white'
+                  : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+              )}
             >
-              <Usb className=w-4 h-4 />
+              <Usb className="w-4 h-4" />
               <span>{isConnected ? 'Disconnect USB' : '🔌 Connect WaziDev USB'}</span>
             </button>
 
             <button
               onClick={handleTestPacket}
-              className=flex items-center space-x-1.5 py-2.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold cursor-pointer transition-colors
+              className="flex items-center space-x-1.5 py-2.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold cursor-pointer transition-colors"
             >
-              <Zap className=w-3.5 h-3.5 text-amber-400 />
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
               <span>Test Packet</span>
             </button>
 
             <button
               onClick={() => setTerminalLogs([])}
-              className=py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-400 border border-slate-800 cursor-pointer transition-colors
+              className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-400 border border-slate-800 cursor-pointer transition-colors"
             >
               Clear
             </button>
           </div>
 
           {/* Terminal Console */}
-          <div className=bg-black/90 rounded-xl border border-slate-800 p-3 h-48 overflow-y-auto font-mono text-[11px] leading-relaxed>
+          <div className="bg-black/90 rounded-xl border border-slate-800 p-3 h-48 overflow-y-auto font-mono text-[11px] leading-relaxed">
             {terminalLogs.length === 0 ? (
-              <div className=text-slate-500 italic text-center py-16>
-                No active serial stream. Plug in WaziDev and click  Connect WaziDev USB.
+              <div className="text-slate-500 italic text-center py-16">
+                No active serial stream. Plug in WaziDev and click "Connect WaziDev USB".
               </div>
             ) : (
               terminalLogs.map((item, idx) => (
                 <div
                   key={idx}
-                  className={mb-1 }
+                  className={'mb-1 ' + (
+                    item.type === 'success'
+                      ? 'text-emerald-400 font-bold'
+                      : item.type === 'error'
+                      ? 'text-rose-400 font-bold'
+                      : item.type === 'warn'
+                      ? 'text-amber-400'
+                      : 'text-slate-300'
+                  )}
                 >
-                  <span className=text-slate-500 mr-2>[{item.time}]</span>
+                  <span className="text-slate-500 mr-2">[{item.time}]</span>
                   {item.msg}
                 </div>
               ))
@@ -263,11 +275,11 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className=px-5 py-3 border-t border-slate-800 bg-slate-950 flex items-center justify-between text-[11px] text-slate-400>
+        <div className="px-5 py-3 border-t border-slate-800 bg-slate-950 flex items-center justify-between text-[11px] text-slate-400">
           <span>Supported: Google Chrome / Edge</span>
           <button
             onClick={onClose}
-            className=text-slate-300 hover:text-white transition-colors cursor-pointer
+            className="text-slate-300 hover:text-white transition-colors cursor-pointer"
           >
             Close
           </button>
