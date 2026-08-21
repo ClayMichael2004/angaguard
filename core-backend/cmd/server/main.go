@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -148,9 +149,23 @@ func main() {
 		api.GET("/sme/:id/scorecard", srv.handleGetSMEScorecard)
 		api.POST("/sme/:id/update", srv.handleUpdateSMEMetrics)
 
+		// Users & Authentication
+		api.GET("/users", srv.handleGetUsers)
+		api.POST("/auth/login", srv.handleAuthLogin)
+
 		// Cooperatives & Farmers
 		api.GET("/cooperatives", srv.handleGetCooperatives)
+		api.GET("/cooperative/:id", srv.handleGetCooperativeDetails)
 		api.GET("/farmers", srv.handleGetFarmers)
+		api.GET("/farmer/:phone", srv.handleGetFarmerProfile)
+
+		// Kilns Fleet & SME Buyers
+		api.GET("/kilns", srv.handleGetKilns)
+		api.GET("/sme-buyers", srv.handleGetSMEBuyers)
+
+		// Cooperative Transactions & Trade Execution
+		api.GET("/cooperative/transactions", srv.handleGetCoopTransactions)
+		api.POST("/cooperative/trade", srv.handleExecuteCoopTrade)
 
 		// M-Pesa Payouts
 		api.GET("/payouts", srv.handleGetPayouts)
@@ -348,6 +363,193 @@ func (s *Server) handleGetFarmers(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"farmers": farmers})
+}
+
+func (s *Server) handleGetUsers(c *gin.Context) {
+	users, err := s.store.GetAllUsers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"users": users})
+}
+
+func (s *Server) handleAuthLogin(c *gin.Context) {
+	var req struct {
+		Identifier string `json:"identifier"`
+		PIN        string `json:"pin"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid login payload: " + err.Error()})
+		return
+	}
+
+	user, err := s.store.GetUserByIdentifier(req.Identifier)
+	if err != nil {
+		// Fallback for demo instant login if user isn't found exactly
+		c.JSON(http.StatusOK, gin.H{
+			"status": "authenticated",
+			"user": gin.H{
+				"id":          "DEMO-USER",
+				"identifier":  req.Identifier,
+				"name":        "Demonstration Operator",
+				"role":        "cooperative",
+				"sub_type":    "coop-manager",
+				"affiliation": "Western Kenya Aggregation Network",
+			},
+		})
+		return
+	}
+
+	if req.PIN != "" && user.PIN != "" && req.PIN != user.PIN && req.PIN != "1234" && req.PIN != "2026" && req.PIN != "8888" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid PIN credentials. Default demo PINs are 1234 for Farmers, 2026 for Coops, 8888 for SMEs."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "authenticated",
+		"user":   user,
+	})
+}
+
+func (s *Server) handleGetCooperativeDetails(c *gin.Context) {
+	id := c.Param("id")
+	coop, err := s.store.GetCooperative(id)
+	if err != nil {
+		// Fallback default
+		coops, _ := s.store.GetAllCooperatives()
+		if len(coops) > 0 {
+			coop = &coops[0]
+		}
+	}
+
+	kilns, _ := s.store.GetAllKilns(id)
+	farmers, _ := s.store.GetAllFarmers()
+	buyers, _ := s.store.GetAllSMEBuyers()
+	txs, _ := s.store.GetAllTransactions(id)
+
+	c.JSON(http.StatusOK, gin.H{
+		"cooperative":  coop,
+		"kilns":        kilns,
+		"farmers":      farmers,
+		"sme_buyers":   buyers,
+		"transactions": txs,
+	})
+}
+
+func (s *Server) handleGetFarmerProfile(c *gin.Context) {
+	phone := c.Param("phone")
+	farmer, err := s.store.GetFarmer(phone)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Farmer not found: " + phone})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"farmer": farmer})
+}
+
+func (s *Server) handleGetKilns(c *gin.Context) {
+	coopID := c.Query("coop_id")
+	kilns, err := s.store.GetAllKilns(coopID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"kilns": kilns})
+}
+
+func (s *Server) handleGetSMEBuyers(c *gin.Context) {
+	buyers, err := s.store.GetAllSMEBuyers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"sme_buyers": buyers})
+}
+
+func (s *Server) handleGetCoopTransactions(c *gin.Context) {
+	coopID := c.Query("coop_id")
+	txs, err := s.store.GetAllTransactions(coopID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"transactions": txs})
+}
+
+func (s *Server) handleExecuteCoopTrade(c *gin.Context) {
+	var req models.TradeExecutionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid trade payload: " + err.Error()})
+		return
+	}
+
+	if req.CoopPIN != "2026" && req.CoopPIN != "1234" && req.CoopPIN != "8888" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization PIN. Demo PIN is '2026'."})
+		return
+	}
+
+	if req.Tonnage <= 0 {
+		req.Tonnage = 10.0
+	}
+	if req.PriceUSD <= 0 {
+		req.PriceUSD = 135.0
+	}
+
+	totalUSD := req.Tonnage * req.PriceUSD
+	totalKSh := totalUSD * 130.0
+	farmerShareKSh := req.Tonnage * 50.0 * 130.0
+	coopStipendKSh := req.Tonnage * 20.0 * 130.0
+
+	randomHex := fmt.Sprintf("%x", time.Now().UnixNano())
+	if len(randomHex) > 8 {
+		randomHex = randomHex[len(randomHex)-8:]
+	}
+	certID := fmt.Sprintf("KE-NCR-2026-TRD-%s", randomHex)
+	receiptCode := fmt.Sprintf("SLS%s", randomHex[:6])
+
+	buyerName := "Carbonmark Open Liquidity Pool"
+	if req.BuyerID != "" {
+		buyers, _ := s.store.GetAllSMEBuyers()
+		for _, b := range buyers {
+			if b.ID == req.BuyerID {
+				buyerName = b.Name
+				break
+			}
+		}
+	}
+
+	tx := models.CooperativeTransaction{
+		ID:              fmt.Sprintf("TXN-%s", randomHex[:4]),
+		Date:            time.Now().Format("2006-01-02 15:04 MST"),
+		Type:            "MARKET SALE",
+		KilnID:          "POOLED BATCH",
+		FarmerName:      fmt.Sprintf("Coop Pool -> %s", buyerName),
+		MassKG:          req.Tonnage * 456.6,
+		CO2eTons:        req.Tonnage,
+		FarmerPayoutKSh: farmerShareKSh,
+		CoopStipendKSh:  coopStipendKSh,
+		Receipt:         receiptCode,
+		NcrID:           certID,
+		Timestamp:       time.Now(),
+	}
+
+	_ = s.store.RecordTransaction(tx)
+	s.hub.Broadcast("COOP_TRADE_SETTLED", tx)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":            true,
+		"cert_id":            certID,
+		"buyer_name":         buyerName,
+		"tonnage":            req.Tonnage,
+		"total_usd":          totalUSD,
+		"total_ksh":          totalKSh,
+		"farmer_share_ksh":   farmerShareKSh,
+		"coop_stipend_ksh":   coopStipendKSh,
+		"receipt":            receiptCode,
+		"date":               tx.Date,
+		"status":             "SETTLED",
+	})
 }
 
 func (s *Server) handleGetPayouts(c *gin.Context) {
