@@ -249,7 +249,7 @@ export const FarmerRecordsPage = ({ onBack, farmerName = 'Wanjala Wafula', farme
                   </span>
                 </td>
                 <td className="py-4 px-2 text-right">
-                  <p className="font-bold text-emerald-700 dark:text-emerald-400">+KSh {r.payoutKsh.toLocaleString()}</p>
+                  <p className="font-bold text-emerald-700 dark:text-emerald-400">+KSh {(r.payoutKsh || 0).toLocaleString()}</p>
                   <p className="text-[10px] text-slate-500 dark:text-stone-400">{r.mpesaReceipt}</p>
                 </td>
                 <td className="py-4 px-2 text-center">
