@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowLeft, History, CheckCircle2, Download, Search, Filter, ShieldCheck, Flame, Wallet, ExternalLink } from 'lucide-react';
+import { ArrowLeft, History, CheckCircle2, Download, Search, Filter, ShieldCheck, Flame, Wallet, ExternalLink, FileText } from 'lucide-react';
+import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 
 export const FarmerRecordsPage = ({ onBack, farmerName = 'Wanjala Wafula', farmerType = 'bio-sme' }) => {
   const [filter, setFilter] = useState('all');
@@ -81,7 +82,34 @@ export const FarmerRecordsPage = ({ onBack, farmerName = 'Wanjala Wafula', farme
   });
 
   const handleDownloadCsv = () => {
-    alert(`Downloading Official Sales & Harvest Records CSV for ${farmerName}...`);
+    const headers = ['Record ID', 'Date & Time', 'Smart Kiln', 'Biochar Yield (KG)', 'Carbon Offset (tCO2e)', 'Disbursal Channel', 'M-Pesa Payout (KSh)', 'M-Pesa Receipt Ref', 'Verification Audit Seal', 'Status'];
+    const rows = filteredRecords.map((r) => [
+      r.id,
+      r.date,
+      r.kiln,
+      r.biocharKg,
+      r.co2eTons,
+      r.channel,
+      r.payoutKsh,
+      r.mpesaReceipt,
+      r.hash,
+      r.status
+    ]);
+    downloadCSV(`${farmerName.toLowerCase().replace(/\s+/g, '_')}_harvest_sales_records.csv`, headers, rows);
+  };
+
+  const handleDownloadAllCertificate = () => {
+    downloadCertificateDocument(`${farmerName.toLowerCase().replace(/\s+/g, '_')}_carbon_certificate`, {
+      title: 'Smallholder Biochar Carbon Harvest Certificate',
+      tonnage: '1.38',
+      biocharKg: '507.0',
+      certId: 'KE-NCR-2026-FARMER-9941',
+      entity: `${farmerName} (Verified Smallholder Producer)`,
+      location: 'Kakamega Central & Lurambi Wards, Western Kenya',
+      kilns: 'KILN-001, KILN-002, KILN-003',
+      value: 'KSh 8,930.00 ($68.69 USD)',
+      date: new Date().toLocaleString('en-KE')
+    });
   };
 
   return (
@@ -100,7 +128,7 @@ export const FarmerRecordsPage = ({ onBack, farmerName = 'Wanjala Wafula', farme
 
           <div>
             <h1 className="text-2xl sm:text-3xl font-black font-sans">
-              Past Sales & Biochar Harvest Data Records
+              Past Sales & Biochar Harvest Records
             </h1>
             <p className="text-stone-700 dark:text-stone-300 text-xs mt-0.5 font-bold">
               Producer: <strong>{farmerName}</strong> • Verified Kenya EMCA Registry Ledger
@@ -108,13 +136,22 @@ export const FarmerRecordsPage = ({ onBack, farmerName = 'Wanjala Wafula', farme
           </div>
         </div>
 
-        <button
-          onClick={handleDownloadCsv}
-          className="flex items-center justify-center space-x-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md cursor-pointer transition-all"
-        >
-          <Download className="w-4 h-4" />
-          <span>Export Sales CSV</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleDownloadCsv}
+            className="flex items-center justify-center space-x-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md cursor-pointer transition-all"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={handleDownloadAllCertificate}
+            className="flex items-center justify-center space-x-2 px-4 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-md cursor-pointer transition-all"
+          >
+            <FileText className="w-4 h-4" />
+            <span>Download Certificate</span>
+          </button>
+        </div>
       </div>
 
       {/* Summary KPI Cards */}
