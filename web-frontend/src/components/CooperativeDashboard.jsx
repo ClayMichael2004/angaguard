@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { Users, BarChart2, ShoppingBag, History, ArrowUpRight, Layers, Flame, Search, Filter, ShieldCheck, CheckCircle2, FileText, Download, Building2, Smartphone, Lock, AlertCircle, X, ChevronRight, RefreshCw } from 'lucide-react';
+import {
+  Users, Flame, Building2, ShoppingBag, ShieldCheck, Download, Search,
+  ArrowUpRight, BarChart2, Layers, CheckCircle2, History, X, Lock,
+  Smartphone, AlertCircle, FileText, ChevronRight, Eye, EyeOff
+} from 'lucide-react';
 import { KilnDigitalTwin3D } from './KilnDigitalTwin3D';
 import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
@@ -43,51 +47,49 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
     { id: 'KILN-011', farmer: 'Emmanuel Wesonga', phone: '+254741987654', location: 'Mumias East', status: 'ACTIVE', skinTemp: 56.4, coreTemp: 555.2, charDepth: 33, initialDepth: 85, battery: 83, lastYieldKg: 75.4, lastYieldTons: 0.19 },
     { id: 'KILN-012', farmer: 'Rosemary Imbuhila', phone: '+254752334455', location: 'Kakamega South', status: 'ACTIVE', skinTemp: 60.1, coreTemp: 584.3, charDepth: 28, initialDepth: 85, battery: 91, lastYieldKg: 82.6, lastYieldTons: 0.21 },
     { id: 'KILN-013', farmer: 'Timothy Khamala', phone: '+254763112233', location: 'Khwisero Ward', status: 'STANDBY', skinTemp: 26.0, coreTemp: 26.0, charDepth: 0, initialDepth: 85, battery: 80, lastYieldKg: 78.0, lastYieldTons: 0.20 },
-    { id: 'KILN-014', farmer: 'Catherine Nabwire', phone: '+254774556677', location: 'Lurambi Central', status: 'COOLING', skinTemp: 45.1, coreTemp: 466.5, charDepth: 31, initialDepth: 85, battery: 85, lastYieldKg: 78.3, lastYieldTons: 0.20 },
-    { id: 'KILN-015', farmer: 'Rosemary Imbuhila', phone: '+254752334455', location: 'Kakamega South Plot B', status: 'STANDBY', skinTemp: 25.5, coreTemp: 25.5, charDepth: 0, initialDepth: 85, battery: 96, lastYieldKg: 83.2, lastYieldTons: 0.21 },
-    { id: 'KILN-016', farmer: 'Meshack Otwoma', phone: '+254785998877', location: 'Ikolomani Gold Belt', status: 'ACTIVE', skinTemp: 58.9, coreTemp: 574.9, charDepth: 29, initialDepth: 85, battery: 88, lastYieldKg: 81.2, lastYieldTons: 0.21 },
-    { id: 'KILN-017', farmer: 'Everlyne Shikuku', phone: '+254796223344', location: 'Shinoyi Village', status: 'ACTIVE', skinTemp: 63.4, coreTemp: 610.2, charDepth: 27, initialDepth: 85, battery: 82, lastYieldKg: 84.1, lastYieldTons: 0.22 },
-    { id: 'KILN-018', farmer: 'Boniface Khalwale', phone: '+254707889900', location: 'Malava Forest Edge', status: 'STANDBY', skinTemp: 24.0, coreTemp: 24.0, charDepth: 0, initialDepth: 85, battery: 93, lastYieldKg: 79.0, lastYieldTons: 0.20 },
+    { id: 'KILN-014', farmer: 'Faith Nasimiyu', phone: '+254774223344', location: 'Bukhungu Area', status: 'ACTIVE', skinTemp: 58.0, coreTemp: 567.8, charDepth: 30, initialDepth: 85, battery: 88, lastYieldKg: 79.2, lastYieldTons: 0.20 },
+    { id: 'KILN-015', farmer: 'Dennis Otwoma', phone: '+254785334455', location: 'Ikolomani Gold Belt', status: 'ACTIVE', skinTemp: 59.2, coreTemp: 576.4, charDepth: 29, initialDepth: 85, battery: 85, lastYieldKg: 81.0, lastYieldTons: 0.21 },
+    { id: 'KILN-016', farmer: 'Agnes Mutonyi', phone: '+254796445566', location: 'Shinyalu Outskirts', status: 'COOLING', skinTemp: 45.1, coreTemp: 462.8, charDepth: 31, initialDepth: 85, battery: 82, lastYieldKg: 77.5, lastYieldTons: 0.20 },
+    { id: 'KILN-017', farmer: 'Meshack Wekesa', phone: '+254707556677', location: 'Lugari East', status: 'STANDBY', skinTemp: 25.5, coreTemp: 25.5, charDepth: 0, initialDepth: 85, battery: 93, lastYieldKg: 83.4, lastYieldTons: 0.22 },
+    { id: 'KILN-018', farmer: 'Hellen Anyango', phone: '+254718667788', location: 'Mumias Central', status: 'ACTIVE', skinTemp: 60.8, coreTemp: 589.6, charDepth: 28, initialDepth: 85, battery: 86, lastYieldKg: 83.0, lastYieldTons: 0.22 },
   ];
 
-  // SMALLHOLDER MEMBERS OF THE 148-FARMER NETWORK
+  // 148 SMALLHOLDER MEMBERS DIRECTORY
   const memberFarmers = [
-    { phone: '+254712345678', name: 'Wanjala Wafula', nationalId: '28491024', location: 'Kakamega Central', kilns: 'KILN-001, KILN-004', burns: 18, biocharKg: 1420.0, creditsTons: 3.89, worthKsh: 68075, withdrawnKsh: 34500, rating: 'AAA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254722998877', name: 'Amina Nekesa', nationalId: '29381044', location: 'Mumias West', kilns: 'KILN-002', burns: 12, biocharKg: 840.0, creditsTons: 2.30, worthKsh: 40250, withdrawnKsh: 19500, rating: 'AAA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254733112233', name: 'Barasa Simiyu', nationalId: '31902845', location: 'Butere', kilns: 'KILN-003, KILN-007', burns: 16, biocharKg: 1250.0, creditsTons: 3.42, worthKsh: 59850, withdrawnKsh: 28000, rating: 'AAA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254711445566', name: 'Nekesa Mukabana', nationalId: '30491823', location: 'Malava', kilns: 'KILN-005', burns: 11, biocharKg: 780.0, creditsTons: 2.14, worthKsh: 37450, withdrawnKsh: 16000, rating: 'AA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254722556677', name: 'Cleophas Malala', nationalId: '27103948', location: 'Shinyalu', kilns: 'KILN-006', burns: 14, biocharKg: 990.0, creditsTons: 2.71, worthKsh: 47425, withdrawnKsh: 21500, rating: 'AAA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254790112233', name: 'Grace Ambani', nationalId: '33481920', location: 'Matungu', kilns: 'KILN-008', burns: 15, biocharKg: 1080.0, creditsTons: 2.96, worthKsh: 51800, withdrawnKsh: 24000, rating: 'AAA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254798334455', name: 'Sylvester Shitanda', nationalId: '26190284', location: 'Lugari', kilns: 'KILN-009', burns: 10, biocharKg: 720.0, creditsTons: 1.97, worthKsh: 34475, withdrawnKsh: 15200, rating: 'AA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254740123456', name: 'Linet Makokha', nationalId: '34591028', location: 'Navakholo', kilns: 'KILN-010', burns: 13, biocharKg: 910.0, creditsTons: 2.49, worthKsh: 43575, withdrawnKsh: 19800, rating: 'AA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254741987654', name: 'Emmanuel Wesonga', nationalId: '31204918', location: 'Mumias East', kilns: 'KILN-011', burns: 8, biocharKg: 560.0, creditsTons: 1.53, worthKsh: 26775, withdrawnKsh: 12000, rating: 'A', mpesaStatus: 'ACTIVE' },
-    { phone: '+254752334455', name: 'Rosemary Imbuhila', nationalId: '29018472', location: 'Kakamega South', kilns: 'KILN-012, KILN-015', burns: 17, biocharKg: 1340.0, creditsTons: 3.67, worthKsh: 64225, withdrawnKsh: 29500, rating: 'AAA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254763112233', name: 'Timothy Khamala', nationalId: '32849102', location: 'Khwisero', kilns: 'KILN-013', burns: 9, biocharKg: 630.0, creditsTons: 1.73, worthKsh: 30275, withdrawnKsh: 13500, rating: 'A', mpesaStatus: 'ACTIVE' },
-    { phone: '+254774556677', name: 'Catherine Nabwire', nationalId: '28193049', location: 'Lurambi', kilns: 'KILN-014', burns: 12, biocharKg: 850.0, creditsTons: 2.33, worthKsh: 40775, withdrawnKsh: 18600, rating: 'AA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254785998877', name: 'Meshack Otwoma', nationalId: '35102938', location: 'Ikolomani', kilns: 'KILN-016', burns: 14, biocharKg: 980.0, creditsTons: 2.68, worthKsh: 46900, withdrawnKsh: 21200, rating: 'AAA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254796223344', name: 'Everlyne Shikuku', nationalId: '30918234', location: 'Shinoyi', kilns: 'KILN-017', burns: 11, biocharKg: 770.0, creditsTons: 2.11, worthKsh: 36925, withdrawnKsh: 16800, rating: 'AA', mpesaStatus: 'ACTIVE' },
-    { phone: '+254707889900', name: 'Boniface Khalwale', nationalId: '27891024', location: 'Malava', kilns: 'KILN-018', burns: 16, biocharKg: 1150.0, creditsTons: 3.15, worthKsh: 55125, withdrawnKsh: 25500, rating: 'AAA', mpesaStatus: 'ACTIVE' },
+    { name: 'Wanjala Wafula', phone: '+254712345678', nationalId: '29481920', location: 'Kakamega Central', kilns: 'KILN-001, KILN-004', burns: 18, biocharKg: 1420.0, creditsTons: 3.89, worthKsh: 68269, withdrawnKsh: 34500, rating: 'AAA', mpesaStatus: 'VERIFIED' },
+    { name: 'Amina Nekesa', phone: '+254722998877', nationalId: '31829104', location: 'Mumias West', kilns: 'KILN-002', burns: 12, biocharKg: 840.0, creditsTons: 2.30, worthKsh: 40365, withdrawnKsh: 22000, rating: 'AAA', mpesaStatus: 'VERIFIED' },
+    { name: 'Barasa Simiyu', phone: '+254733112233', nationalId: '28192049', location: 'Butere Outgrower', kilns: 'KILN-003, KILN-007', burns: 16, biocharKg: 1250.0, creditsTons: 3.42, worthKsh: 60021, withdrawnKsh: 31000, rating: 'AAA', mpesaStatus: 'VERIFIED' },
+    { name: 'Nekesa Mukabana', phone: '+254711445566', nationalId: '30192841', location: 'Malava North', kilns: 'KILN-005', burns: 11, biocharKg: 780.0, creditsTons: 2.14, worthKsh: 37557, withdrawnKsh: 19000, rating: 'AA+', mpesaStatus: 'VERIFIED' },
+    { name: 'Cleophas Malala', phone: '+254722556677', nationalId: '27192834', location: 'Shinyalu Forest', kilns: 'KILN-006', burns: 14, biocharKg: 990.0, creditsTons: 2.71, worthKsh: 47560, withdrawnKsh: 28000, rating: 'AAA', mpesaStatus: 'VERIFIED' },
+    { name: 'Grace Ambani', phone: '+254790112233', nationalId: '32910482', location: 'Matungu Hub', kilns: 'KILN-008', burns: 15, biocharKg: 1080.0, creditsTons: 2.96, worthKsh: 51948, withdrawnKsh: 30500, rating: 'AAA', mpesaStatus: 'VERIFIED' },
+    { name: 'Sylvester Shitanda', phone: '+254798334455', nationalId: '25192841', location: 'Lugari Agro', kilns: 'KILN-009', burns: 10, biocharKg: 720.0, creditsTons: 1.97, worthKsh: 34573, withdrawnKsh: 17500, rating: 'AA', mpesaStatus: 'VERIFIED' },
+    { name: 'Linet Makokha', phone: '+254740123456', nationalId: '33192849', location: 'Navakholo Center', kilns: 'KILN-010', burns: 13, biocharKg: 910.0, creditsTons: 2.49, worthKsh: 43699, withdrawnKsh: 24000, rating: 'AA+', mpesaStatus: 'VERIFIED' },
+    { name: 'Emmanuel Wesonga', phone: '+254741987654', nationalId: '26192849', location: 'Mumias East', kilns: 'KILN-011', burns: 8, biocharKg: 560.0, creditsTons: 1.53, worthKsh: 26851, withdrawnKsh: 13000, rating: 'AA', mpesaStatus: 'VERIFIED' },
+    { name: 'Rosemary Imbuhila', phone: '+254752334455', nationalId: '29819204', location: 'Kakamega South', kilns: 'KILN-012', burns: 17, biocharKg: 1340.0, creditsTons: 3.67, worthKsh: 64408, withdrawnKsh: 33000, rating: 'AAA', mpesaStatus: 'VERIFIED' },
+    { name: 'Timothy Khamala', phone: '+254763112233', nationalId: '30491823', location: 'Khwisero Ward', kilns: 'KILN-013', burns: 9, biocharKg: 620.0, creditsTons: 1.70, worthKsh: 29835, withdrawnKsh: 15000, rating: 'AA', mpesaStatus: 'VERIFIED' },
+    { name: 'Faith Nasimiyu', phone: '+254774223344', nationalId: '31920491', location: 'Bukhungu Area', kilns: 'KILN-014', burns: 14, biocharKg: 980.0, creditsTons: 2.68, worthKsh: 47034, withdrawnKsh: 26500, rating: 'AAA', mpesaStatus: 'VERIFIED' },
+    { name: 'Dennis Otwoma', phone: '+254785334455', nationalId: '28910482', location: 'Ikolomani', kilns: 'KILN-015', burns: 11, biocharKg: 790.0, creditsTons: 2.16, worthKsh: 37908, withdrawnKsh: 20000, rating: 'AA+', mpesaStatus: 'VERIFIED' },
+    { name: 'Agnes Mutonyi', phone: '+254796445566', nationalId: '34192841', location: 'Shinyalu Outskirts', kilns: 'KILN-016', burns: 12, biocharKg: 860.0, creditsTons: 2.36, worthKsh: 41418, withdrawnKsh: 21500, rating: 'AA+', mpesaStatus: 'VERIFIED' },
+    { name: 'Meshack Wekesa', phone: '+254707556677', nationalId: '27819204', location: 'Lugari East', kilns: 'KILN-017', burns: 10, biocharKg: 710.0, creditsTons: 1.95, worthKsh: 34222, withdrawnKsh: 18000, rating: 'AA', mpesaStatus: 'VERIFIED' },
+    { name: 'Hellen Anyango', phone: '+254718667788', nationalId: '32192849', location: 'Mumias Central', kilns: 'KILN-018', burns: 15, biocharKg: 1090.0, creditsTons: 2.99, worthKsh: 52474, withdrawnKsh: 31000, rating: 'AAA', mpesaStatus: 'VERIFIED' },
   ];
 
-  // CORPORATE SME BUYERS & MARKETPLACE OFFTAKERS
+  // SME OFFTAKER BUYERS & CONTRACTS
   const smeBuyersList = [
-    { id: 'SME-KIZITO-ELDORET', name: 'Kizito Grain Millers Ltd', location: 'Eldoret Industrial Zone', industry: 'Grain Flour Milling', purchasedTons: 24.8, valueUsd: 3348, valueKsh: 435240, status: 'CONTRACT ACTIVE', ncrCert: 'KE-NCR-2026-KIZ-01', contact: '+254722001122' },
-    { id: 'SME-MOMBASA-CEMENT', name: 'Mombasa Heavy Cement Works', location: 'Mombasa Port Terminal', industry: 'Cement & Clinker', purchasedTons: 15.0, valueUsd: 2070, valueKsh: 269100, status: 'SETTLED', ncrCert: 'KE-NCR-2026-MOM-04', contact: '+254733994411' },
-    { id: 'SME-NZOIA-PACKAGING', name: 'Nzoia Agro Packaging Co.', location: 'Bungoma / Webuye', industry: 'Pulp & Paper Packaging', purchasedTons: 38.2, valueUsd: 5157, valueKsh: 670410, status: 'CONTRACT ACTIVE', ncrCert: 'KE-NCR-2026-NZO-08', contact: '+254711883322' },
-    { id: 'SME-NAIROBI-LOGISTICS', name: 'East Africa Express Freight', location: 'Nairobi Inland Depot', industry: 'Logistics & Trucking', purchasedTons: 20.0, valueUsd: 2700, valueKsh: 351000, status: 'SETTLED', ncrCert: 'KE-NCR-2026-EAF-12', contact: '+254700112233' },
-    { id: 'SME-KERICHO-TEA', name: 'Highland Kericho Tea Processors', location: 'Kericho Highland Zone', industry: 'Tea Processing & Steam', purchasedTons: 18.5, valueUsd: 2497, valueKsh: 324610, status: 'CONTRACT ACTIVE', ncrCert: 'KE-NCR-2026-KER-03', contact: '+254721445566' },
+    { id: 'BUY-001', name: 'East Africa Express Fleet Ltd', industry: 'Freight Logistics (Diesel Offsets)', location: 'Nairobi / Eldoret', purchasedTons: 20.0, valueKsh: 351000, lastOrder: '2026-08-18', status: 'ACTIVE OFFTAKER' },
+    { id: 'BUY-002', name: 'Kizito Grain Millers Ltd', industry: 'Agro-Processing (Scope 3 Inset)', location: 'Eldoret Industrial Zone', purchasedTons: 24.8, valueKsh: 435240, lastOrder: '2026-08-12', status: 'ACTIVE INSETTING' },
+    { id: 'BUY-003', name: 'Western Cement Distributors', industry: 'Construction Materials', location: 'Kisumu Port depot', purchasedTons: 12.0, valueKsh: 210600, lastOrder: '2026-07-29', status: 'VERIFIED OFFTAKER' },
+    { id: 'BUY-004', name: 'Lake Basin Tea Packers', industry: 'Beverage Packaging', location: 'Kericho Hub', purchasedTons: 15.6, valueKsh: 273780, lastOrder: '2026-07-14', status: 'VERIFIED OFFTAKER' },
   ];
 
-  // HISTORIC COOPERATIVE TRANSACTIONS AUDIT LOG
+  // HISTORIC TRANSACTIONS & SETTLEMENT LOG
   const transactionsAuditLog = [
-    { id: 'TXN-9081', date: '2026-08-21 04:41 EAT', type: 'MINT & DISBURSE', kiln: 'KILN-001', farmer: 'Wanjala Wafula', massKg: 79.75, co2eTons: 0.202, farmerPayoutKsh: 1313.63, coopStipendKsh: 525.45, receipt: 'Z9692PSQXE', ncrId: 'KE-NCR-2026-09c58f91' },
-    { id: 'TXN-8840', date: '2026-08-20 16:15 EAT', type: 'MINT & DISBURSE', kiln: 'KILN-002', farmer: 'Amina Nekesa', massKg: 82.60, co2eTons: 0.210, farmerPayoutKsh: 1365.00, coopStipendKsh: 546.00, receipt: 'QHK881029', ncrId: 'KE-NCR-2026-77a10f22' },
-    { id: 'TXN-8720', date: '2026-08-19 11:30 EAT', type: 'MINT & DISBURSE', kiln: 'KILN-003', farmer: 'Barasa Simiyu', massKg: 76.80, co2eTons: 0.195, farmerPayoutKsh: 1267.50, coopStipendKsh: 507.00, receipt: 'MKA991024', ncrId: 'KE-NCR-2026-3d201c88' },
-    { id: 'TXN-8611', date: '2026-08-18 14:20 EAT', type: 'MARKET SALE', kiln: 'POOL BATCH #14', farmer: 'Cooperative Pool (8 Farmers)', massKg: 3850.0, co2eTons: 9.80, farmerPayoutKsh: 63700.00, coopStipendKsh: 25480.00, receipt: 'SLS7719204', ncrId: 'KE-NCR-2026-BCH-14' },
-    { id: 'TXN-8490', date: '2026-08-16 09:45 EAT', type: 'MINT & DISBURSE', kiln: 'KILN-006', farmer: 'Cleophas Malala', massKg: 78.30, co2eTons: 0.199, farmerPayoutKsh: 1293.50, coopStipendKsh: 517.40, receipt: 'PBA339102', ncrId: 'KE-NCR-2026-9f4410e1' },
+    { id: 'TX-9901', date: '2026-08-19 14:32 EAT', type: 'M-PESA B2C DISBURSAL', kiln: 'KILN-001', farmer: 'Wanjala Wafula', massKg: 79.8, co2eTons: 0.20, farmerPayoutKsh: 1313.63, coopStipendKsh: 525.45, receipt: 'QHK9102941', ncrId: 'KE-NCR-2026-cbc58516e738' },
+    { id: 'TX-8842', date: '2026-08-18 11:20 EAT', type: 'CARBONMARK OFFTAKE TRADE', kiln: 'Fleet Pooled', farmer: 'EA Express Freight', massKg: 4566.0, co2eTons: 10.0, farmerPayoutKsh: 65000.0, coopStipendKsh: 26000.0, receipt: 'QHK8819204', ncrId: 'KE-NCR-2026-TRD-881920' },
+    { id: 'TX-7719', date: '2026-08-14 11:15 EAT', type: 'M-PESA B2C DISBURSAL', kiln: 'KILN-002', farmer: 'Amina Nekesa', massKg: 82.6, co2eTons: 0.21, farmerPayoutKsh: 1379.31, coopStipendKsh: 551.72, receipt: 'PBA4819204', ncrId: 'KE-NCR-2026-881920491024' },
   ];
 
-  // Line Graph: Market Carbon Credit Spot Trend ($35 - $145 / tCO2e)
+  // Spot Trend Data
   const lineGraphData = [
     { x: 'Week 1', y: 45 },
     { x: 'Week 2', y: 78 },
@@ -95,13 +97,14 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
     { x: 'Week 4', y: 135 },
   ];
 
-  // Realistic Multi-Step Sell Credits Modal State
+  // Modal State
   const [showSellModal, setShowSellModal] = useState(false);
-  const [sellStep, setSellStep] = useState(1); // 1: Buyer & Volume, 2: dMRV Quality Check, 3: Revenue Split, 4: PIN Sign-off, 5: Confirmation
+  const [sellStep, setSellStep] = useState(1);
   const [selectedBuyer, setSelectedBuyer] = useState(null);
   const [sellTonnage, setSellTonnage] = useState(5.0);
-  const [coopPin, setCoopPin] = useState('');
-  const [pinError, setPinError] = useState('');
+  const [coopPassword, setCoopPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const [isProcessingTrade, setIsProcessingTrade] = useState(false);
   const [tradeConfirmation, setTradeConfirmation] = useState(null);
 
@@ -109,17 +112,17 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
     setSelectedBuyer(buyer || smeBuyersList[0]);
     setSellTonnage(5.0);
     setSellStep(1);
-    setCoopPin('');
-    setPinError('');
+    setCoopPassword('');
+    setPasswordError('');
     setShowSellModal(true);
   };
 
   const handleExecuteTradeAuth = () => {
-    if (coopPin.length !== 4 || isNaN(Number(coopPin))) {
-      setPinError('Please enter a valid 4-digit Cooperative Authorization PIN');
+    if (!coopPassword || coopPassword.length < 4) {
+      setPasswordError('Please enter your Cooperative Authorization Password (at least 4 characters)');
       return;
     }
-    setPinError('');
+    setPasswordError('');
     setIsProcessingTrade(true);
 
     setTimeout(() => {
@@ -128,8 +131,10 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
       const pricePerTon = 135.0;
       const totalUsd = sellTonnage * pricePerTon;
       const totalKsh = totalUsd * 130.0;
+      const communityShareKsh = (54.0 / 135.0) * totalKsh;
       const farmerShareKsh = (50.0 / 135.0) * totalKsh;
       const coopStipendKsh = (20.0 / 135.0) * totalKsh;
+      const levyShareKsh = (11.0 / 135.0) * totalKsh;
 
       setTradeConfirmation({
         certId,
@@ -138,16 +143,17 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
         pricePerTon,
         totalUsd,
         totalKsh,
+        communityShareKsh,
         farmerShareKsh,
         coopStipendKsh,
+        levyShareKsh,
         date: new Date().toLocaleString('en-KE'),
       });
 
       setSellStep(5);
-    }, 1600);
+    }, 1200);
   };
 
-  // Filtered members list
   const filteredMembers = memberFarmers.filter((m) => {
     const matchesSearch =
       m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -160,26 +166,26 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
   });
 
   return (
-    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-stone-900 dark:text-stone-100">
+    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-slate-900 dark:text-stone-100">
       
       {/* Top Header & Corner Account Badge */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-[#2d3f58]/40 light:border-[#e2e8f0] gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-slate-200 dark:border-[#2d3f58]/40 gap-4">
         <div className="flex items-center space-x-3">
-          <h1 className="text-2xl sm:text-3xl font-black font-sans text-stone-100 light:text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-black font-sans text-slate-900 dark:text-stone-100">
             Agricultural Cooperative Hub
           </h1>
-          <span className="bg-emerald-950/40 light:bg-emerald-100 border border-emerald-600/60 light:border-emerald-300 text-emerald-400 light:text-emerald-800 font-mono text-xs px-3 py-1 rounded-full font-bold">
+          <span className="bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-600/60 text-emerald-800 dark:text-emerald-400 font-mono text-xs px-3 py-1 rounded-full font-bold">
             Western Kenya Region
           </span>
         </div>
 
         {/* CORNER ACCOUNT BADGE & SELL ACTION */}
         <div className="flex items-center space-x-3">
-          <div className="hidden sm:flex items-center space-x-2 bg-[#131e30] light:bg-white border border-emerald-500/40 light:border-emerald-600/30 px-3.5 py-1.5 rounded-2xl shadow-sm">
-            <Building2 className="w-4 h-4 text-emerald-500" />
+          <div className="hidden sm:flex items-center space-x-2 bg-white dark:bg-[#131e30] border border-emerald-500/40 dark:border-emerald-600/30 px-3.5 py-1.5 rounded-2xl shadow-sm">
+            <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <div className="text-left">
-              <p className="text-[9px] text-stone-400 light:text-slate-500 uppercase font-bold">Registered Hub: {coopInfo.id}</p>
-              <p className="font-extrabold text-stone-100 light:text-slate-900 text-xs truncate max-w-[200px]">{coopInfo.name}</p>
+              <p className="text-[9px] text-slate-500 dark:text-stone-400 uppercase font-bold">Registered Hub: {coopInfo.id}</p>
+              <p className="font-extrabold text-slate-900 dark:text-stone-100 text-xs truncate max-w-[200px]">{coopInfo.name}</p>
             </div>
           </div>
 
@@ -193,64 +199,63 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
         </div>
       </div>
 
-
-      {/* Cumulative KPI Cards with Dual Units (Currency & Mass) */}
+      {/* Cumulative KPI Cards with Dual Units */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-emerald-500">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-emerald-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Pooled Carbon Harvest</span>
+            <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">Pooled Carbon Harvest</span>
             <Flame className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+          <p className="text-2xl sm:text-3xl font-black text-emerald-700 dark:text-emerald-400">
             {coopInfo.cumulative_credits_tons} tCO2e
           </p>
-          <p className="text-stone-500 text-[11px] font-bold">
+          <p className="text-slate-600 dark:text-stone-400 text-[11px] font-bold">
             = {coopInfo.cumulative_biochar_kg.toLocaleString()} KG Verified Biochar
           </p>
         </div>
 
-        <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-orange-500">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-orange-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Cooperative Pool Valuation</span>
-            <span className="text-orange-500 font-bold text-xs">$135/t</span>
+            <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">Cooperative Pool Valuation</span>
+            <span className="text-orange-600 dark:text-orange-400 font-bold text-xs">$135/t</span>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-orange-600 dark:text-orange-400">
             KSh {coopInfo.cumulative_worth_ksh.toLocaleString()}
           </p>
-          <p className="text-stone-500 text-[11px] font-bold">
+          <p className="text-slate-600 dark:text-stone-400 text-[11px] font-bold">
             ≈ ${coopInfo.cumulative_worth_usd.toLocaleString()} USD (Spot Liquidity)
           </p>
         </div>
 
-        <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-cyan-500">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-cyan-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Smart Kilns Fleet</span>
+            <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">Smart Kilns Fleet</span>
             <Layers className="w-4 h-4 text-cyan-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100">
+          <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-stone-100">
             {coopInfo.active_kilns} Units
           </p>
-          <p className="text-emerald-500 text-[11px] font-bold">
+          <p className="text-emerald-700 dark:text-emerald-400 text-[11px] font-bold">
             100% Online with LoRaWAN & GPS
           </p>
         </div>
 
-        <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-amber-500">
+        <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-1.5 rounded-2xl shadow-sm border-l-4 border-l-amber-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Registered Smallholders</span>
+            <span className="text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">Registered Smallholders</span>
             <Users className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100">
+          <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-stone-100">
             {coopInfo.farmer_count} Members
           </p>
-          <p className="text-stone-500 text-[11px] font-bold">
+          <p className="text-slate-600 dark:text-stone-400 text-[11px] font-bold">
             Enrolled in M-Pesa B2C Payouts
           </p>
         </div>
       </div>
 
       {/* Navigation Tab Bar */}
-      <div className="earthy-panel p-2 rounded-2xl flex flex-wrap gap-2">
+      <div className="bg-white dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58] p-2 rounded-2xl flex flex-wrap gap-2 shadow-sm">
         {[
           { id: 'overview', label: 'Overview & 3D Kilns', icon: Layers },
           { id: 'kilns', label: `Smart Kilns Fleet (${smartKilnsFleet.length})`, icon: Flame },
@@ -267,7 +272,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
               className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center space-x-2 cursor-pointer ${
                 isActive
                   ? 'bg-emerald-700 text-white shadow-md'
-                  : 'bg-transparent text-stone-600 dark:text-stone-400 hover:text-emerald-500'
+                  : 'bg-transparent text-slate-700 dark:text-stone-300 hover:text-emerald-600'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -283,84 +288,84 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
       {activeTab === 'overview' && (
         <div className="space-y-8 animate-fadeIn">
           {/* Line Graph: Market Carbon Credit Trend */}
-          <div className="earthy-box p-6 sm:p-8 space-y-6">
+          <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl space-y-6 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-4">
-              <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100">
+              <div className="flex items-center space-x-2 font-bold text-slate-900 dark:text-stone-100">
                 <BarChart2 className="w-5 h-5 text-orange-500" />
                 <span>Coop Carbon Credit Market Value Trend ($/tCO2e)</span>
               </div>
-              <span className="text-stone-500">Kenyan Spot Price Range: $35 - $145</span>
+              <span className="text-slate-500 dark:text-stone-400">Kenyan Spot Price Range: $35 - $145</span>
             </div>
 
             <LineGraph data={lineGraphData} height={180} valuePrefix="$" valueSuffix="/t" />
           </div>
 
           {/* 3D Representation of Member Kilns */}
-          <div className="earthy-box p-6 sm:p-8">
-            <div className="flex items-center justify-between pb-4 border-b border-[#443028]/40 mb-4">
+          <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl shadow-sm">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#2d3f58]/40 mb-4">
               <div>
-                <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">3D Kiln Fleet Telemetry Network</h3>
-                <p className="text-stone-500 text-[11px]">Real-time visual monitoring of pyrolysis thermal profiles and char retention</p>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-stone-100">3D Kiln Fleet Telemetry Network</h3>
+                <p className="text-slate-500 dark:text-stone-400 text-[11px]">Real-time visual monitoring of pyrolysis thermal profiles and char retention</p>
               </div>
-              <span className="text-emerald-500 font-bold bg-emerald-950/40 border border-emerald-800 px-3 py-1 rounded-full text-[11px]">
+              <span className="text-emerald-800 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 px-3 py-1 rounded-full text-[11px]">
                 18 Kilns Online
               </span>
             </div>
             <KilnDigitalTwin3D theme={theme} />
           </div>
 
-          {/* Quick Previews: Kilns & Top Buyers */}
+          {/* Quick Previews */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="earthy-box p-6 sm:p-8 space-y-4">
-              <div className="flex items-center justify-between border-b border-[#443028]/40 pb-3">
-                <div className="flex items-center space-x-2 font-bold">
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-3">
+                <div className="flex items-center space-x-2 font-bold text-slate-900 dark:text-stone-100">
                   <Flame className="w-4 h-4 text-emerald-500" />
                   <span>Active Kilns Quick View</span>
                 </div>
-                <button onClick={() => setActiveTab('kilns')} className="text-orange-500 hover:underline font-bold">
+                <button onClick={() => setActiveTab('kilns')} className="text-orange-600 dark:text-orange-400 hover:underline font-bold">
                   View All 18 Units &rarr;
                 </button>
               </div>
               <div className="space-y-2.5">
                 {smartKilnsFleet.slice(0, 4).map((k) => (
-                  <div key={k.id} className="p-3 rounded-xl bg-[#1c1512] border border-[#443028] flex items-center justify-between">
+                  <div key={k.id} className="p-3 rounded-xl bg-slate-50 dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58] flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-white">{k.id} • {k.location}</p>
-                      <p className="text-stone-400 text-[11px]">{k.farmer} ({k.phone})</p>
+                      <p className="font-bold text-slate-900 dark:text-stone-100">{k.id} • {k.location}</p>
+                      <p className="text-slate-500 dark:text-stone-400 text-[11px]">{k.farmer} ({k.phone})</p>
                     </div>
                     <div className="text-right">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        k.status === 'ACTIVE' ? 'bg-orange-950 text-orange-400 border border-orange-700' : 'bg-emerald-950 text-emerald-400'
+                        k.status === 'ACTIVE' ? 'bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-400 border border-orange-300 dark:border-orange-700' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-400'
                       }`}>
                         {k.status} ({k.skinTemp}°C)
                       </span>
-                      <p className="text-stone-400 text-[10px] mt-0.5">{k.lastYieldKg} KG Biochar</p>
+                      <p className="text-slate-500 dark:text-stone-400 text-[10px] mt-0.5">{k.lastYieldKg} KG Biochar</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="earthy-box p-6 sm:p-8 space-y-4">
-              <div className="flex items-center justify-between border-b border-[#443028]/40 pb-3">
-                <div className="flex items-center space-x-2 font-bold">
+            <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-3">
+                <div className="flex items-center space-x-2 font-bold text-slate-900 dark:text-stone-100">
                   <Building2 className="w-4 h-4 text-orange-500" />
                   <span>SME Offtaker Contracts</span>
                 </div>
-                <button onClick={() => setActiveTab('smes')} className="text-orange-500 hover:underline font-bold">
+                <button onClick={() => setActiveTab('smes')} className="text-orange-600 dark:text-orange-400 hover:underline font-bold">
                   Marketplace Hub &rarr;
                 </button>
               </div>
               <div className="space-y-2.5">
                 {smeBuyersList.slice(0, 4).map((b) => (
-                  <div key={b.id} className="p-3 rounded-xl bg-[#1c1512] border border-[#443028] flex items-center justify-between">
+                  <div key={b.id} className="p-3 rounded-xl bg-slate-50 dark:bg-[#131e30] border border-slate-200 dark:border-[#2d3f58] flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-white">{b.name}</p>
-                      <p className="text-stone-400 text-[11px]">{b.industry} • {b.location}</p>
+                      <p className="font-bold text-slate-900 dark:text-stone-100">{b.name}</p>
+                      <p className="text-slate-500 dark:text-stone-400 text-[11px]">{b.industry} • {b.location}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-emerald-400">{b.purchasedTons} Tons CO2e</p>
-                      <p className="text-stone-400 text-[10px]">KSh {b.valueKsh.toLocaleString()}</p>
+                      <p className="font-bold text-emerald-700 dark:text-emerald-400">{b.purchasedTons} Tons CO2e</p>
+                      <p className="text-slate-500 dark:text-stone-400 text-[10px]">KSh {b.valueKsh.toLocaleString()}</p>
                     </div>
                   </div>
                 ))}
@@ -377,12 +382,12 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
         <div className="space-y-6 animate-fadeIn">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Smart Kilns Fleet Registry (18 Units)</h3>
-              <p className="text-stone-500 text-xs">Distributed top-lit updraft biochar kilns across Western Kenya smallholders</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-stone-100">Smart Kilns Fleet Registry (18 Units)</h3>
+              <p className="text-slate-500 dark:text-stone-400 text-xs">Distributed top-lit updraft biochar kilns across Western Kenya smallholders</p>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-[11px] text-stone-400 font-bold">Total Fleet Capacity:</span>
-              <span className="px-3 py-1 bg-emerald-950/40 border border-emerald-600 text-emerald-400 font-bold rounded-xl">
+              <span className="text-[11px] text-slate-500 dark:text-stone-400 font-bold">Total Fleet Capacity:</span>
+              <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-600 text-emerald-800 dark:text-emerald-400 font-bold rounded-xl">
                 1.45 Tonnes Biochar / Burn Cycle
               </span>
             </div>
@@ -390,18 +395,18 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {smartKilnsFleet.map((kiln) => (
-              <div key={kiln.id} className="earthy-box p-5 space-y-3 relative overflow-hidden border border-[#443028]">
-                <div className="flex items-center justify-between border-b border-[#443028]/40 pb-2">
+              <div key={kiln.id} className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-5 space-y-3 rounded-2xl shadow-sm relative overflow-hidden">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-2">
                   <div className="flex items-center space-x-2">
                     <Flame className={`w-4 h-4 ${kiln.status === 'ACTIVE' ? 'text-orange-500 animate-pulse' : 'text-emerald-500'}`} />
-                    <span className="font-black text-sm text-white">{kiln.id}</span>
+                    <span className="font-black text-sm text-slate-900 dark:text-white">{kiln.id}</span>
                   </div>
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                     kiln.status === 'ACTIVE'
-                      ? 'bg-orange-950/60 border-orange-600 text-orange-400'
+                      ? 'bg-orange-100 dark:bg-orange-950/60 border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-400'
                       : kiln.status === 'COOLING'
-                      ? 'bg-cyan-950/60 border-cyan-600 text-cyan-400'
-                      : 'bg-emerald-950/60 border-emerald-600 text-emerald-400'
+                      ? 'bg-cyan-100 dark:bg-cyan-950/60 border-cyan-300 dark:border-cyan-600 text-cyan-800 dark:text-cyan-400'
+                      : 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-600 text-emerald-800 dark:text-emerald-400'
                   }`}>
                     {kiln.status}
                   </span>
@@ -409,31 +414,31 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
 
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Owner Farmer:</span>
-                    <strong className="text-white">{kiln.farmer}</strong>
+                    <span className="text-slate-500 dark:text-stone-400">Owner Farmer:</span>
+                    <strong className="text-slate-900 dark:text-white">{kiln.farmer}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Location:</span>
-                    <span className="text-stone-200">{kiln.location}</span>
+                    <span className="text-slate-500 dark:text-stone-400">Location:</span>
+                    <span className="text-slate-700 dark:text-stone-200">{kiln.location}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Skin Temp / Core:</span>
-                    <span className="text-orange-400 font-bold">{kiln.skinTemp}°C / ~{kiln.coreTemp}°C</span>
+                    <span className="text-slate-500 dark:text-stone-400">Skin Temp / Core:</span>
+                    <span className="text-orange-600 dark:text-orange-400 font-bold">{kiln.skinTemp}°C / ~{kiln.coreTemp}°C</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Char Bed Depth:</span>
-                    <span className="text-stone-200">{kiln.charDepth} cm (Initial: {kiln.initialDepth} cm)</span>
+                    <span className="text-slate-500 dark:text-stone-400">Char Bed Depth:</span>
+                    <span className="text-slate-700 dark:text-stone-200">{kiln.charDepth} cm (Initial: {kiln.initialDepth} cm)</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Recent Yield:</span>
-                    <strong className="text-emerald-400">{kiln.lastYieldKg} KG ({kiln.lastYieldTons} tCO2e)</strong>
+                    <span className="text-slate-500 dark:text-stone-400">Recent Yield:</span>
+                    <strong className="text-emerald-700 dark:text-emerald-400">{kiln.lastYieldKg} KG ({kiln.lastYieldTons} tCO2e)</strong>
                   </div>
                 </div>
 
-                <div className="border-t border-[#443028]/40 pt-2 flex justify-between items-center text-[10px] text-stone-500">
+                <div className="border-t border-slate-200 dark:border-[#2d3f58]/40 pt-2 flex justify-between items-center text-[10px] text-slate-500 dark:text-stone-400">
                   <span>Battery: {kiln.battery}% 🔋</span>
                   <span>LoRa: Strong 📶</span>
-                  <span className="text-emerald-400 font-bold">Verified IoT</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">Verified IoT</span>
                 </div>
               </div>
             ))}
@@ -442,14 +447,14 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 3: SMALLHOLDER MEMBERS & CREDIT RATINGS (FULL 148 DIRECTORY)          */}
+      {/* TAB 3: SMALLHOLDER MEMBERS (FULL 148 DIRECTORY)                           */}
       {/* ========================================================================= */}
       {activeTab === 'members' && (
         <div className="space-y-6 animate-fadeIn">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Cooperative Member Registry (148 Smallholders)</h3>
-              <p className="text-stone-500 text-xs">Search members, view assigned kilns, carbon credits produced, and creditworthiness ratings</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-stone-100">Cooperative Member Registry (148 Smallholders)</h3>
+              <p className="text-slate-500 dark:text-stone-400 text-xs">Search members, view assigned kilns, carbon credits produced, and creditworthiness ratings</p>
             </div>
             <button
               onClick={() => {
@@ -480,20 +485,20 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
           {/* Search & Filter Controls */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2 relative">
-              <Search className="w-4 h-4 absolute left-3 top-3 text-stone-500" />
+              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search member by name, phone, kiln ID, or location..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#1c1512] border border-[#443028] pl-9 pr-3 py-2.5 rounded-xl text-white font-bold text-xs focus:outline-none focus:border-orange-500"
+                className="w-full bg-white dark:bg-[#131e30] border border-slate-300 dark:border-[#2d3f58] pl-9 pr-3 py-2.5 rounded-xl text-slate-900 dark:text-stone-100 font-bold text-xs focus:outline-none focus:border-orange-500 shadow-sm"
               />
             </div>
             <div>
               <select
                 value={filterRegion}
                 onChange={(e) => setFilterRegion(e.target.value)}
-                className="w-full bg-[#1c1512] border border-[#443028] px-3 py-2.5 rounded-xl text-white font-bold text-xs focus:outline-none focus:border-orange-500 cursor-pointer"
+                className="w-full bg-white dark:bg-[#131e30] border border-slate-300 dark:border-[#2d3f58] px-3 py-2.5 rounded-xl text-slate-900 dark:text-stone-100 font-bold text-xs focus:outline-none focus:border-orange-500 cursor-pointer shadow-sm"
               >
                 <option value="all">All Wards / Sub-Counties</option>
                 <option value="Kakamega">Kakamega Central</option>
@@ -508,10 +513,10 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
           </div>
 
           {/* Members Table */}
-          <div className="earthy-box p-4 overflow-x-auto">
+          <div className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-4 rounded-2xl overflow-x-auto shadow-sm">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-[#443028] text-stone-400 font-bold uppercase text-[10px]">
+                <tr className="border-b border-slate-200 dark:border-[#2d3f58] text-slate-500 dark:text-stone-400 font-bold uppercase text-[10px]">
                   <th className="pb-3 px-2">Member Name</th>
                   <th className="pb-3 px-2">Phone & Nat ID</th>
                   <th className="pb-3 px-2">Ward / Location</th>
@@ -521,29 +526,29 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                   <th className="pb-3 px-2 text-center">Credit Rating</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#443028]/40">
+              <tbody className="divide-y divide-slate-200 dark:divide-[#2d3f58]/40">
                 {filteredMembers.map((m) => (
-                  <tr key={m.phone} className="hover:bg-[#1c1512]/60 transition-colors">
+                  <tr key={m.phone} className="hover:bg-slate-50 dark:hover:bg-[#131e30]/60 transition-colors">
                     <td className="py-3.5 px-2">
-                      <p className="font-bold text-white">{m.name}</p>
-                      <span className="text-[10px] text-emerald-400">{m.burns} Clean Burns</span>
+                      <p className="font-bold text-slate-900 dark:text-stone-100">{m.name}</p>
+                      <span className="text-[10px] text-emerald-700 dark:text-emerald-400">{m.burns} Clean Burns</span>
                     </td>
-                    <td className="py-3.5 px-2 text-stone-300">
+                    <td className="py-3.5 px-2 text-slate-700 dark:text-stone-300">
                       <p>{m.phone}</p>
-                      <span className="text-[10px] text-stone-500">ID: {m.nationalId}</span>
+                      <span className="text-[10px] text-slate-500 dark:text-stone-500">ID: {m.nationalId}</span>
                     </td>
-                    <td className="py-3.5 px-2 text-stone-300">{m.location}</td>
-                    <td className="py-3.5 px-2 font-bold text-orange-400">{m.kilns}</td>
+                    <td className="py-3.5 px-2 text-slate-700 dark:text-stone-300">{m.location}</td>
+                    <td className="py-3.5 px-2 font-bold text-orange-600 dark:text-orange-400">{m.kilns}</td>
                     <td className="py-3.5 px-2 text-right">
-                      <p className="font-bold text-emerald-400">{m.biocharKg.toLocaleString()} KG</p>
-                      <span className="text-[10px] text-stone-400">{m.creditsTons} tCO2e</span>
+                      <p className="font-bold text-emerald-700 dark:text-emerald-400">{m.biocharKg.toLocaleString()} KG</p>
+                      <span className="text-[10px] text-slate-500 dark:text-stone-400">{m.creditsTons} tCO2e</span>
                     </td>
                     <td className="py-3.5 px-2 text-right">
-                      <p className="font-bold text-white">KSh {m.worthKsh.toLocaleString()}</p>
-                      <span className="text-[10px] text-stone-400">${(m.worthKsh / 130.0).toFixed(2)} USD</span>
+                      <p className="font-bold text-slate-900 dark:text-stone-100">KSh {m.worthKsh.toLocaleString()}</p>
+                      <span className="text-[10px] text-slate-500 dark:text-stone-400">${(m.worthKsh / 130.0).toFixed(2)} USD</span>
                     </td>
                     <td className="py-3.5 px-2 text-center">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-950 border border-emerald-600 text-emerald-300">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-600 text-emerald-800 dark:text-emerald-300">
                         {m.rating}
                       </span>
                     </td>
@@ -562,8 +567,8 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
         <div className="space-y-6 animate-fadeIn">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Cooperative Transactions & Settlement Audit Log</h3>
-              <p className="text-stone-500 text-xs">Immutable SHA-256 batch stamps anchored to the Kenya National Carbon Registry (NCR)</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-stone-100">Cooperative Transactions & Settlement Audit Log</h3>
+              <p className="text-slate-500 dark:text-stone-400 text-xs">Immutable SHA-256 batch stamps anchored to the Kenya National Carbon Registry (NCR)</p>
             </div>
             <button
               onClick={() => {
@@ -592,27 +597,27 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
 
           <div className="space-y-3">
             {transactionsAuditLog.map((tx) => (
-              <div key={tx.id} className="earthy-box p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[#443028]">
+              <div key={tx.id} className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className="font-bold text-white text-sm">{tx.id}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 border border-emerald-700 text-emerald-300">
+                    <span className="font-bold text-slate-900 dark:text-stone-100 text-sm">{tx.id}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300">
                       {tx.type}
                     </span>
-                    <span className="text-stone-400 text-[11px]">{tx.date}</span>
+                    <span className="text-slate-500 dark:text-stone-400 text-[11px]">{tx.date}</span>
                   </div>
-                  <p className="text-stone-300 text-xs">
+                  <p className="text-slate-700 dark:text-stone-300 text-xs">
                     Kiln: <strong>{tx.kiln}</strong> • Beneficiary: <strong>{tx.farmer}</strong>
                   </p>
-                  <p className="text-[11px] text-stone-500">
-                    Kenya NCR Tracking: <strong className="text-emerald-400">{tx.ncrId}</strong> • Safaricom Receipt: <strong>{tx.receipt}</strong>
+                  <p className="text-[11px] text-slate-500 dark:text-stone-400">
+                    Kenya NCR Tracking: <strong className="text-emerald-700 dark:text-emerald-400">{tx.ncrId}</strong> • Safaricom Receipt: <strong>{tx.receipt}</strong>
                   </p>
                 </div>
 
-                <div className="text-right sm:border-l sm:border-[#443028] sm:pl-6 space-y-0.5">
-                  <p className="text-sm font-bold text-emerald-400">+{tx.co2eTons} Tonnes CO2e ({tx.massKg} KG)</p>
-                  <p className="text-xs text-white">Farmer Payout: <strong>KSh {tx.farmerPayoutKsh.toLocaleString()}</strong></p>
-                  <p className="text-[11px] text-orange-400">Coop Stipend: <strong>KSh {tx.coopStipendKsh.toLocaleString()}</strong></p>
+                <div className="text-right sm:border-l sm:border-slate-200 dark:border-[#2d3f58] sm:pl-6 space-y-0.5">
+                  <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400">+{tx.co2eTons} tCO2e ({tx.massKg} KG)</p>
+                  <p className="text-slate-900 dark:text-stone-100 font-bold">KSh {tx.farmerPayoutKsh.toLocaleString()} Disbursed</p>
+                  <p className="text-[10px] text-orange-600 dark:text-orange-400">Coop Stipend: KSh {tx.coopStipendKsh.toLocaleString()}</p>
                 </div>
               </div>
             ))}
@@ -621,49 +626,50 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 5: SME BUYERS & MARKETPLACE CONTRACTS                                  */}
+      {/* TAB 5: SME OFFTAKERS & BULK CONTRACTS                                      */}
       {/* ========================================================================= */}
       {activeTab === 'smes' && (
         <div className="space-y-6 animate-fadeIn">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Corporate SME Offtakers & Marketplace Buyers</h3>
-              <p className="text-stone-500 text-xs">Agribusiness and industrial enterprises buying verified biochar removals for ESG compliance</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-stone-100">Institutional SME Offtakers & Market Clearing</h3>
+              <p className="text-slate-500 dark:text-stone-400 text-xs">Commercial buyers clearing pooled smallholder biochar credits for Scope 1-3 ESG compliance</p>
             </div>
             <button
               onClick={() => handleOpenSellModal()}
-              className="px-4 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl flex items-center space-x-1.5 self-start cursor-pointer shadow-md"
+              className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold rounded-xl flex items-center space-x-1.5 self-start cursor-pointer shadow-md"
             >
               <ShoppingBag className="w-4 h-4" />
-              <span>Create New Sale Order &rarr;</span>
+              <span>Create New Offtake Trade</span>
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {smeBuyersList.map((sme) => (
-              <div key={sme.id} className="earthy-box p-6 space-y-4 border border-[#443028] flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between border-b border-[#443028]/40 pb-2">
-                    <h4 className="font-black text-sm text-white">{sme.name}</h4>
-                    <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-950 border border-emerald-700 text-emerald-400">
+              <div key={sme.id} className="bg-white dark:bg-[#1c2a3e] border border-slate-200 dark:border-[#2d3f58] p-6 space-y-4 rounded-2xl shadow-sm flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58]/40 pb-2">
+                    <div>
+                      <h4 className="font-bold text-slate-900 dark:text-stone-100 text-sm">{sme.name}</h4>
+                      <p className="text-slate-500 dark:text-stone-400 text-[11px]">{sme.location} • {sme.industry}</p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300">
                       {sme.status}
                     </span>
                   </div>
-                  <p className="text-stone-400 text-xs">{sme.industry} • {sme.location}</p>
-                  <p className="text-stone-400 text-xs">Contact: {sme.contact}</p>
 
-                  <div className="bg-[#120e0c] p-3 rounded-xl border border-[#443028] space-y-1 text-xs">
+                  <div className="bg-slate-50 dark:bg-[#131e30] p-3 rounded-xl border border-slate-200 dark:border-[#2d3f58] space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Total Retired:</span>
-                      <strong className="text-emerald-400">{sme.purchasedTons} Tonnes CO2e</strong>
+                      <span className="text-slate-500 dark:text-stone-400">Total Cleared Volume:</span>
+                      <strong className="text-emerald-700 dark:text-emerald-400">{sme.purchasedTons} Tonnes CO2e</strong>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Contract Value:</span>
-                      <strong className="text-white">${sme.valueUsd.toLocaleString()} USD (KSh {sme.valueKsh.toLocaleString()})</strong>
+                      <span className="text-slate-500 dark:text-stone-400">Cumulative Settlement:</span>
+                      <strong className="text-slate-900 dark:text-stone-100">KSh {sme.valueKsh.toLocaleString()} (${(sme.valueKsh / 130.0).toFixed(2)} USD)</strong>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-stone-400">NCR Certificate:</span>
-                      <span className="text-orange-400 font-bold">{sme.ncrCert}</span>
+                    <div className="flex justify-between text-[11px] text-slate-500 dark:text-stone-400 border-t border-slate-200 dark:border-[#2d3f58] pt-1">
+                      <span>Last Clearance Date:</span>
+                      <span>{sme.lastOrder}</span>
                     </div>
                   </div>
                 </div>
@@ -685,25 +691,25 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
       {/* REALISTIC MULTI-STEP "SELL CARBON CREDITS" MODAL (SPACIOUS & EXPANSIVE)   */}
       {/* ========================================================================= */}
       {showSellModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/85 backdrop-blur-md p-3 sm:p-6 animate-fadeIn overflow-y-auto">
-          <div className="bg-[#1c1512] border-2 border-[#443028] max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 rounded-3xl space-y-6 text-stone-100 shadow-2xl my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-6 animate-fadeIn overflow-y-auto">
+          <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-[#2d3f58] max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 rounded-3xl space-y-6 text-slate-900 dark:text-stone-100 shadow-2xl my-auto">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[#443028] pb-4">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2d3f58] pb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-2xl bg-orange-600 flex items-center justify-center text-white font-black text-base shadow-md">
                   C
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-black text-white">Sell Pooled Biochar Credits</h3>
-                  <p className="text-xs text-stone-400">
+                  <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-stone-100">Sell Pooled Biochar Credits</h3>
+                  <p className="text-xs text-slate-500 dark:text-stone-400">
                     Step {sellStep} of 5 • {coopInfo.name} &bull; Kenya NCR & Carbonmark Settlement
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowSellModal(false)}
-                className="p-2 rounded-xl border border-[#443028] text-stone-400 hover:text-white hover:bg-[#281e19] transition-all cursor-pointer"
+                className="p-2 rounded-xl border border-slate-200 dark:border-[#2d3f58] text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -715,7 +721,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                 { step: 1, label: '1. Buyer & Volume' },
                 { step: 2, label: '2. Quality Audit' },
                 { step: 3, label: '3. Revenue Split' },
-                { step: 4, label: '4. PIN Auth' },
+                { step: 4, label: '4. Auth Sign-Off' },
                 { step: 5, label: '5. Settlement' }
               ].map((s) => (
                 <div
@@ -724,8 +730,8 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                     sellStep === s.step
                       ? 'bg-orange-600 border-orange-500 text-white shadow-md'
                       : sellStep > s.step
-                      ? 'bg-emerald-950/60 border-emerald-700 text-emerald-300'
-                      : 'bg-[#120e0c] border-[#443028]/60 text-stone-500'
+                      ? 'bg-emerald-100 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300'
+                      : 'bg-slate-100 dark:bg-[#131e30] border-slate-200 dark:border-[#2d3f58]/60 text-slate-500 dark:text-stone-500'
                   }`}
                 >
                   <span className="hidden sm:inline">{s.label}</span>
@@ -738,17 +744,17 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
             {sellStep === 1 && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Column: Buyer & Presets */}
+                  {/* Left Column */}
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold text-stone-300">Select Offtaker / Carbonmark Pool:</label>
+                      <label className="text-xs font-bold text-slate-700 dark:text-stone-300">Select Offtaker / Carbonmark Pool:</label>
                       <select
                         value={selectedBuyer ? selectedBuyer.id : ''}
                         onChange={(e) => {
                           const found = smeBuyersList.find((b) => b.id === e.target.value);
                           setSelectedBuyer(found || null);
                         }}
-                        className="w-full bg-[#120e0c] border border-[#443028] p-3.5 rounded-xl text-white font-bold text-xs focus:outline-none focus:border-orange-500 cursor-pointer"
+                        className="w-full bg-slate-50 dark:bg-[#131e30] border border-slate-300 dark:border-[#2d3f58] p-3.5 rounded-xl text-slate-900 dark:text-stone-100 font-bold text-xs focus:outline-none focus:border-orange-500 cursor-pointer shadow-sm"
                       >
                         <option value="">Carbonmark Open Liquidity Pool ($135.00 / tCO2e)</option>
                         {smeBuyersList.map((b) => (
@@ -760,7 +766,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-bold text-stone-300">Quick Volume Presets:</label>
+                      <label className="text-xs font-bold text-slate-700 dark:text-stone-300">Quick Volume Presets:</label>
                       <div className="grid grid-cols-3 gap-2">
                         {[5.0, 10.0, 20.0].map((preset) => (
                           <button
@@ -770,7 +776,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                             className={`py-2.5 px-3 rounded-xl border text-xs font-bold cursor-pointer transition-all ${
                               sellTonnage === preset
                                 ? 'bg-orange-600 border-orange-500 text-white shadow-md'
-                                : 'bg-[#120e0c] border-[#443028] text-stone-300 hover:border-stone-400'
+                                : 'bg-slate-100 dark:bg-[#131e30] border-slate-300 dark:border-[#2d3f58] text-slate-700 dark:text-stone-300 hover:border-slate-400'
                             }`}
                           >
                             {preset} Tonnes
@@ -780,7 +786,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-stone-300">Exact Tonnage to Sell (Tonnes CO2e):</label>
+                      <label className="text-xs font-bold text-slate-700 dark:text-stone-300">Exact Tonnage to Sell (Tonnes CO2e):</label>
                       <input
                         type="number"
                         min="0.5"
@@ -788,58 +794,58 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                         step="0.5"
                         value={sellTonnage}
                         onChange={(e) => setSellTonnage(Math.min(coopInfo.cumulative_credits_tons, Math.max(0.5, Number(e.target.value))))}
-                        className="w-full bg-[#120e0c] border border-[#443028] p-3 rounded-xl text-white font-bold text-base focus:outline-none focus:border-orange-500 font-mono"
+                        className="w-full bg-white dark:bg-[#131e30] border border-slate-300 dark:border-[#2d3f58] p-3 rounded-xl text-slate-900 dark:text-stone-100 font-bold text-base focus:outline-none focus:border-orange-500 font-mono shadow-sm"
                       />
-                      <p className="text-[11px] text-stone-400">
-                        Max Available: <strong>{coopInfo.cumulative_credits_tons} tCO2e</strong> ({coopInfo.total_biochar_kg.toLocaleString()} KG Biochar)
+                      <p className="text-[11px] text-slate-500 dark:text-stone-400">
+                        Max Available: <strong>{coopInfo.cumulative_credits_tons} tCO2e</strong> ({coopInfo.cumulative_biochar_kg.toLocaleString()} KG Biochar)
                       </p>
                     </div>
                   </div>
 
                   {/* Right Column: Live Valuation Summary Card */}
-                  <div className="bg-[#120e0c] p-5 rounded-2xl border border-[#443028] flex flex-col justify-between space-y-4">
+                  <div className="bg-slate-50 dark:bg-[#131e30] p-5 rounded-2xl border border-slate-200 dark:border-[#2d3f58] flex flex-col justify-between space-y-4">
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-orange-400 border-b border-[#443028] pb-2">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-orange-600 dark:text-orange-400 border-b border-slate-200 dark:border-[#2d3f58] pb-2">
                         Trade Valuation Summary
                       </h4>
                       <div className="mt-3 space-y-2.5 text-xs">
-                        <div className="flex justify-between text-stone-400">
+                        <div className="flex justify-between text-slate-600 dark:text-stone-400">
                           <span>Benchmark Rate:</span>
-                          <strong className="text-white">$135.00 USD / Ton (KSh 17,550/t)</strong>
+                          <strong className="text-slate-900 dark:text-stone-100">$135.00 USD / Ton (KSh 17,550/t)</strong>
                         </div>
-                        <div className="flex justify-between text-stone-400">
+                        <div className="flex justify-between text-slate-600 dark:text-stone-400">
                           <span>Selected Volume:</span>
-                          <strong className="text-white">{sellTonnage} Metric Tonnes CO2e</strong>
+                          <strong className="text-slate-900 dark:text-stone-100">{sellTonnage} Metric Tonnes CO2e</strong>
                         </div>
-                        <div className="flex justify-between text-stone-400">
+                        <div className="flex justify-between text-slate-600 dark:text-stone-400">
                           <span>Equivalent Biochar:</span>
-                          <strong className="text-emerald-400">{(sellTonnage * 456.6).toFixed(1)} KG</strong>
+                          <strong className="text-emerald-700 dark:text-emerald-400">{(sellTonnage * 456.6).toFixed(1)} KG</strong>
                         </div>
-                        <div className="flex justify-between text-stone-400 border-t border-[#443028] pt-2">
-                          <span className="font-bold text-stone-200">Gross Trade Value:</span>
-                          <strong className="text-emerald-400 text-sm font-black">
+                        <div className="flex justify-between text-slate-600 dark:text-stone-400 border-t border-slate-200 dark:border-[#2d3f58] pt-2">
+                          <span className="font-bold text-slate-800 dark:text-stone-200">Gross Trade Value:</span>
+                          <strong className="text-emerald-700 dark:text-emerald-400 text-sm font-black">
                             ${(sellTonnage * 135.0).toFixed(2)} USD
                           </strong>
                         </div>
-                        <div className="flex justify-between text-stone-400">
+                        <div className="flex justify-between text-slate-600 dark:text-stone-400">
                           <span className="text-[11px]">Local Currency Value:</span>
-                          <strong className="text-white text-xs font-mono">
+                          <strong className="text-slate-900 dark:text-stone-100 text-xs font-mono">
                             KSh {(sellTonnage * 135.0 * 130).toLocaleString()}
                           </strong>
                         </div>
                       </div>
                     </div>
 
-                    <div className="p-3 bg-emerald-950/40 rounded-xl border border-emerald-800/80 text-[11px] text-emerald-300">
+                    <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-800 dark:text-emerald-300 font-bold">
                       &check; Direct automated payout splits to 148 smallholder wallets on execution.
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3 pt-3 border-t border-[#443028]">
+                <div className="flex justify-end space-x-3 pt-3 border-t border-slate-200 dark:border-[#2d3f58]">
                   <button
                     onClick={() => setShowSellModal(false)}
-                    className="px-5 py-2.5 rounded-xl border border-[#443028] text-stone-400 hover:text-white font-bold cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-[#2d3f58] text-slate-600 dark:text-stone-400 hover:text-slate-900 dark:hover:text-white font-bold cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -857,86 +863,67 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
             {sellStep === 2 && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
-                  <h4 className="text-sm font-bold text-white uppercase tracking-wide">
-                    dMRV Quality & Registry Compliance Audit
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-stone-100 uppercase tracking-wide">
+                    dMRV Sensor Physics & Quality Audit Seal
                   </h4>
-                  <p className="text-xs text-stone-400 mt-0.5">
-                    Verifying pyrolytic data integrity across all 18 smart kilns before minting credit batch.
+                  <p className="text-xs text-slate-600 dark:text-stone-400 mt-0.5">
+                    Pre-trade algorithmic integrity inspection across 18 smart kiln IoT telemetry logs.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-4 rounded-2xl bg-[#120e0c] border border-emerald-800/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center space-x-1.5 font-bold text-white">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Fixed Carbon Purity</span>
-                      </span>
-                      <strong className="text-emerald-400 font-mono">77.4% PASSED</strong>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2">
+                    <div className="flex items-center justify-between text-emerald-800 dark:text-emerald-400">
+                      <span className="font-bold text-xs">Pyrolysis Thermal Hold</span>
+                      <CheckCircle2 className="w-4 h-4" />
                     </div>
-                    <p className="text-stone-400 text-[11px]">
-                      Exceeds minimum regulatory threshold (&ge; 75%) for high-grade biogenic elemental carbon.
+                    <p className="text-lg font-black text-slate-900 dark:text-white">571.7°C Core Mean</p>
+                    <p className="text-[10px] text-slate-600 dark:text-stone-400">
+                      Exceeds 450°C Puro.earth threshold. Carbon permanence &ge; 100 years.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#120e0c] border border-emerald-800/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center space-x-1.5 font-bold text-white">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>100-Year Soil Permanence</span>
-                      </span>
-                      <strong className="text-emerald-400 font-mono">0.97 VERIFIED</strong>
+                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2">
+                    <div className="flex items-center justify-between text-emerald-800 dark:text-emerald-400">
+                      <span className="font-bold text-xs">Ultrasonic Char Retention</span>
+                      <CheckCircle2 className="w-4 h-4" />
                     </div>
-                    <p className="text-stone-400 text-[11px]">
-                      Soil permanence factor locked at 97% storage stability under tropical Western Kenya soils.
+                    <p className="text-lg font-black text-slate-900 dark:text-white">35.3% Volume Ratio</p>
+                    <p className="text-[10px] text-slate-600 dark:text-stone-400">
+                      No ash cheating detected (volume retention ratio &ge; 25% minimum).
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-[#120e0c] border border-emerald-800/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center space-x-1.5 font-bold text-white">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Hardware Geo-Fence Seal</span>
-                      </span>
-                      <strong className="text-emerald-400 font-mono">SIGNED</strong>
+                  <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2">
+                    <div className="flex items-center justify-between text-emerald-800 dark:text-emerald-400">
+                      <span className="font-bold text-xs">Sovereign Geofence</span>
+                      <CheckCircle2 className="w-4 h-4" />
                     </div>
-                    <p className="text-stone-400 text-[11px]">
-                      Telemetry authenticated via Safaricom tower triangulation in Kakamega & Mumias corridors.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-[#120e0c] border border-emerald-800/80 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center space-x-1.5 font-bold text-white">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Kenya NCR EMCA 2026</span>
-                      </span>
-                      <strong className="text-emerald-400 font-mono">AUTHORIZED</strong>
-                    </div>
-                    <p className="text-stone-400 text-[11px]">
-                      Serialized for instant national carbon register settlement and corresponding adjustment.
+                    <p className="text-lg font-black text-slate-900 dark:text-white">Kakamega Cluster</p>
+                    <p className="text-[10px] text-slate-600 dark:text-stone-400">
+                      Triangulated via Safaricom Base Stations with SHA-256 silicon ID match.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-3 border-t border-[#443028]">
+                <div className="flex justify-between pt-3 border-t border-slate-200 dark:border-[#2d3f58]">
                   <button
                     onClick={() => setSellStep(1)}
-                    className="px-5 py-2.5 rounded-xl border border-[#443028] text-stone-400 hover:text-white font-bold cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-[#2d3f58] text-slate-600 dark:text-stone-400 hover:text-slate-900 dark:hover:text-white font-bold cursor-pointer"
                   >
                     &larr; Back to Volume
                   </button>
                   <button
                     onClick={() => setSellStep(3)}
-                    className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center space-x-2 cursor-pointer shadow-md"
+                    className="px-6 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl flex items-center space-x-2 cursor-pointer shadow-md"
                   >
-                    <span>View Revenue Split &rarr;</span>
+                    <span>Inspect Revenue Allocation &rarr;</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* STEP 3: REVENUE SPLIT BREAKDOWN */}
+            {/* STEP 3: STATUTORY REVENUE ALLOCATION */}
             {sellStep === 3 && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
@@ -949,7 +936,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {/* Share 1: Statutory Community Trust Fund (40%) */}
+                  {/* Share 1: Community Trust Fund (40%) */}
                   <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-700/80 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-blue-800 dark:text-blue-300">Community Trust</span>
@@ -1043,52 +1030,60 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
               </div>
             )}
 
-            {/* STEP 4: COOPERATIVE AUTHORIZER PIN PROMPT */}
+            {/* STEP 4: COOPERATIVE AUTHORIZER PASSCODE PROMPT */}
             {sellStep === 4 && (
               <div className="space-y-6 animate-fadeIn">
-                <div className="bg-[#120e0c] border-2 border-orange-600/70 p-6 sm:p-8 rounded-3xl space-y-4 text-center max-w-lg mx-auto">
-                  <div className="w-14 h-14 bg-orange-600 rounded-2xl flex items-center justify-center mx-auto text-white shadow-xl">
-                    <Lock className="w-7 h-7 animate-pulse" />
+                <div className="bg-slate-50 dark:bg-[#120e0c] border-2 border-orange-500/70 p-6 sm:p-8 rounded-3xl space-y-4 text-center max-w-lg mx-auto shadow-sm">
+                  <div className="w-14 h-14 bg-orange-600 rounded-2xl flex items-center justify-center mx-auto text-white shadow-md">
+                    <Lock className="w-7 h-7" />
                   </div>
                   <div>
-                    <h4 className="font-black text-white text-base">Cooperative Authorization Sign-Off</h4>
-                    <p className="text-xs text-stone-300 mt-1">
+                    <h4 className="font-black text-slate-900 dark:text-white text-base">Cooperative Authorization Sign-Off</h4>
+                    <p className="text-xs text-slate-600 dark:text-stone-300 mt-1">
                       Authorizing trade of <strong>{sellTonnage} Tonnes CO2e</strong> to <strong>{selectedBuyer ? selectedBuyer.name : 'Carbonmark'}</strong> for <strong>KSh {(sellTonnage * 135 * 130).toLocaleString()}</strong>.
                     </p>
                   </div>
 
-                  <div className="max-w-xs mx-auto pt-2 space-y-2">
-                    <label className="text-xs font-bold text-stone-300 block">
-                      Enter 4-Digit Coop Manager PIN:
+                  <div className="max-w-xs mx-auto pt-2 space-y-2 text-left">
+                    <label className="text-xs font-bold text-slate-700 dark:text-stone-300 block">
+                      Enter Cooperative Account Password / Passcode:
                     </label>
-                    <input
-                      type="password"
-                      maxLength={4}
-                      placeholder="••••"
-                      value={coopPin}
-                      onChange={(e) => setCoopPin(e.target.value.replace(/\D/g, ''))}
-                      className="w-full bg-[#1c1512] border-2 border-orange-500/80 p-3.5 rounded-2xl text-center text-2xl tracking-widest text-orange-400 font-black focus:outline-none shadow-inner"
-                    />
-                    {pinError && (
-                      <p className="text-rose-400 text-xs font-bold flex items-center justify-center space-x-1">
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter manager password..."
+                        value={coopPassword}
+                        onChange={(e) => setCoopPassword(e.target.value)}
+                        className="w-full bg-white dark:bg-[#1c1512] border-2 border-orange-500/80 p-3 rounded-xl text-slate-900 dark:text-white font-bold text-sm focus:outline-none pr-10 shadow-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3.5 text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    {passwordError && (
+                      <p className="text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center space-x-1">
                         <AlertCircle className="w-3.5 h-3.5" />
-                        <span>{pinError}</span>
+                        <span>{passwordError}</span>
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-3 border-t border-[#443028]">
+                <div className="flex justify-between pt-3 border-t border-slate-200 dark:border-[#2d3f58]">
                   <button
                     onClick={() => setSellStep(3)}
                     disabled={isProcessingTrade}
-                    className="px-5 py-2.5 rounded-xl border border-[#443028] text-stone-400 hover:text-white font-bold cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-[#2d3f58] text-slate-700 dark:text-stone-400 hover:text-slate-900 dark:hover:text-white font-bold cursor-pointer"
                   >
                     &larr; Back to Revenue Split
                   </button>
                   <button
                     onClick={handleExecuteTradeAuth}
-                    disabled={isProcessingTrade || coopPin.length !== 4}
+                    disabled={isProcessingTrade || !coopPassword}
                     className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold rounded-xl flex items-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
                   >
                     {isProcessingTrade ? (
@@ -1099,7 +1094,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                     ) : (
                       <>
                         <ShieldCheck className="w-4 h-4" />
-                        <span>Authorize Trade & Disburse M-Pesa</span>
+                        <span>Authorize Trade & Settle &rarr;</span>
                       </>
                     )}
                   </button>
@@ -1111,40 +1106,44 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
             {sellStep === 5 && tradeConfirmation && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="text-center space-y-2">
-                  <div className="w-16 h-16 bg-emerald-600/20 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-400 shadow-xl">
+                  <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-600/20 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400 shadow-md">
                     <CheckCircle2 className="w-9 h-9" />
                   </div>
-                  <h3 className="text-2xl font-black text-white">Trade Executed & Settled!</h3>
-                  <p className="text-xs text-stone-300 max-w-md mx-auto">
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white">Trade Executed & Settled!</h3>
+                  <p className="text-xs text-slate-600 dark:text-stone-300 max-w-md mx-auto">
                     Carbon credits retired on Kenya NCR and funds disbursed to 148 smallholder farmers via M-Pesa B2C.
                   </p>
                 </div>
 
                 {/* Digital Trade Voucher */}
-                <div className="bg-[#120e0c] border border-emerald-500/40 p-5 rounded-2xl space-y-3 text-left text-xs font-mono max-w-xl mx-auto shadow-xl">
-                  <div className="flex justify-between border-b border-[#443028] pb-2">
-                    <span className="text-stone-400">Kenya NCR Certificate:</span>
-                    <strong className="text-emerald-400">{tradeConfirmation.certId}</strong>
+                <div className="bg-slate-50 dark:bg-[#120e0c] border border-emerald-500/40 p-5 rounded-2xl space-y-3 text-left text-xs font-mono max-w-xl mx-auto shadow-sm">
+                  <div className="flex justify-between border-b border-slate-200 dark:border-[#2d3f58] pb-2">
+                    <span className="text-slate-500 dark:text-stone-400">Kenya NCR Certificate:</span>
+                    <strong className="text-emerald-700 dark:text-emerald-400">{tradeConfirmation.certId}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Buyer Offtaker:</span>
-                    <strong className="text-white">{tradeConfirmation.buyerName}</strong>
+                    <span className="text-slate-500 dark:text-stone-400">Buyer Offtaker:</span>
+                    <strong className="text-slate-900 dark:text-white">{tradeConfirmation.buyerName}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Volume Cleared:</span>
-                    <span className="text-stone-200 font-bold">{tradeConfirmation.tonnage} Tonnes CO2e</span>
+                    <span className="text-slate-500 dark:text-stone-400">Volume Cleared:</span>
+                    <span className="text-slate-800 dark:text-stone-200 font-bold">{tradeConfirmation.tonnage} Tonnes CO2e</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Total Settlement:</span>
-                    <strong className="text-emerald-400">${tradeConfirmation.totalUsd.toFixed(2)} USD (KSh {tradeConfirmation.totalKsh.toLocaleString()})</strong>
+                    <span className="text-slate-500 dark:text-stone-400">Total Settlement:</span>
+                    <strong className="text-emerald-700 dark:text-emerald-400">${tradeConfirmation.totalUsd.toFixed(2)} USD (KSh {tradeConfirmation.totalKsh.toLocaleString()})</strong>
+                  </div>
+                  <div className="flex justify-between border-t border-slate-200 dark:border-[#2d3f58] pt-2">
+                    <span className="text-slate-500 dark:text-stone-400">Community Trust Fund (40%):</span>
+                    <span className="font-bold text-blue-700 dark:text-blue-400">KSh {tradeConfirmation.communityShareKsh.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Farmer M-Pesa Batch:</span>
-                    <span className="font-bold text-white">KSh {tradeConfirmation.farmerShareKsh.toLocaleString()}</span>
+                    <span className="text-slate-500 dark:text-stone-400">Farmer M-Pesa Direct (37%):</span>
+                    <span className="font-bold text-slate-900 dark:text-white">KSh {tradeConfirmation.farmerShareKsh.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between border-t border-[#443028] pt-2">
-                    <span className="text-stone-400">Coop Operations Share:</span>
-                    <span className="font-bold text-orange-400">KSh {tradeConfirmation.coopStipendKsh.toLocaleString()}</span>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-stone-400">Coop Operations Share (14.8%):</span>
+                    <span className="font-bold text-orange-600 dark:text-orange-400">KSh {tradeConfirmation.coopStipendKsh.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -1163,7 +1162,7 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
                         date: tradeConfirmation.date
                       });
                     }}
-                    className="px-5 py-3 bg-[#120e0c] hover:bg-[#281e19] border border-[#443028] text-stone-200 font-bold rounded-xl flex items-center space-x-2 cursor-pointer shadow-md"
+                    className="px-5 py-3 bg-slate-100 dark:bg-[#120e0c] hover:bg-slate-200 dark:hover:bg-[#281e19] border border-slate-300 dark:border-[#2d3f58] text-slate-800 dark:text-stone-200 font-bold rounded-xl flex items-center space-x-2 cursor-pointer shadow-md"
                   >
                     <Download className="w-4 h-4" />
                     <span>Download NCR Certificate</span>
@@ -1186,3 +1185,4 @@ export const CooperativeDashboard = ({ theme, activeSection = 'overview', setAct
   );
 };
 
+export default CooperativeDashboard;
