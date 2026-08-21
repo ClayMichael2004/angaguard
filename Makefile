@@ -1,4 +1,4 @@
-.PHONY: all build test clean run-backend run-frontend run-bridge simulate
+.PHONY: all build test clean run run-all dev run-backend run-frontend run-bridge simulate-valid simulate-ash-cheating simulate-sand-padding docker-build docker-up docker-down
 
 all: build test
 
@@ -18,6 +18,15 @@ test:
 	@echo "==> Testing Python AI & Telephony Bridge..."
 	cd ai-telephony-bridge && python3 -m unittest test_bridge.py
 
+# Unified single-command launcher
+run: run-all
+
+dev: run-all
+
+run-all:
+	@./start.sh
+
+# Individual service launchers
 run-backend:
 	@echo "==> Starting AngaGuard Go Core Backend on :8080..."
 	cd core-backend && go run cmd/server/main.go
@@ -30,6 +39,7 @@ run-frontend:
 	@echo "==> Starting React Web Frontend on :3000..."
 	cd web-frontend && npm run dev
 
+# Edge Hardware Simulation Commands
 simulate-valid:
 	@echo "==> Simulating Valid Biomass Pyrolysis Burn..."
 	./edge-firmware/bin/simulator valid
@@ -41,6 +51,32 @@ simulate-ash-cheating:
 simulate-sand-padding:
 	@echo "==> Simulating Sand Padding Attack..."
 	./edge-firmware/bin/simulator sand_padding
+
+# Pipe simulated payloads directly into the live dMRV Oracle
+feed-valid:
+	@echo "==> Ingesting Valid Telemetry into live Oracle..."
+	./edge-firmware/bin/simulator valid | curl -s -X POST -H "Content-Type: application/json" -d @- http://localhost:8080/api/telemetry
+
+feed-ash-cheating:
+	@echo "==> Ingesting Ash Cheating Attack payload into live Oracle (Expect rejection)..."
+	./edge-firmware/bin/simulator ash_cheating | curl -s -X POST -H "Content-Type: application/json" -d @- http://localhost:8080/api/telemetry
+
+feed-sand-padding:
+	@echo "==> Ingesting Sand Padding Attack payload into live Oracle (Expect rejection)..."
+	./edge-firmware/bin/simulator sand_padding | curl -s -X POST -H "Content-Type: application/json" -d @- http://localhost:8080/api/telemetry
+
+# Docker Orchestration Commands
+docker-build:
+	@echo "==> Building Docker images for all services..."
+	docker compose build
+
+docker-up:
+	@echo "==> Launching stack via Docker Compose..."
+	docker compose up -d
+
+docker-down:
+	@echo "==> Stopping Docker Compose stack..."
+	docker compose down
 
 clean:
 	rm -rf core-backend/bin edge-firmware/bin web-frontend/dist

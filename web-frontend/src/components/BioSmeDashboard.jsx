@@ -4,7 +4,7 @@ import { LedgerExplorerView } from './LedgerExplorerView';
 import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 
-export const BioSmeDashboard = ({ theme }) => {
+export const BioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSection }) => {
   const [smeInfo] = useState({
     name: 'Kizito Grain Millers Ltd',
     location: 'Eldoret Industrial Zone, Kenya',
@@ -17,7 +17,14 @@ export const BioSmeDashboard = ({ theme }) => {
     scope2_grid_kwh: 45000,
   });
 
-  const [activeView, setActiveView] = useState('overview'); // 'overview', 'outgrowers', 'ledger'
+  const [internalView, setInternalView] = useState('overview'); // 'overview', 'outgrowers', 'ledger', 'reports'
+  const activeView = activeSection || internalView;
+  const setActiveView = (viewId) => {
+    setInternalView(viewId);
+    if (setActiveSection) {
+      setActiveSection(viewId);
+    }
+  };
   const [showCertModal, setShowCertModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCrop, setFilterCrop] = useState('all');
@@ -62,58 +69,39 @@ export const BioSmeDashboard = ({ theme }) => {
   });
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto font-mono text-xs text-stone-900 dark:text-stone-100">
+    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-stone-900 dark:text-stone-100">
       
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-[#443028]/40 gap-4">
-        <div>
-          <div className="flex items-center space-x-3">
-            <h1 className="text-2xl sm:text-3xl font-black font-sans">
-              Bio SME Corporate Hub
-            </h1>
-            <span className="bg-emerald-950/40 border border-emerald-600/60 text-emerald-400 font-mono text-xs px-3 py-1 rounded-full font-bold">
-              Supply Chain Insetting
-            </span>
-          </div>
-          <p className="text-stone-600 dark:text-stone-400 text-xs mt-1 font-bold">
-            {smeInfo.name} • KRA PIN: <strong>{smeInfo.tax_pin}</strong> • Sponsoring Outgrower Farmers
-          </p>
+      {/* Header Banner & Corner Account Badge */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-[#2d3f58]/40 light:border-[#e2e8f0] gap-4">
+        <div className="flex items-center space-x-3">
+          <h1 className="text-2xl sm:text-3xl font-black font-sans text-stone-100 light:text-slate-900">
+            Bio SME Corporate Hub
+          </h1>
+          <span className="bg-emerald-950/40 light:bg-emerald-100 border border-emerald-600/60 light:border-emerald-300 text-emerald-400 light:text-emerald-800 font-mono text-xs px-3 py-1 rounded-full font-bold">
+            Supply Chain Insetting
+          </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveView('overview')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'overview' ? 'bg-orange-600 text-white shadow-md' : 'border border-[#443028] text-stone-400 hover:text-white'
-            }`}
-          >
-            ESG Overview
-          </button>
-          <button
-            onClick={() => setActiveView('outgrowers')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'outgrowers' ? 'bg-emerald-700 text-white shadow-md' : 'border border-[#443028] text-stone-400 hover:text-white'
-            }`}
-          >
-            Funded Outgrowers ({fundedFarmersRegistry.length})
-          </button>
-          <button
-            onClick={() => setActiveView('ledger')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'ledger' ? 'bg-stone-700 text-white shadow-md' : 'border border-[#443028] text-stone-400 hover:text-white'
-            }`}
-          >
-            dMRV Ledger
-          </button>
+        {/* CORNER ACCOUNT BADGE */}
+        <div className="flex items-center space-x-3">
+          <div className="hidden sm:flex items-center space-x-2 bg-[#131e30] light:bg-white border border-emerald-500/40 light:border-emerald-600/30 px-3.5 py-1.5 rounded-2xl shadow-sm">
+            <Building2 className="w-4 h-4 text-emerald-500" />
+            <div className="text-left">
+              <p className="text-[9px] text-stone-400 light:text-slate-500 uppercase font-bold">KRA PIN: {smeInfo.tax_pin}</p>
+              <p className="font-extrabold text-stone-100 light:text-slate-900 text-xs truncate max-w-[200px]">{smeInfo.name}</p>
+            </div>
+          </div>
+
           <button
             onClick={() => setShowCertModal(true)}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold cursor-pointer shadow-md flex items-center space-x-1.5"
+            className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold cursor-pointer shadow-md flex items-center space-x-1.5 text-xs"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>ISSB / IFRS S2 Pass</span>
           </button>
         </div>
       </div>
+
 
       {activeView === 'overview' && (
         <>

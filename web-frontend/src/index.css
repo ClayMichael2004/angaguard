@@ -12,43 +12,80 @@
   --border-earth: #2d3f58;    /* Defined Slate Border */
   --accent-green: #10b981;    /* Vibrant Eco Emerald Green */
   --accent-orange: #f97316;   /* Clean Solar Amber/Orange */
-  --accent-brown: #0284c7;    /* Slate Blue Accent */
+  --accent-blue: #0284c7;     /* Slate Blue Accent */
 }
 
-/* Light Theme: Soft Slate Ice Sand (Zero Bright White Glare) */
+/* Light Theme: Refined Warm Cream / Slate Grey (Zero Obscured Text, Crisp Contrast) */
 .light {
-  --bg-main: #f1f5f9;         /* Soft Slate Ice Sand */
-  --bg-panel: #e2e8f0;        /* Warm Muted Slatestone */
-  --bg-card: #edf2f7;         /* Calm Muted Slate Card (Gentle on the eyes) */
-  --text-main: #0f172a;       /* Deep Slate Charcoal High-Contrast Text */
-  --text-muted: #334155;      /* Crisp Dark Slate Muted Text */
-  --border-earth: #cbd5e1;    /* Defined Slatestone Border */
+  --bg-main: #f4f6f8;         /* Elegant Soft Cream / Light Slate Grey */
+  --bg-panel: #ffffff;        /* Pure Clean Card / Panel Background */
+  --bg-card: #ffffff;         /* Crisp White Card */
+  --text-main: #0f172a;       /* Deep High-Contrast Charcoal Slate */
+  --text-muted: #475569;      /* Crisp Dark Slate Muted Text */
+  --border-earth: #e2e8f0;    /* Crisp Clean Slate Border */
   --accent-green: #047857;    /* Deep Eco Emerald */
   --accent-orange: #c2410c;   /* Terracotta Orange */
-  --accent-brown: #0369a1;    /* Deep Slate Blue */
+  --accent-blue: #0369a1;     /* Deep Slate Blue */
 }
 
-/* High Contrast & Muted Overrides for Light Mode */
-.light .text-stone-400,
-.light .text-stone-500,
-.light .text-stone-600 {
-  color: #334155 !important;
-}
-
-.light .text-stone-300,
+/* Universal Legibility & Contrast Overrides for Light Mode */
+.light .text-stone-100,
 .light .text-stone-200,
-.light .text-stone-100 {
+.light .text-stone-300,
+.light .text-slate-100,
+.light .text-slate-200,
+.light .text-slate-300,
+.light .text-gray-100,
+.light .text-gray-200,
+.light .text-gray-300,
+.light .text-white {
   color: #0f172a !important;
 }
 
-.light .bg-\[\#1c1512\] {
-  background-color: #e2e8f0 !important;
-  border-color: #cbd5e1 !important;
+.light .text-stone-400,
+.light .text-stone-500,
+.light .text-stone-600,
+.light .text-slate-400,
+.light .text-slate-500,
+.light .text-slate-600,
+.light .text-gray-400,
+.light .text-gray-500 {
+  color: #475569 !important;
 }
 
-.light .bg-\[\#120e0c\] {
-  background-color: #cbd5e1 !important;
-  border-color: #94a3b8 !important;
+/* Colored buttons/badges retain high contrast white text when needed */
+.light .bg-emerald-600 .text-white,
+.light .bg-emerald-700 .text-white,
+.light .bg-orange-600 .text-white,
+.light .bg-orange-700 .text-white,
+.light .bg-red-600 .text-white,
+.light button.bg-emerald-600,
+.light button.bg-emerald-700,
+.light button.bg-orange-600,
+.light button.bg-orange-700,
+.light button.bg-blue-600,
+.light button.bg-amber-600 {
+  color: #ffffff !important;
+}
+
+/* Dark Hardcoded Backgrounds in Light Mode become Crisp Cream / Soft White Panels */
+.light .bg-\[\#1c1512\],
+.light .bg-\[\#120e0c\],
+.light .bg-\[\#131e30\],
+.light .bg-\[\#1c2a3e\],
+.light .bg-slate-900,
+.light .bg-slate-950,
+.light .bg-stone-900,
+.light .bg-stone-950 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.light .border-\[\#443028\],
+.light .border-slate-800,
+.light .border-stone-800 {
+  border-color: #e2e8f0 !important;
 }
 
 @layer base {
@@ -61,7 +98,7 @@
     position: relative;
   }
 
-  /* Photorealistic Clean Environment Sky Background Layer */
+  /* Photorealistic Clean Environment Background Layer */
   body::before {
     content: "";
     position: fixed;
@@ -70,7 +107,7 @@
     right: 0;
     bottom: 0;
     z-index: -10;
-    background-image: linear-gradient(to bottom, rgba(11, 19, 32, 0.86), rgba(19, 30, 48, 0.90)), url('/assets/clean_environment_hero.jpg');
+    background-image: linear-gradient(to bottom, rgba(11, 19, 32, 0.88), rgba(19, 30, 48, 0.92)), url('/assets/clean_environment_hero.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -81,7 +118,7 @@
   }
 
   .light body::before {
-    background-image: linear-gradient(to bottom, rgba(241, 245, 249, 0.88), rgba(226, 232, 240, 0.92)), url('/assets/clean_environment_hero.jpg');
+    background-image: linear-gradient(to bottom, rgba(244, 246, 248, 0.94), rgba(235, 240, 245, 0.96)), url('/assets/clean_environment_hero.jpg');
     filter: blur(16px);
   }
 }
@@ -96,9 +133,11 @@
 }
 
 .light .earthy-box {
-  background-color: rgba(237, 242, 247, 0.95);
+  background-color: #ffffff;
   backdrop-filter: blur(12px);
-  border-color: #cbd5e1;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.06);
+  color: #0f172a;
 }
 
 .earthy-box-hover:hover {
@@ -107,15 +146,17 @@
 }
 
 .earthy-panel {
-  background-color: rgba(19, 30, 48, 0.90);
+  background-color: rgba(19, 30, 48, 0.92);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-earth);
 }
 
 .light .earthy-panel {
-  background-color: rgba(226, 232, 240, 0.96);
+  background-color: #ffffff;
   backdrop-filter: blur(12px);
-  border-color: #cbd5e1;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
 }
 
 /* Eco Emerald Accent Utility Badges & Headers */
@@ -126,8 +167,8 @@
 }
 
 .light .green-pill {
-  background-color: rgba(4, 120, 87, 0.15);
-  border: 1px solid rgba(4, 120, 87, 0.4);
+  background-color: rgba(4, 120, 87, 0.12);
+  border: 1px solid rgba(4, 120, 87, 0.35);
   color: #047857;
 }
 

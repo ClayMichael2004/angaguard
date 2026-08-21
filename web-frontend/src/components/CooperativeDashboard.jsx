@@ -4,8 +4,15 @@ import { KilnDigitalTwin3D } from './KilnDigitalTwin3D';
 import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 
-export const CooperativeDashboard = ({ theme }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'kilns', 'members', 'transactions', 'smes'
+export const CooperativeDashboard = ({ theme, activeSection = 'overview', setActiveSection }) => {
+  const [internalTab, setInternalTab] = useState('overview'); // 'overview', 'kilns', 'members', 'transactions', 'smes'
+  const activeTab = activeSection || internalTab;
+  const setActiveTab = (tabId) => {
+    setInternalTab(tabId);
+    if (setActiveSection) {
+      setActiveSection(tabId);
+    }
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRegion, setFilterRegion] = useState('all');
 
@@ -153,34 +160,39 @@ export const CooperativeDashboard = ({ theme }) => {
   });
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto font-mono text-xs text-stone-900 dark:text-stone-100">
+    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-stone-900 dark:text-stone-100">
       
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-[#443028]/40 gap-4">
-        <div>
-          <div className="flex items-center space-x-3">
-            <h1 className="text-2xl sm:text-3xl font-black font-sans">
-              Agricultural Cooperative Hub
-            </h1>
-            <span className="bg-emerald-950/40 border border-emerald-600/60 text-emerald-400 font-mono text-xs px-3 py-1 rounded-full font-bold">
-              Western Kenya Region
-            </span>
-          </div>
-          <p className="text-stone-600 dark:text-stone-400 text-xs mt-1 font-bold">
-            {coopInfo.name} • Registered Hub: <strong>{coopInfo.id}</strong>
-          </p>
+      {/* Top Header & Corner Account Badge */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-[#2d3f58]/40 light:border-[#e2e8f0] gap-4">
+        <div className="flex items-center space-x-3">
+          <h1 className="text-2xl sm:text-3xl font-black font-sans text-stone-100 light:text-slate-900">
+            Agricultural Cooperative Hub
+          </h1>
+          <span className="bg-emerald-950/40 light:bg-emerald-100 border border-emerald-600/60 light:border-emerald-300 text-emerald-400 light:text-emerald-800 font-mono text-xs px-3 py-1 rounded-full font-bold">
+            Western Kenya Region
+          </span>
         </div>
 
+        {/* CORNER ACCOUNT BADGE & SELL ACTION */}
         <div className="flex items-center space-x-3">
+          <div className="hidden sm:flex items-center space-x-2 bg-[#131e30] light:bg-white border border-emerald-500/40 light:border-emerald-600/30 px-3.5 py-1.5 rounded-2xl shadow-sm">
+            <Building2 className="w-4 h-4 text-emerald-500" />
+            <div className="text-left">
+              <p className="text-[9px] text-stone-400 light:text-slate-500 uppercase font-bold">Registered Hub: {coopInfo.id}</p>
+              <p className="font-extrabold text-stone-100 light:text-slate-900 text-xs truncate max-w-[200px]">{coopInfo.name}</p>
+            </div>
+          </div>
+
           <button
             onClick={() => handleOpenSellModal()}
-            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold shadow-lg transition-all cursor-pointer border border-orange-400/30 flex items-center space-x-2"
+            className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold shadow-md transition-all cursor-pointer border border-orange-400/30 flex items-center space-x-2 text-xs"
           >
             <ShoppingBag className="w-4 h-4" />
-            <span>Sell Pooled Carbon Credits &rarr;</span>
+            <span>Sell Pooled Credits &rarr;</span>
           </button>
         </div>
       </div>
+
 
       {/* Cumulative KPI Cards with Dual Units (Currency & Mass) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

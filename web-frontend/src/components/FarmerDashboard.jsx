@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Wallet, ArrowDownToLine, Flame, Sparkles, CheckCircle2, TrendingUp, History, Building2, Users, FileText, ArrowRight, ShieldCheck, Lock, Smartphone, X, Download, AlertCircle } from 'lucide-react';
+import {
+  Wallet, ArrowDownToLine, Flame, Sparkles, CheckCircle2, TrendingUp,
+  History, Building2, Users, FileText, ArrowRight, ShieldCheck, Lock,
+  Smartphone, X, Download, AlertCircle, Eye, EyeOff, User
+} from 'lucide-react';
 import { KilnDigitalTwin3D } from './KilnDigitalTwin3D';
 import { LineGraph } from './LineGraph';
 import { FarmerRecordsPage } from './FarmerRecordsPage';
 import { downloadCertificateDocument } from '../utils/downloadHelpers';
 
-export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
+export const FarmerDashboard = ({ theme, activeSection = 'overview', setActiveSection, defaultFarmerType = 'bio-sme' }) => {
   const [farmerType, setFarmerType] = useState(defaultFarmerType);
   const [showFullRecordsView, setShowFullRecordsView] = useState(false);
 
@@ -26,14 +30,15 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
 
   // Multi-step M-Pesa Cashout Modal State
   const [showCashoutModal, setShowCashoutModal] = useState(false);
-  const [cashoutStep, setCashoutStep] = useState(1); // 1: Amount, 2: Split Review, 3: PIN Prompt, 4: Success Receipt
+  const [cashoutStep, setCashoutStep] = useState(1); // 1: Amount, 2: Split Review, 3: Password Auth, 4: Success Receipt
   const [cashoutAmount, setCashoutAmount] = useState(12450.0);
-  const [mpesaPin, setMpesaPin] = useState('');
-  const [pinError, setPinError] = useState('');
-  const [isProcessingStk, setIsProcessingStk] = useState(false);
+  const [accountPassword, setAccountPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [isProcessingDisbursal, setIsProcessingDisbursal] = useState(false);
   const [lastReceipt, setLastReceipt] = useState(null);
 
-  // If user clicked the Records text link, display the full-screen Records & Sales Data page!
+  // If user clicked the Records link, display the full-screen Records & Sales Data page!
   if (showFullRecordsView) {
     return (
       <FarmerRecordsPage
@@ -44,7 +49,7 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
     );
   }
 
-  // Realistic Carbon Credit Spot Price Data Points ($35 - $145 range)
+  // Carbon Credit Spot Price Data Points ($35 - $145 range)
   const lineGraphPriceData = [
     { x: '08:00', y: 130.00 },
     { x: '10:00', y: 132.50 },
@@ -64,21 +69,21 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
     if (farmerData.available_ksh <= 0) return;
     setCashoutAmount(farmerData.available_ksh);
     setCashoutStep(1);
-    setMpesaPin('');
-    setPinError('');
+    setAccountPassword('');
+    setPasswordError('');
     setShowCashoutModal(true);
   };
 
-  const handleExecutePinAuth = () => {
-    if (mpesaPin.length !== 4 || isNaN(Number(mpesaPin))) {
-      setPinError('Please enter a valid 4-digit M-Pesa PIN');
+  const handleExecutePasswordAuth = () => {
+    if (!accountPassword || accountPassword.length < 4) {
+      setPasswordError('Please enter your account password (at least 4 characters)');
       return;
     }
-    setPinError('');
-    setIsProcessingStk(true);
+    setPasswordError('');
+    setIsProcessingDisbursal(true);
 
     setTimeout(() => {
-      setIsProcessingStk(false);
+      setIsProcessingDisbursal(false);
       const receiptCode = `QHK${Math.floor(1000000 + Math.random() * 9000000)}`;
       const newAvailable = Math.max(0, farmerData.available_ksh - cashoutAmount);
       const newWithdrawn = farmerData.total_withdrawn_ksh + cashoutAmount;
@@ -107,147 +112,128 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
   const usdWithdrawn = (farmerData.total_withdrawn_ksh / 130.0).toFixed(2);
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto font-mono text-xs text-stone-900 dark:text-stone-100">
+    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-stone-900 dark:text-stone-100">
       
-      {/* Farmer Dashboard Type Switcher Panel */}
-      <div className="earthy-panel p-2 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center space-x-2 pl-3">
-          <span className="text-xs font-bold text-stone-800 dark:text-stone-300">
-            Account Strategy:
-          </span>
-          <span className="text-[10px] text-stone-500 font-normal">
-            (Switch between Outgrower Insetting & Coop Pool)
-          </span>
-        </div>
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
+      {/* Top Bar: Account Switcher & Corner Entity Badge */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* Strategy Switcher */}
+        <div className="earthy-panel p-1.5 rounded-2xl flex items-center space-x-2">
           <button
             onClick={() => setFarmerType('bio-sme')}
-            className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               farmerType === 'bio-sme'
                 ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-transparent text-stone-800 dark:text-stone-300 hover:text-orange-500'
+                : 'bg-transparent text-stone-600 dark:text-stone-300 hover:text-orange-500'
             }`}
           >
-            Type A: Bio SME Outgrower
+            Bio SME Outgrower Model
           </button>
 
           <button
             onClick={() => setFarmerType('cooperative')}
-            className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               farmerType === 'cooperative'
                 ? 'bg-emerald-700 text-white shadow-md'
-                : 'bg-transparent text-stone-800 dark:text-stone-300 hover:text-emerald-500'
+                : 'bg-transparent text-stone-600 dark:text-stone-300 hover:text-emerald-500'
             }`}
           >
-            Type B: Agricultural Coop Member
+            Cooperative Member Model
           </button>
         </div>
-      </div>
 
-      {/* Header Banner & Affiliation */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-6 border-b border-[#443028]/40 light:border-[#b8ad96] gap-4">
-        <div>
-          <div className="flex items-center space-x-3">
-            <h1 className="text-2xl sm:text-3xl font-black font-sans">
-              Smallholder Farmer Portal
-            </h1>
-            <span className="px-3 py-1 bg-emerald-950/40 border border-emerald-500/50 text-emerald-400 font-mono text-[11px] rounded-full font-bold">
-              Active Clean Producer
-            </span>
+        {/* CORNER ACCOUNT BADGE */}
+        <div className="flex items-center space-x-3 bg-[#131e30] light:bg-white border border-emerald-500/40 light:border-emerald-600/30 px-4 py-2 rounded-2xl shadow-sm self-start md:self-auto">
+          <div className="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500 flex items-center justify-center text-emerald-500 font-bold">
+            <User className="w-4 h-4" />
           </div>
-          <p className="text-stone-700 dark:text-stone-300 text-xs mt-1 font-bold">
-            Producer: <strong>{farmerData.name}</strong> • Phone: <strong>{farmerData.phone}</strong> • Assigned: <strong>{farmerData.assigned_kilns.join(', ')}</strong>
-          </p>
+          <div className="text-left">
+            <p className="text-[10px] text-stone-400 light:text-slate-500 uppercase font-bold">
+              {farmerType === 'bio-sme' ? farmerData.bio_sme_name : farmerData.coop_name}
+            </p>
+            <p className="font-extrabold text-stone-100 light:text-slate-900 text-xs">
+              {farmerData.name} • {farmerData.phone}
+            </p>
+          </div>
         </div>
-
-        {/* PROMINENT CLICKABLE TEXT LINK TO PAST SALES & DATA RECORDS */}
-        <button
-          onClick={() => setShowFullRecordsView(true)}
-          className="flex items-center space-x-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold shadow-lg transition-all cursor-pointer border border-orange-400/30"
-          title="Open Full Past Sales & Data Records Page"
-        >
-          <FileText className="w-4 h-4 text-white" />
-          <span className="text-xs">View Past Sales & Harvest Records &rarr;</span>
-        </button>
       </div>
 
       {/* 4 Summary Metric Cards with Dual Currency (KSh & USD) + Dual Mass (KG & Tonnes) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-orange-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Available Cashout</span>
+            <span className="text-stone-500 light:text-slate-500 font-bold uppercase text-[10px]">Available Cashout</span>
             <Wallet className="w-4 h-4 text-orange-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100">
+          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100 light:text-slate-900">
             KSh {farmerData.available_ksh.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
           </p>
-          <p className="text-orange-500 text-[11px] font-bold">
+          <p className="text-orange-500 light:text-orange-700 text-[11px] font-bold">
             ≈ ${usdAvailable} USD (Ready to Disburse)
           </p>
         </div>
 
         <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-emerald-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Total Biochar Harvested</span>
+            <span className="text-stone-500 light:text-slate-500 font-bold uppercase text-[10px]">Total Biochar Harvested</span>
             <Flame className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+          <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 light:text-emerald-700">
             {farmerData.biochar_harvest_kg.toLocaleString()} KG
           </p>
-          <p className="text-stone-500 text-[11px] font-bold">
+          <p className="text-stone-500 light:text-slate-600 text-[11px] font-bold">
             = {farmerData.credits_generated_tons} Tonnes CO2e Sequestered
           </p>
         </div>
 
         <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-cyan-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Cumulative Withdrawn</span>
+            <span className="text-stone-500 light:text-slate-500 font-bold uppercase text-[10px]">Cumulative Withdrawn</span>
             <CheckCircle2 className="w-4 h-4 text-cyan-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100">
+          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100 light:text-slate-900">
             KSh {farmerData.total_withdrawn_ksh.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
           </p>
-          <p className="text-stone-500 text-[11px] font-bold">
+          <p className="text-stone-500 light:text-slate-600 text-[11px] font-bold">
             ≈ ${usdWithdrawn} USD via Safaricom B2C
           </p>
         </div>
 
         <div className="earthy-box p-5 space-y-1.5 border-l-4 border-l-amber-500">
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 font-bold uppercase text-[10px]">Pyrolysis Burn Cycles</span>
+            <span className="text-stone-500 light:text-slate-500 font-bold uppercase text-[10px]">Pyrolysis Burn Cycles</span>
             <Sparkles className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100">
+          <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100 light:text-slate-900">
             {farmerData.total_burns} Clean Burns
           </p>
-          <p className="text-stone-500 text-[11px] font-bold">
+          <p className="text-stone-500 light:text-slate-600 text-[11px] font-bold">
             100% Verified by IoT Sensors
           </p>
         </div>
       </div>
 
       {/* Real-time Earnings & M-Pesa Multi-Step Cashout Banner */}
-      <div className="earthy-panel p-6 sm:p-8 rounded-3xl space-y-6 border border-[#443028] light:border-[#b8ad96] shadow-lg">
+      <div className="earthy-panel p-6 sm:p-8 rounded-3xl space-y-6 shadow-md">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-1.5">
-            <div className="flex items-center space-x-2 text-orange-600 dark:text-orange-400 font-bold text-sm">
+            <div className="flex items-center space-x-2 text-orange-500 light:text-orange-700 font-bold text-sm">
               <Wallet className="w-5 h-5" />
               <span>Real-Time Earnings Available for Instant Mobile Cashout</span>
             </div>
             <div className="flex items-baseline space-x-3">
-              <p className="text-4xl sm:text-5xl font-black text-stone-900 dark:text-stone-100 tracking-tight">
+              <p className="text-4xl sm:text-5xl font-black text-stone-900 dark:text-stone-100 light:text-slate-900 tracking-tight">
                 KSh {farmerData.available_ksh.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
               </p>
-              <span className="text-stone-500 text-lg font-bold">(${usdAvailable} USD)</span>
+              <span className="text-stone-500 light:text-slate-600 text-lg font-bold">(${usdAvailable} USD)</span>
             </div>
-            <p className="text-stone-700 dark:text-stone-300 text-xs font-bold flex items-center space-x-1.5">
+            <p className="text-stone-600 dark:text-stone-300 light:text-slate-700 text-xs font-bold flex items-center space-x-1.5">
               <span>Backed by</span>
-              <strong className="text-emerald-500">{farmerData.credits_generated_tons} Tonnes CO2e ({farmerData.biochar_harvest_kg} KG Biochar)</strong>
+              <strong className="text-emerald-500 light:text-emerald-700">{farmerData.credits_generated_tons} Tonnes CO2e ({farmerData.biochar_harvest_kg} KG Biochar)</strong>
               <span>at Kenya Market Index ($135.00/t).</span>
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 min-w-[260px]">
+          <div className="flex flex-col gap-2 min-w-[280px]">
             <button
               onClick={handleOpenCashout}
               disabled={farmerData.available_ksh <= 0}
@@ -258,11 +244,11 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
               }`}
             >
               <ArrowDownToLine className="w-4 h-4" />
-              <span>Start M-Pesa Cashout Process &rarr;</span>
+              <span>Initiate M-Pesa Cashout &rarr;</span>
             </button>
-            <div className="flex items-center justify-center space-x-1.5 text-[11px] text-stone-500 font-bold">
+            <div className="flex items-center justify-center space-x-1.5 text-[11px] text-stone-500 light:text-slate-500 font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Safaricom Daraja B2C Multi-Step Auth</span>
+              <span>Safaricom Daraja B2C System Authorization</span>
             </div>
           </div>
         </div>
@@ -270,12 +256,12 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
 
       {/* 3D Representation of Smart Kilns with Multi-Kiln Switcher */}
       <div className="earthy-box p-6 sm:p-8">
-        <div className="flex items-center justify-between pb-4 border-b border-[#443028]/40 mb-4">
+        <div className="flex items-center justify-between pb-4 border-b border-[#2d3f58]/40 light:border-[#e2e8f0] mb-4">
           <div>
-            <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">Interactive 3D Smart Kiln Digital Twin</h3>
-            <p className="text-stone-500 text-[11px]">Real-time thermal conduction glow and ultrasonic char bed depth</p>
+            <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 light:text-slate-900">Interactive 3D Smart Kiln Digital Twin</h3>
+            <p className="text-stone-500 light:text-slate-600 text-[11px]">Real-time thermal conduction glow and ultrasonic char bed depth</p>
           </div>
-          <span className="text-emerald-500 font-bold bg-emerald-950/40 border border-emerald-800 px-2.5 py-1 rounded-full text-[10px]">
+          <span className="text-emerald-500 light:text-emerald-700 font-bold bg-emerald-950/40 light:bg-emerald-100 border border-emerald-800 light:border-emerald-300 px-3 py-1 rounded-full text-[10px]">
             Live Sensor Feed: 58.5°C
           </span>
         </div>
@@ -287,12 +273,12 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
         
         {/* Line Graph */}
         <div className="earthy-box p-6 sm:p-8 space-y-4">
-          <div className="flex items-center justify-between border-b border-[#443028]/40 light:border-[#b8ad96] pb-3">
-            <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100">
+          <div className="flex items-center justify-between border-b border-[#2d3f58]/40 light:border-[#e2e8f0] pb-3">
+            <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100 light:text-slate-900">
               <TrendingUp className="w-5 h-5 text-orange-500" />
               <span>Carbon Removal Spot Value Trend ($/tCO2e)</span>
             </div>
-            <span className="text-stone-700 dark:text-stone-300 font-bold">Kenya Range: $35 - $145</span>
+            <span className="text-stone-600 dark:text-stone-300 light:text-slate-700 font-bold">Kenya Range: $35 - $145</span>
           </div>
 
           <LineGraph
@@ -307,8 +293,8 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
         {/* Past Sales Records Audit Card with Clickable Link to Full Page */}
         <div className="earthy-box p-6 sm:p-8 space-y-6 flex flex-col justify-between">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-[#443028]/40 light:border-[#b8ad96] pb-4">
-              <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100">
+            <div className="flex items-center justify-between border-b border-[#2d3f58]/40 light:border-[#e2e8f0] pb-4">
+              <div className="flex items-center space-x-2 font-bold text-stone-900 dark:text-stone-100 light:text-slate-900">
                 <History className="w-5 h-5 text-emerald-500" />
                 <span>Recent Biochar Harvest & M-Pesa Disbursals</span>
               </div>
@@ -316,7 +302,7 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
               {/* Clickable text link opening full records page */}
               <button
                 onClick={() => setShowFullRecordsView(true)}
-                className="text-orange-600 dark:text-orange-400 font-bold hover:underline cursor-pointer flex items-center space-x-1"
+                className="text-orange-500 light:text-orange-700 font-bold hover:underline cursor-pointer flex items-center space-x-1"
               >
                 <span>View All Records &rarr;</span>
               </button>
@@ -324,28 +310,28 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
 
             <div className="space-y-3">
               {pastRecordsPreview.map((rec) => (
-                <div key={rec.id} className="p-4 rounded-xl bg-[#1c1512] light:bg-[#dad2bd] border border-[#443028] light:border-[#b8ad96] flex items-center justify-between">
+                <div key={rec.id} className="p-4 rounded-xl bg-[#131e30] light:bg-slate-50 border border-[#2d3f58] light:border-[#e2e8f0] flex items-center justify-between">
                   <div>
-                    <p className="font-bold text-stone-900 dark:text-stone-100">{rec.kiln}</p>
-                    <p className="text-stone-700 dark:text-stone-300 text-[11px] font-bold">{rec.date} • {rec.biocharKg} KG Biochar ({rec.co2eTons} tCO2e)</p>
+                    <p className="font-bold text-stone-900 dark:text-stone-100 light:text-slate-900">{rec.kiln}</p>
+                    <p className="text-stone-500 light:text-slate-600 text-[11px] font-bold">{rec.date} • {rec.biocharKg} KG Biochar ({rec.co2eTons} tCO2e)</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-emerald-600 dark:text-emerald-400">+KSh {rec.payoutKsh.toLocaleString()}</p>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">{rec.status}</span>
+                    <p className="font-bold text-emerald-500 light:text-emerald-700">+KSh {rec.payoutKsh.toLocaleString()}</p>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 light:bg-emerald-100 text-emerald-400 light:text-emerald-700 font-bold">{rec.status}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-orange-950/30 border border-orange-600/30 text-stone-700 dark:text-stone-300 text-[11px] font-bold flex justify-between items-center">
+          <div className="p-3.5 rounded-2xl bg-orange-950/30 light:bg-orange-50 border border-orange-600/30 text-stone-600 dark:text-stone-300 light:text-slate-700 text-[11px] font-bold flex justify-between items-center">
             <span className="flex items-center space-x-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
               <span>Immutable Ledger: Kenya NCR EMCA 2026</span>
             </span>
             <button
               onClick={() => setShowFullRecordsView(true)}
-              className="text-orange-500 hover:underline font-bold"
+              className="text-orange-500 light:text-orange-700 hover:underline font-bold"
             >
               Open Full Audit Records &rarr;
             </button>
@@ -355,26 +341,26 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
       </div>
 
       {/* ========================================================================= */}
-      {/* REALISTIC MULTI-STEP SAFARICOM M-PESA CASHOUT MODAL                       */}
+      {/* SAFARICOM M-PESA CASHOUT MODAL (SYSTEM PASSWORD VERIFICATION)             */}
       {/* ========================================================================= */}
       {showCashoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/85 backdrop-blur-md p-4 animate-fadeIn">
-          <div className="bg-[#1c1512] border-2 border-[#443028] max-w-lg w-full p-6 sm:p-7 rounded-3xl space-y-6 text-stone-100 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fadeIn">
+          <div className="bg-[#0f172a] light:bg-white border border-[#2d3f58] light:border-[#cbd5e1] max-w-lg w-full p-6 sm:p-7 rounded-3xl space-y-6 text-stone-100 light:text-slate-900 shadow-2xl">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[#443028] pb-4">
+            <div className="flex items-center justify-between border-b border-[#2d3f58] light:border-[#e2e8f0] pb-4">
               <div className="flex items-center space-x-2.5">
                 <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-sm">
                   M
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Safaricom M-Pesa B2C Cashout</h3>
-                  <p className="text-[11px] text-stone-400">Step {cashoutStep} of 4 • Encrypted Channel</p>
+                  <h3 className="text-base font-bold text-stone-100 light:text-slate-900">Safaricom M-Pesa B2C Cashout</h3>
+                  <p className="text-[11px] text-stone-400 light:text-slate-500">Step {cashoutStep} of 4 • Encrypted Daraja Channel</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowCashoutModal(false)}
-                className="p-1 rounded-lg border border-[#443028] text-stone-400 hover:text-white"
+                className="p-1 rounded-lg border border-[#2d3f58] light:border-[#cbd5e1] text-stone-400 hover:text-white light:hover:text-black cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -383,19 +369,19 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
             {/* STEP 1: CHOOSE AMOUNT */}
             {cashoutStep === 1 && (
               <div className="space-y-5 animate-fadeIn">
-                <div className="bg-[#120e0c] p-4 rounded-2xl border border-[#443028] space-y-2">
-                  <div className="flex justify-between text-xs text-stone-400">
+                <div className="bg-[#131e30] light:bg-slate-50 p-4 rounded-2xl border border-[#2d3f58] light:border-[#e2e8f0] space-y-2">
+                  <div className="flex justify-between text-xs text-stone-400 light:text-slate-600">
                     <span>Available Balance:</span>
-                    <span className="font-bold text-emerald-400">KSh {farmerData.available_ksh.toLocaleString()}</span>
+                    <span className="font-bold text-emerald-400 light:text-emerald-700">KSh {farmerData.available_ksh.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-xs text-stone-400">
+                  <div className="flex justify-between text-xs text-stone-400 light:text-slate-600">
                     <span>Verified Carbon Mass:</span>
-                    <span className="font-bold text-stone-200">{farmerData.credits_generated_tons} Tonnes ({farmerData.biochar_harvest_kg} KG)</span>
+                    <span className="font-bold text-stone-200 light:text-slate-800">{farmerData.credits_generated_tons} Tonnes ({farmerData.biochar_harvest_kg} KG)</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-stone-300">Select Withdrawal Amount (KSh):</label>
+                  <label className="text-xs font-bold text-stone-300 light:text-slate-700">Select Withdrawal Amount (KSh):</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
                       { label: '100% (All)', amt: farmerData.available_ksh },
@@ -409,7 +395,7 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
                         className={`py-2 px-3 rounded-xl border text-xs font-bold cursor-pointer transition-all ${
                           cashoutAmount === preset.amt
                             ? 'bg-orange-600 border-orange-500 text-white'
-                            : 'bg-[#120e0c] border-[#443028] text-stone-300 hover:border-stone-400'
+                            : 'bg-[#131e30] light:bg-slate-100 border-[#2d3f58] light:border-[#cbd5e1] text-stone-300 light:text-slate-700 hover:border-stone-400'
                         }`}
                       >
                         {preset.label}
@@ -423,9 +409,9 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
                     max={farmerData.available_ksh}
                     value={cashoutAmount}
                     onChange={(e) => setCashoutAmount(Math.min(farmerData.available_ksh, Math.max(0, Number(e.target.value))))}
-                    className="w-full bg-[#120e0c] border border-[#443028] p-3 rounded-xl text-white font-bold text-base focus:outline-none focus:border-orange-500"
+                    className="w-full bg-[#131e30] light:bg-white border border-[#2d3f58] light:border-[#cbd5e1] p-3 rounded-xl text-stone-100 light:text-slate-900 font-bold text-base focus:outline-none focus:border-orange-500"
                   />
-                  <p className="text-[11px] text-stone-400">
+                  <p className="text-[11px] text-stone-400 light:text-slate-500">
                     Disbursal Value: <strong>${(cashoutAmount / 130.0).toFixed(2)} USD</strong> (Conversion rate: 1 USD = 130 KSh)
                   </p>
                 </div>
@@ -433,7 +419,7 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
                 <div className="flex justify-end space-x-3 pt-2">
                   <button
                     onClick={() => setShowCashoutModal(false)}
-                    className="px-4 py-2.5 rounded-xl border border-[#443028] text-stone-400 hover:text-white"
+                    className="px-4 py-2.5 rounded-xl border border-[#2d3f58] light:border-[#cbd5e1] text-stone-400 light:text-slate-600 hover:text-white light:hover:text-black"
                   >
                     Cancel
                   </button>
@@ -451,36 +437,36 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
             {/* STEP 2: REVIEW SPLIT & RECIPIENT */}
             {cashoutStep === 2 && (
               <div className="space-y-5 animate-fadeIn">
-                <div className="bg-[#120e0c] p-4 rounded-2xl border border-[#443028] space-y-3">
-                  <h4 className="font-bold text-xs text-stone-300 uppercase tracking-wide border-b border-[#443028] pb-2">
+                <div className="bg-[#131e30] light:bg-slate-50 p-4 rounded-2xl border border-[#2d3f58] light:border-[#e2e8f0] space-y-3">
+                  <h4 className="font-bold text-xs text-stone-300 light:text-slate-800 uppercase tracking-wide border-b border-[#2d3f58] light:border-[#e2e8f0] pb-2">
                     Disbursal Beneficiary & Revenue Split
                   </h4>
 
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Recipient Name:</span>
-                      <span className="font-bold text-white">{farmerData.name}</span>
+                      <span className="text-stone-400 light:text-slate-600">Recipient Name:</span>
+                      <span className="font-bold text-stone-100 light:text-slate-900">{farmerData.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-400">M-Pesa Mobile Number:</span>
-                      <span className="font-bold text-emerald-400">{farmerData.phone}</span>
+                      <span className="text-stone-400 light:text-slate-600">M-Pesa Registered Number:</span>
+                      <span className="font-bold text-emerald-400 light:text-emerald-700">{farmerData.phone}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-400">Payout Channel:</span>
-                      <span className="font-bold text-stone-200">Safaricom Daraja B2C API</span>
+                      <span className="text-stone-400 light:text-slate-600">Payout Channel:</span>
+                      <span className="font-bold text-stone-200 light:text-slate-800">Safaricom Daraja B2C API</span>
                     </div>
                   </div>
 
-                  <div className="border-t border-[#443028] pt-2 space-y-1 text-[11px]">
-                    <div className="flex justify-between text-emerald-400 font-bold">
+                  <div className="border-t border-[#2d3f58] light:border-[#e2e8f0] pt-2 space-y-1 text-[11px]">
+                    <div className="flex justify-between text-emerald-400 light:text-emerald-700 font-bold">
                       <span>Farmer Direct Share (37%):</span>
                       <span>KSh {cashoutAmount.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-stone-500">
+                    <div className="flex justify-between text-stone-500 light:text-slate-500">
                       <span>Cooperative Logistics Reserve (15%):</span>
                       <span>KSh {(cashoutAmount * 0.4).toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-stone-500">
+                    <div className="flex justify-between text-stone-500 light:text-slate-500">
                       <span>Platform Verification Fee (48%):</span>
                       <span>KSh {(cashoutAmount * 1.3).toFixed(2)}</span>
                     </div>
@@ -490,7 +476,7 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
                 <div className="flex justify-between pt-2">
                   <button
                     onClick={() => setCashoutStep(1)}
-                    className="px-4 py-2.5 rounded-xl border border-[#443028] text-stone-400 hover:text-white"
+                    className="px-4 py-2.5 rounded-xl border border-[#2d3f58] light:border-[#cbd5e1] text-stone-400 light:text-slate-600 hover:text-white light:hover:text-black"
                   >
                     &larr; Back
                   </button>
@@ -498,69 +484,80 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
                     onClick={() => setCashoutStep(3)}
                     className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center space-x-1.5 cursor-pointer shadow-md"
                   >
-                    <span>Proceed to PIN Auth &rarr;</span>
+                    <span>Proceed to Password Auth &rarr;</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* STEP 3: M-PESA STK PUSH PIN AUTHENTICATION */}
+            {/* STEP 3: SYSTEM LOGIN PASSWORD VERIFICATION (NO MPESA PIN ASKED) */}
             {cashoutStep === 3 && (
               <div className="space-y-5 animate-fadeIn">
-                <div className="bg-emerald-950/40 border-2 border-emerald-600/70 p-5 rounded-2xl space-y-3 text-center">
+                <div className="bg-emerald-950/40 light:bg-emerald-50 border-2 border-emerald-600/70 p-5 rounded-2xl space-y-3 text-center">
                   <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center mx-auto text-white shadow-lg">
-                    <Smartphone className="w-6 h-6 animate-pulse" />
+                    <Lock className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-sm">Safaricom SIM Prompt</h4>
-                    <p className="text-xs text-stone-300 mt-1">
-                      Do you want to authorize disbursal of <strong>KSh {cashoutAmount.toLocaleString()}</strong> to <strong>{farmerData.phone}</strong>?
+                    <h4 className="font-bold text-stone-100 light:text-slate-900 text-sm">System Identity Verification</h4>
+                    <p className="text-xs text-stone-300 light:text-slate-600 mt-1">
+                      Authorize disbursal of <strong>KSh {cashoutAmount.toLocaleString()}</strong> to registered phone <strong>{farmerData.phone}</strong>.
                     </p>
                   </div>
 
-                  <div className="max-w-xs mx-auto pt-2 space-y-2">
-                    <label className="text-[11px] font-bold text-stone-300 block">
-                      Enter 4-Digit M-Pesa PIN:
+                  <div className="max-w-sm mx-auto pt-2 space-y-2 text-left">
+                    <label className="text-[11px] font-bold text-stone-300 light:text-slate-700 block">
+                      Enter AngaGuard Account Password / Passcode:
                     </label>
-                    <input
-                      type="password"
-                      maxLength={4}
-                      placeholder="••••"
-                      value={mpesaPin}
-                      onChange={(e) => setMpesaPin(e.target.value.replace(/\D/g, ''))}
-                      className="w-full bg-[#120e0c] border border-emerald-500/80 p-3 rounded-xl text-center text-xl tracking-widest text-emerald-400 font-black focus:outline-none"
-                    />
-                    {pinError && (
-                      <p className="text-rose-400 text-[11px] font-bold flex items-center justify-center space-x-1">
-                        <AlertCircle className="w-3 h-3" />
-                        <span>{pinError}</span>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your system password..."
+                        value={accountPassword}
+                        onChange={(e) => setAccountPassword(e.target.value)}
+                        className="w-full bg-[#131e30] light:bg-white border border-emerald-500/80 p-3 rounded-xl text-stone-100 light:text-slate-900 font-bold focus:outline-none focus:border-emerald-400 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3.5 text-stone-400 light:text-slate-500 hover:text-white light:hover:text-black"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    {passwordError && (
+                      <p className="text-rose-400 text-[11px] font-bold flex items-center space-x-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>{passwordError}</span>
                       </p>
                     )}
+                    <p className="text-[10px] text-stone-400 light:text-slate-500 italic">
+                      🔒 Disbursal uses Safaricom Daraja B2C API. Funds will be directly credited to your M-Pesa.
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex justify-between pt-2">
                   <button
                     onClick={() => setCashoutStep(2)}
-                    disabled={isProcessingStk}
-                    className="px-4 py-2.5 rounded-xl border border-[#443028] text-stone-400 hover:text-white"
+                    disabled={isProcessingDisbursal}
+                    className="px-4 py-2.5 rounded-xl border border-[#2d3f58] light:border-[#cbd5e1] text-stone-400 light:text-slate-600 hover:text-white light:hover:text-black"
                   >
                     &larr; Back
                   </button>
                   <button
-                    onClick={handleExecutePinAuth}
-                    disabled={isProcessingStk || mpesaPin.length !== 4}
+                    onClick={handleExecutePasswordAuth}
+                    disabled={isProcessingDisbursal || !accountPassword}
                     className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
                   >
-                    {isProcessingStk ? (
+                    {isProcessingDisbursal ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Verifying with Safaricom...</span>
+                        <span>Initiating B2C Disbursal...</span>
                       </>
                     ) : (
                       <>
-                        <Lock className="w-4 h-4" />
-                        <span>Authorize & Disburse</span>
+                        <ShieldCheck className="w-4 h-4" />
+                        <span>Confirm & Disburse to M-Pesa</span>
                       </>
                     )}
                   </button>
@@ -576,33 +573,33 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-black text-white">Disbursal Confirmed!</h3>
-                  <p className="text-xs text-stone-300 mt-1">
+                  <h3 className="text-xl font-black text-stone-100 light:text-slate-900">Disbursal Confirmed!</h3>
+                  <p className="text-xs text-stone-300 light:text-slate-600 mt-1">
                     Funds have been transferred to your Safaricom M-Pesa wallet.
                   </p>
                 </div>
 
                 {/* Printable Digital Receipt Card */}
-                <div className="bg-[#120e0c] border border-emerald-500/40 p-4 rounded-2xl space-y-2 text-left text-xs font-mono">
-                  <div className="flex justify-between border-b border-[#443028] pb-2">
-                    <span className="text-stone-400">M-Pesa Receipt:</span>
-                    <strong className="text-emerald-400 text-sm">{lastReceipt.code}</strong>
+                <div className="bg-[#131e30] light:bg-slate-50 border border-emerald-500/40 p-4 rounded-2xl space-y-2 text-left text-xs font-mono">
+                  <div className="flex justify-between border-b border-[#2d3f58] light:border-[#e2e8f0] pb-2">
+                    <span className="text-stone-400 light:text-slate-500">M-Pesa Receipt:</span>
+                    <strong className="text-emerald-400 light:text-emerald-700 text-sm">{lastReceipt.code}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Amount Paid:</span>
-                    <strong className="text-white">KSh {lastReceipt.amountKsh.toLocaleString()} (${lastReceipt.amountUsd} USD)</strong>
+                    <span className="text-stone-400 light:text-slate-500">Amount Paid:</span>
+                    <strong className="text-stone-100 light:text-slate-900">KSh {lastReceipt.amountKsh.toLocaleString()} (${lastReceipt.amountUsd} USD)</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Recipient Phone:</span>
-                    <span className="text-stone-200">{lastReceipt.phone}</span>
+                    <span className="text-stone-400 light:text-slate-500">Recipient Phone:</span>
+                    <span className="text-stone-200 light:text-slate-800">{lastReceipt.phone}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-400">Timestamp:</span>
-                    <span className="text-stone-200">{lastReceipt.date}</span>
+                    <span className="text-stone-400 light:text-slate-500">Timestamp:</span>
+                    <span className="text-stone-200 light:text-slate-800">{lastReceipt.date}</span>
                   </div>
-                  <div className="flex justify-between border-t border-[#443028] pt-2">
-                    <span className="text-stone-400">Remaining Balance:</span>
-                    <span className="font-bold text-orange-400">KSh {lastReceipt.remainingKsh.toLocaleString()}</span>
+                  <div className="flex justify-between border-t border-[#2d3f58] light:border-[#e2e8f0] pt-2">
+                    <span className="text-stone-400 light:text-slate-500">Remaining Balance:</span>
+                    <span className="font-bold text-orange-400 light:text-orange-600">KSh {lastReceipt.remainingKsh.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -621,7 +618,7 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
                         date: lastReceipt.date
                       });
                     }}
-                    className="px-4 py-2.5 bg-[#120e0c] hover:bg-[#281e19] border border-[#443028] text-stone-300 font-bold rounded-xl flex items-center space-x-1.5 cursor-pointer"
+                    className="px-4 py-2.5 bg-[#131e30] light:bg-slate-100 hover:bg-[#1c2a3e] light:hover:bg-slate-200 border border-[#2d3f58] light:border-[#cbd5e1] text-stone-300 light:text-slate-800 font-bold rounded-xl flex items-center space-x-1.5 cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
                     <span>Download Official Voucher</span>
@@ -644,3 +641,4 @@ export const FarmerDashboard = ({ theme, defaultFarmerType = 'bio-sme' }) => {
   );
 };
 
+export default FarmerDashboard;

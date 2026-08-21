@@ -3,7 +3,7 @@ import { ShoppingCart, BarChart2, CheckCircle2, ArrowUpRight, Building2, ShieldC
 import { LineGraph } from './LineGraph';
 import { downloadCSV, downloadCertificateDocument } from '../utils/downloadHelpers';
 
-export const NonBioSmeDashboard = ({ theme }) => {
+export const NonBioSmeDashboard = ({ theme, activeSection = 'overview', setActiveSection }) => {
   const [smeProfile, setSmeProfile] = useState({
     name: 'East Africa Express Fleet Freight Ltd',
     location: 'Nairobi Inland Port Depot',
@@ -35,7 +35,7 @@ export const NonBioSmeDashboard = ({ theme }) => {
 
   // Multi-step Procurement Modal State
   const [showBuyModal, setShowBuyModal] = useState(false);
-  const [buyStep, setBuyStep] = useState(1); // 1: Volume & Cost, 2: Scope Purpose, 3: Billing Info, 4: PIN 2FA, 5: Settlement Voucher
+  const [buyStep, setBuyStep] = useState(1); // 1: Volume & Cost, 2: Scope Purpose, 3: Billing Info, 4: Passcode Auth, 5: Settlement Voucher
   const [selectedPool, setSelectedPool] = useState(null);
   const [purchaseAmount, setPurchaseAmount] = useState(5.0);
   const [retirementScope, setRetirementScope] = useState('Scope 1: Logistics Diesel Fleet');
@@ -55,13 +55,13 @@ export const NonBioSmeDashboard = ({ theme }) => {
     setPurchaseAmount(5.0);
     setBuyStep(1);
     setCorporatePin('');
-    setPinError('');
+    setPasswordError('');
     setShowBuyModal(true);
   };
 
   const handleExecuteCorporateBuy = () => {
-    if (corporatePin.length !== 4 || isNaN(Number(corporatePin))) {
-      setPinError('Please enter a valid 4-digit Corporate Authorization PIN');
+    if (!corporatePin || corporatePin.length < 4) {
+      setPinError('Please enter a valid Corporate Authorization Passcode / Password');
       return;
     }
     setPinError('');
@@ -105,28 +105,32 @@ export const NonBioSmeDashboard = ({ theme }) => {
   const remainingNetLiability = Math.max(0, Number((smeProfile.gross_liability - smeProfile.retired_credits).toFixed(2)));
 
   return (
-    <div className="space-y-8 animate-fadeIn max-w-6xl mx-auto font-mono text-xs text-stone-900 dark:text-stone-100">
+    <div className="space-y-8 animate-fadeIn w-full font-mono text-xs text-stone-900 dark:text-stone-100">
       
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-[#443028]/40 gap-4">
-        <div>
-          <div className="flex items-center space-x-3">
-            <h1 className="text-2xl sm:text-3xl font-black font-sans">
-              Corporate Carbon Procurement Hub
-            </h1>
-            <span className="bg-orange-950/40 border border-orange-600/60 text-orange-400 font-mono text-xs px-3 py-1 rounded-full font-bold">
-              Institutional Offsetting
-            </span>
-          </div>
-          <p className="text-stone-600 dark:text-stone-400 text-xs mt-1 font-bold">
-            {smeProfile.name} • KRA PIN: <strong>{smeProfile.tax_pin}</strong> • {smeProfile.location}
-          </p>
+      {/* Header Banner & Corner Account Badge */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-4 border-b border-[#2d3f58]/40 light:border-[#e2e8f0] gap-4">
+        <div className="flex items-center space-x-3">
+          <h1 className="text-2xl sm:text-3xl font-black font-sans text-stone-100 light:text-slate-900">
+            Corporate Carbon Procurement Hub
+          </h1>
+          <span className="bg-orange-950/40 light:bg-orange-100 border border-orange-600/60 light:border-orange-300 text-orange-400 light:text-orange-800 font-mono text-xs px-3 py-1 rounded-full font-bold">
+            Institutional Offsetting
+          </span>
         </div>
 
+        {/* CORNER ACCOUNT BADGE & PURCHASE ACTION */}
         <div className="flex items-center space-x-3">
+          <div className="hidden sm:flex items-center space-x-2 bg-[#131e30] light:bg-white border border-emerald-500/40 light:border-emerald-600/30 px-3.5 py-1.5 rounded-2xl shadow-sm">
+            <Building2 className="w-4 h-4 text-emerald-500" />
+            <div className="text-left">
+              <p className="text-[9px] text-stone-400 light:text-slate-500 uppercase font-bold">KRA PIN: {smeProfile.tax_pin}</p>
+              <p className="font-extrabold text-stone-100 light:text-slate-900 text-xs truncate max-w-[200px]">{smeProfile.name}</p>
+            </div>
+          </div>
+
           <button
             onClick={() => handleOpenPurchase(coopCreditPools[0])}
-            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold shadow-lg transition-all cursor-pointer border border-orange-400/30 flex items-center space-x-2"
+            className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold shadow-md transition-all cursor-pointer border border-orange-400/30 flex items-center space-x-2 text-xs"
           >
             <ShoppingCart className="w-4 h-4" />
             <span>Instant Procurement &rarr;</span>

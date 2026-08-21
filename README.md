@@ -7,6 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
 [![C++17](https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=c%2B%2B)](https://isocpp.org)
+[![Docker Compose](https://img.shields.io/badge/Docker-Compose_Ready-2496ED?style=flat-square&logo=docker)](docker-compose.yml)
 [![Safaricom M-Pesa](https://img.shields.io/badge/Daraja-B2C_Settled-00C300?style=flat-square)](https://developer.safaricom.co.ke)
 [![Kenya NCR](https://img.shields.io/badge/Registry-Kenya_NCR_2026-10b981?style=flat-square)](documentation.md)
 
@@ -39,10 +40,11 @@ Traditional carbon credit verification relies on legacy Validation and Verificat
                                                                         │
                                 ┌───────────────────────────────────────┴──────────────────┐
                                 ▼                                                          ▼
-                     [React + Vite Frontend]                                     [2G Telephony Stack]
-                     • SME Corporate Web App                                     • USSD Engine (*384*55#)
+                     [Full-Length Web SaaS App]                                  [2G Telephony Stack]
+                     • Left Navigation Sidebar                                   • USSD Engine (*384*55#)
                      • 3D Kiln Digital Twin (Three.js)                           • Africa's Talking Gateway
-                     • Public Cryptographic Vault Explorer                       • Instant M-Pesa Disbursal
+                     • Corner Account Identity Badges                            • Active Voice IVR Engine
+                     • Cream/Dark Mode System Auth                               • Instant M-Pesa Disbursal
 ```
 
 ### Pod Directory Breakdown
@@ -52,26 +54,208 @@ Traditional carbon credit verification relies on legacy Validation and Verificat
 | **`core-backend/`** | Go (Gin-Gonic), SQLite (WAL), SHA-256 Cryptography | Stoichiometric dMRV validation, blockchain block minting, M-Pesa B2C split engine, spatial-temporal geofencing, ISSB report generator. |
 | **`edge-firmware/`** | C++17, WaziDev Arduino Toolchain | 5-point median sonar filter, Steinhart-Hart thermistor reading, silicon UID injection, 50-entry flash ring buffer, standalone simulator. |
 | **`ai-telephony-bridge/`** | Python 3, FastAPI, ElevenLabs | Real-time burn curve anomaly classifier, LoRaWAN forwarder, automated Swahili & English IVR voice synthesizer. |
-| **`web-frontend/`** | React 18, Vite, TypeScript, Tailwind CSS, Three.js | SME ESG corporate dashboard, interactive 3D kiln twin, farmer PWA with M-Pesa cashout, cryptographic block explorer, 2G feature phone emulator. |
+| **`web-frontend/`** | React 18, Vite, TypeScript, Tailwind CSS, Three.js | Full-length SaaS dashboard with left sidebar, 3D kiln twin, M-Pesa cashout with password auth, corner account badges, cream/dark mode. |
 
 ---
 
-## 🧪 Comprehensive Loophole Defense Matrix
+## ⚡ Quick Reference: Network Endpoints & Ports
 
-AngaGuard includes rigid, hardware-enforced mathematical defenses against all 7 physical and digital fraud attack vectors:
+| Service | Port | Local URL | Description |
+| :--- | :--- | :--- | :--- |
+| **Web Frontend** | `3000` | [http://localhost:3000](http://localhost:3000) | Full-length SaaS Portal with Left Sidebar & 3D Twin |
+| **Core Backend** | `8080` | [http://localhost:8080](http://localhost:8080) | dMRV Engine, Cryptographic Ledger, M-Pesa API |
+| **Core Stats API** | `8080` | [http://localhost:8080/api/stats](http://localhost:8080/api/stats) | Live network metrics & ledger summary |
+| **WebSocket Stream** | `8080` | `ws://localhost:8080/ws` | Real-time block minting & telemetry feed |
+| **AI Bridge** | `5000` | [http://localhost:5000](http://localhost:5000) | ML Anomaly classifier & Swahili IVR |
+| **USSD Gateway** | `8080` | [http://localhost:8080/api/ussd](http://localhost:8080/api/ussd) | Africa's Talking `*384*55#` emulator |
 
+---
+
+## 🚀 How to Run (Execution Formulas)
+
+### 📋 Prerequisites
+- **Go** (1.22+)
+- **Node.js** (18+) & **npm**
+- **Python** (3.10+)
+- **g++** / C++17 compiler & `make`
+- *(Optional for Docker mode)*: **Docker** & **Docker Compose**
+
+---
+
+### Formula 1: 🌟 One-Command Fast Run (Recommended for Local Dev)
+
+Launch all microservices (Go Core Backend, Python AI Bridge, Vite Web Frontend, and C++ Simulator) simultaneously with automatic process management and graceful shutdown:
+
+```bash
+make run
 ```
-┌──────────────────────────────────────┬─────────────────────────────────────────────────────────────┐
-│ Vulnerability / Attack Vector        │ Technical Engineering Defense Strategy                      │
-├──────────────────────────────────────┼─────────────────────────────────────────────────────────────┤
-│ 1. Chamber Core Fusion (>450°C)      │ Air-Gapped Standoff 15cm above lid + Steinhart-Hart model   │
-│ 2. "Ash Cheating" (False Volume)     │ Dual-Metric Curve: Reject volume collapse >90% (open ash)   │
-│ 3. Sand-Padding Attack               │ Thermal Mass Coherence Check (Sluggish ΔT/Δt < 1.2°C/min)   │
-│ 4. Acoustic Noise Scatter            │ Two-Point Static Calibration (t0 pre-burn vs cooled t_final)│
-│ 5. Multi-Drum Sensor Swap            │ Factory-Burned Silicon MCU Unique ID tied 1-to-1 to coop    │
-│ 6. Stolen Hardware Burn              │ Spatial-Temporal Geo-Fencing & LoRa cell triangulation      │
-│ 7. Offline Rural Connectivity        │ 50-Log Edge Flash Ring Buffer + 2G USSD (*384*55#) fallback │
-└──────────────────────────────────────┴─────────────────────────────────────────────────────────────┘
+*(or equivalently: `./start.sh` or `make dev`)*
+
+When running:
+1. Open [http://localhost:3000](http://localhost:3000) in your browser.
+2. Navigate between personas (Smallholder Farmer, Cooperative Union, Bio SME, Non-Bio SME) using the **persistent Left Sidebar**.
+3. Press `Ctrl+C` in the terminal at any time to cleanly stop all running services.
+
+---
+
+### Formula 2: 🐳 Docker Compose Run (Production & Containerized Mode)
+
+To run the entire system inside isolated Docker containers:
+
+```bash
+# Build and launch all containers in detached mode
+make docker-up
+
+# Or using native docker compose
+docker compose up --build -d
+```
+
+To view logs or stop the containers:
+```bash
+# View live container logs
+docker compose logs -f
+
+# Tear down the stack
+make docker-down
+```
+
+Access the dashboard at [http://localhost:3000](http://localhost:3000).
+
+---
+
+### Formula 3: 🖥️ Multi-Terminal Granular Run (Service by Service)
+
+#### Terminal 1 — Go Core Backend & dMRV Oracle (Port 8080)
+```bash
+make run-backend
+# or: cd core-backend && go run cmd/server/main.go
+```
+
+#### Terminal 2 — Python AI Anomaly & Telephony Bridge (Port 5000)
+```bash
+make run-bridge
+# or: cd ai-telephony-bridge && uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+```
+
+#### Terminal 3 — React Web Frontend (Port 3000)
+```bash
+make run-frontend
+# or: cd web-frontend && npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 📜 Credit Certification & Legal Entity Framework
+
+### 1. Which Legal Entity Certifies AngaGuard Credits?
+AngaGuard carbon credits (Biochar Carbon Removal Certificates - CORCs) are certified under a **dual sovereign and international dMRV legal architecture**:
+
+1. **Sovereign Statutory Entity (Republic of Kenya)**:
+   - **Entity**: **Kenya National Carbon Registry (Kenya NCR)**.
+   - **Statutory Law**: **Climate Change (Amendment) Act 2024** and the **Environmental Management and Co-ordination Act (EMCA 2026)**.
+   - **Oversight Body**: The **National Environment Management Authority (NEMA)** and the **Climate Change Directorate (CCD)** under Kenya's Ministry of Environment, Climate Change and Forestry.
+   - **Role**: Validates national carbon asset registration, executes sovereign tracking IDs (e.g. `KE-NCR-2026-cbc58516e738`), and manages Article 6.2 / 6.4 Corresponding Adjustments to prevent double-counting.
+
+2. **International dMRV Standard & Exchange**:
+   - **Methodology**: **Puro.earth Biochar Methodology (Edition 2025/2026)** and **ISO 14064-2:2019** (Greenhouse Gas Project Quantification).
+   - **Marketplace Clearing**: **Carbonmark Sandbox API** (instant spot market liquidity index at $135.00 / tCO2e).
+
+### 2. How the AngaGuard Oracle Bridges Physical Kilns to Certification:
+```
+[Physical Smart Kiln] ──► [WaziDev MCU SHA-256 Hashed Telemetry]
+                                    │
+                                    ▼
+                     [Go dMRV Stoichiometric Engine]
+                                    │
+    ┌───────────────────────────────┴───────────────────────────────┐
+    ▼                                                               ▼
+[SHA-256 Immutable Ledger]                         [Kenya NCR Sovereign Certificate]
+• Block Hash                                       • Certificate: KE-NCR-2026-XXXX
+• Biochar Mass: 79.8 KG                            • Puro.earth / ISO 14064-2 Compliant
+• Net CO2e: 0.202 tCO2e                            • M-Pesa B2C Payout: KSh 1,313.63
+```
+
+---
+
+## 🔬 Hardware Demonstration: Biochar vs. Ash Cheating
+
+### 1. Physical & Scientific Differences
+
+| Parameter | Legitimate Biochar Pyrolysis | Ash Cheating (Complete Combustion) |
+| :--- | :--- | :--- |
+| **Atmosphere** | **Oxygen-limited (Anoxic)** | **Excess Oxygen (Open Fire)** |
+| **Chemical Output** | Polycyclic aromatic carbon matrix ($C_{\text{org}} \ge 75\%$) | Mineral ash ($K_2O, CaO, SiO_2$), Carbon escaped as $CO_2$ |
+| **Volume Retention ($\eta$)** | **30% – 50% skeletal volume** (height: 85cm $\to$ ~30cm) | **< 10% catastrophic collapse** (height: 85cm $\to$ < 8cm) |
+| **Thermal Profile** | Controlled plateau hold (400°C–650°C for >35 min) | Sharp runaway combustion followed by rapid thermal decay |
+| **dMRV Oracle Action** | **MINTED & SETTLED (M-Pesa Disbursed)** | **REJECTED (Fraud Code: `ASH_CHEATING_DETECTED`)** |
+
+### 2. How to Run the Live Hardware Demo
+
+While your stack is running, execute the following commands in your terminal to see the live dMRV Oracle and 3D Digital Twin respond in real time:
+
+#### Step A: Stream Valid Biochar Pyrolysis (Expected: Pass & Mint)
+```bash
+make feed-valid
+```
+- **What Happens**:
+  - The HC-SR04 Sonar detects height changing from 85cm to 30cm ($\eta = 35.3\% \ge 25\%$).
+  - Steinhart-Hart temperature model confirms peak core temperature of 571.7°C.
+  - The Go Oracle seals Block #1 on the ledger, issues tracking ID `KE-NCR-2026-XXXX`, and triggers instant Safaricom M-Pesa B2C payout of **KSh 1,313.63** to the farmer.
+  - The 3D Kiln in the Web Dashboard renders an active thermal glow.
+
+#### Step B: Stream "Ash Cheating" Fraud Attack (Expected: Oracle Block)
+```bash
+make feed-ash-cheating
+```
+- **What Happens**:
+  - The Sonar sensor detects height dropping from 85cm to 8cm ($\eta = 9.4\% < 25\%$ minimum threshold).
+  - The AI Bridge and Go Oracle trigger rule `ASH_CHEATING_DETECTED (Volume retention 0.094 < 0.25)`.
+  - HTTP 422 `REJECTED_PHYSICS_VIOLATION` is broadcasted via WebSocket.
+  - Zero blockchain blocks minted; zero M-Pesa funds disbursed.
+
+#### Step C: Stream "Sand Padding" Fraud Attack (Expected: Thermal Mass Rejection)
+```bash
+make feed-sand-padding
+```
+- **What Happens**:
+  - Inert sand added to drum creates heavy thermal inertia.
+  - Temperature heating rate is only $0.35^\circ\text{C/min}$ (normal biochar is $> 1.2^\circ\text{C/min}$).
+  - Oracle flags `SAND_PADDING_DETECTED: Sluggish thermal ramp rate` and rejects the payload.
+
+---
+
+## 🎨 UI/UX Enhancements & Design Standards
+
+The AngaGuard frontend includes a complete professional SaaS layout:
+
+1. **Full-Length Layout with Persistent Left Sidebar**:
+   - Organized navigation sections (Overview, Fleet Kilns, Smallholder Members, Spot Index, Audit Ledger, ISSB Reports).
+   - Telephony shortcuts for **2G USSD (*384*55#)** and **AI Voice Assistant**.
+2. **Dedicated Corner Account Identity Badges**:
+   - Account names (e.g. *Kakamega Sugarcane Coop Union*, *Kizito Grain Millers Ltd*, *Wanjala Wafula*) are placed neatly in dashboard corners, leaving top bars clean and uncluttered.
+3. **Refined Cream / Slate Grey Light Mode**:
+   - Soft cream-grey palette (`#f4f6f8`) with dark charcoal text (`#0f172a` / `#1e293b`), crisp slate borders (`#e2e8f0`), and high-contrast badges with zero washed-out text.
+4. **Secure System Password Disbursals**:
+   - Removed M-Pesa PIN prompts; farmers authorize M-Pesa B2C withdrawals using their **System Account Password** via Safaricom Daraja B2C rails.
+5. **Interactive AI Voice Assistant (Swahili & English IVR)**:
+   - Voice assistant with Web Speech API and ElevenLabs audio playback, pulsing audio waveform, and live Swahili/English transcripts.
+
+---
+
+## 🧪 Automated Testing Suite
+
+Run unit tests across Go, C++, and Python in one command:
+```bash
+make test
+```
+
+Test 2G USSD (*384*55#) via curl:
+```bash
+curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "sessionId=AT-001&phoneNumber=+254712345678&serviceCode=*384*55#&text=" \
+  http://localhost:8080/api/ussd
 ```
 
 ---
@@ -86,47 +270,6 @@ AngaGuard includes rigid, hardware-enforced mathematical defenses against all 7 
 │         (Safaricom M-Pesa)    │   (Logistics & Soil Return)   │     (Software Take-Rate)    │
 │           $50.00 (37.0%)      │         $20.00 (14.8%)        │        $65.00 (48.2%)       │
 └───────────────────────────────┴───────────────────────────────┴─────────────────────────────┘
-```
-
----
-
-## 🚀 Quick Start & Development
-
-### 1. Prerequisites
-* **Go** 1.22+
-* **Node.js** 18+ & **npm**
-* **Python** 3.10+
-* **g++** / C++17 compiler
-
-### 2. Build & Test Entire Suite in One Command
-```bash
-make test
-```
-
-### 3. Run Backend Services
-```bash
-# Terminal 1: Launch Go Core Backend & dMRV Oracle (Port 8080)
-make run-backend
-
-# Terminal 2: Launch Python AI & Telephony Bridge (Port 5000)
-make run-bridge
-
-# Terminal 3: Launch React Web Frontend (Port 3000)
-make run-frontend
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to interact with the full platform.
-
-### 4. Run Edge Hardware Simulator
-```bash
-# Legitimate burn simulation
-make simulate-valid
-
-# Test Ash Cheating attack vector (Blocked by Oracle)
-make simulate-ash-cheating
-
-# Test Sand Padding attack vector (Blocked by Oracle)
-make simulate-sand-padding
 ```
 
 ---
