@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang=en>
 <head>
   <meta charset=UTF-8>
@@ -159,44 +159,6 @@ Click 'Connect WaziDev USB' above to select your Arduino COM Port.</pre>
  }
  }
  }
- }
- } catch (err) {
- log(Serial reading error: , text-rose-400);
- } finally {
- reader.releaseLock();
- }
- }
-
- async function forwardToCloud(payload) {
- const url = document.getElementById(targetUrl).value.trim() || /api/telemetry;
- log([Forwarding] POST ..., text-amber-300);
-
- try {
- const response = await fetch(url, {
- method: POST,
- headers: { Content-Type: application/json },
- body: JSON.stringify(payload)
- });
-
- const data = await response.json();
- forwardedCount++;
- document.getElementById(packetCount).innerText = Packets Forwarded: ;
-
- if (response.ok) {
- log([Cloud 200 OK] Biochar: kg | CORC: | Payout: KSh , text-emerald-400 font-bold);
- } else {
- log([Cloud Rejection] , text-rose-400 font-bold);
- }
- } catch (err) {
- log([Cloud Network Error] , text-rose-500);
- }
- }
-
- async function sendTestPacket() {
- const testPacket = {
- device_uid: MCU-WAZIDEV-77A9,
- kiln_id: KILN-001,
- coop_id: COOP-KAKAMEGA-01,
  farmer_phone: +254712345678,
  initial_height_cm: 85.0,
  final_height_cm: 30.0,

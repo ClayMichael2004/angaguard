@@ -122,7 +122,21 @@ export const HardwareBridgeModal = ({ isOpen, onClose }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
+
+      const rawText = await res.text();
+      let data = {};
+      try {
+        data = rawText ? JSON.parse(rawText) : {};
+      } catch (parseErr) {
+        if (!res.ok) {
+          addLog('[Cloud HTTP ' + res.status + ' Error] Endpoint returned non-JSON. If your Go backend is deployed separately, enter the full Render backend URL above (e.g., https://your-backend.onrender.com/api/telemetry).', 'error');
+        } else {
+          addLog('[Cloud 200 OK] Telemetry accepted (Raw response: ' + (rawText || 'OK') + ')', 'success');
+          setForwardedCount((prev) => prev + 1);
+        }
+        return;
+      }
+
       if (res.ok) {
         setForwardedCount((prev) => prev + 1);
         addLog('[Cloud 200 OK] Biochar: ' + (data.biochar_yield_kg || 'Validated') + 'kg | CORC: ' + (data.corc_mint_id || 'MINTED') + ' | Payout: KSh ' + (data.farmer_payout_ksh || '6,450'), 'success');
