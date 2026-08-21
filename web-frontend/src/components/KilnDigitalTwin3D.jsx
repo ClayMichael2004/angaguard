@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Flame, Thermometer, Layers, Radio, ShieldCheck, Eye, Layers3 } from 'lucide-react';
 
-export const KilnDigitalTwin3D = ({ theme = 'dark' }) => {
+export const KilnDigitalTwin3D = ({ theme = 'dark', showHeader = true }) => {
   const mountRef = useRef(null);
 
   // Multi-Kiln List Switcher
@@ -40,7 +40,7 @@ export const KilnDigitalTwin3D = ({ theme = 'dark' }) => {
 
     const container = mountRef.current;
     const width = container.clientWidth;
-    const height = container.clientHeight || 420;
+    const height = container.clientHeight || 400;
 
     // Scene Setup
     const scene = new THREE.Scene();
@@ -152,68 +152,64 @@ export const KilnDigitalTwin3D = ({ theme = 'dark' }) => {
 
     particlesGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     const particleMat = new THREE.PointsMaterial({
-      color: 0xea580c,
-      size: 0.1,
+      color: 0xf97316,
+      size: 0.085,
       transparent: true,
-      opacity: isBurning ? 0.85 : 0.1,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending
     });
     const particleSystem = new THREE.Points(particlesGeo, particleMat);
-    kilnGroup.add(particleSystem);
+    if (isBurning) {
+      kilnGroup.add(particleSystem);
+    }
 
-    // Mouse Interaction for 3D Drag Rotation
-    let isMouseDown = false;
+    // Interactive Orbit Mouse Drag
+    let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
     const onMouseDown = (e) => {
-      isMouseDown = true;
+      isDragging = true;
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
     const onMouseMove = (e) => {
-      if (!isMouseDown) return;
+      if (!isDragging) return;
       const deltaX = e.clientX - previousMousePosition.x;
       const deltaY = e.clientY - previousMousePosition.y;
 
-      kilnGroup.rotation.y += deltaX * 0.01;
-      kilnGroup.rotation.x += deltaY * 0.005;
-      kilnGroup.rotation.x = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, kilnGroup.rotation.x));
+      kilnGroup.rotation.y += deltaX * 0.008;
+      kilnGroup.rotation.x += deltaY * 0.008;
 
       previousMousePosition = { x: e.clientX, y: e.clientY };
     };
 
     const onMouseUp = () => {
-      isMouseDown = false;
+      isDragging = false;
     };
 
-    container.addEventListener('mousedown', onMouseDown);
+    const dom = renderer.domElement;
+    dom.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
 
     // Animation Loop
     let animationFrameId;
-    let clock = new THREE.Clock();
-
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
 
-      if (!isMouseDown) {
-        kilnGroup.rotation.y += 0.004;
+      if (!isDragging) {
+        kilnGroup.rotation.y += 0.003;
       }
 
       if (isBurning) {
         const positions = particleSystem.geometry.attributes.position.array;
         for (let i = 0; i < particleCount; i++) {
           positions[i * 3 + 1] += particleSpeeds[i];
-          if (positions[i * 3 + 1] > 2.0) {
+          if (positions[i * 3 + 1] > 1.4) {
             positions[i * 3 + 1] = -1.2;
-            positions[i * 3] = (Math.random() - 0.5) * 1.8;
-            positions[i * 3 + 2] = (Math.random() - 0.5) * 1.8;
           }
         }
         particleSystem.geometry.attributes.position.needsUpdate = true;
-        thermalPointLight.intensity = 3.2 + Math.sin(elapsed * 6) * 1.1;
       }
 
       renderer.render(scene, camera);
@@ -222,9 +218,9 @@ export const KilnDigitalTwin3D = ({ theme = 'dark' }) => {
     animate();
 
     const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight || 420;
+      if (!mountRef.current) return;
+      const w = mountRef.current.clientWidth;
+      const h = mountRef.current.clientHeight || 400;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -234,7 +230,7 @@ export const KilnDigitalTwin3D = ({ theme = 'dark' }) => {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      container.removeEventListener('mousedown', onMouseDown);
+      dom.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
       window.removeEventListener('resize', handleResize);
@@ -243,77 +239,79 @@ export const KilnDigitalTwin3D = ({ theme = 'dark' }) => {
   }, [biocharHeightCM, isBurning, wireframe, theme, selectedKilnId]);
 
   return (
-    <div className="space-y-6 animate-fadeIn font-mono text-xs">
+    <div className="space-y-4 animate-fadeIn font-mono text-xs">
       
-      {/* Header & Multi-Kiln Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#443028]/40 gap-4">
-        <div>
-          <div className="flex items-center space-x-3">
-            <h3 className="text-lg font-bold text-orange-500 font-sans">
-              3D Smart Kiln Representation & Sensor Telemetry
-            </h3>
-            <span className="bg-emerald-950/40 border border-emerald-700/60 text-emerald-500 font-mono text-[11px] px-2.5 py-0.5 rounded-full flex items-center space-x-1 font-bold">
-              <Radio className="w-3 h-3 animate-pulse" />
-              <span>Sensors Live</span>
-            </span>
+      {/* Optional Top Header & Multi-Kiln Switcher */}
+      {showHeader && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-[#443028]/40 gap-3">
+          <div>
+            <div className="flex items-center space-x-3">
+              <h3 className="text-base font-bold text-orange-500 font-sans">
+                3D Smart Kiln Representation & Sensor Telemetry
+              </h3>
+              <span className="bg-emerald-950/40 border border-emerald-700/60 text-emerald-500 font-mono text-[11px] px-2 py-0.5 rounded-full flex items-center space-x-1 font-bold">
+                <Radio className="w-3 h-3 animate-pulse" />
+                <span>Sensors Live</span>
+              </span>
+            </div>
+            <p className="text-stone-700 dark:text-stone-300 text-xs mt-0.5 font-bold">
+              Tracks residue height levels & pyrolysis temps to accurately determine biochar production & carbon credits.
+            </p>
           </div>
-          <p className="text-stone-700 dark:text-stone-300 text-xs mt-1 font-bold">
-            Tracks residue height levels & pyrolysis temps to accurately determine biochar production & carbon credits.
-          </p>
-        </div>
 
-        {/* Multi-Kiln Dropdown Selector */}
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2 bg-[#1c1512] border border-[#443028] px-3 py-1.5 rounded-xl">
-            <Layers3 className="w-4 h-4 text-orange-500" />
-            <select
-              value={selectedKilnId}
-              onChange={(e) => handleKilnChange(e.target.value)}
-              className="bg-transparent font-mono text-xs font-bold text-white focus:outline-none cursor-pointer"
+          {/* Multi-Kiln Dropdown Selector */}
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 bg-[#1c1512] border border-[#443028] px-2.5 py-1.5 rounded-xl">
+              <Layers3 className="w-4 h-4 text-orange-500" />
+              <select
+                value={selectedKilnId}
+                onChange={(e) => handleKilnChange(e.target.value)}
+                className="bg-transparent font-mono text-xs font-bold text-white focus:outline-none cursor-pointer"
+              >
+                {kilns.map((k) => (
+                  <option key={k.id} value={k.id} className="bg-[#1c1512] text-white">
+                    {k.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              onClick={() => setWireframe(!wireframe)}
+              className="px-2.5 py-1.5 rounded-xl text-xs font-mono border border-[#443028] text-stone-800 dark:text-stone-200 hover:border-orange-500 cursor-pointer font-bold"
             >
-              {kilns.map((k) => (
-                <option key={k.id} value={k.id} className="bg-[#1c1512] text-white">
-                  {k.name}
-                </option>
-              ))}
-            </select>
+              {wireframe ? 'Mesh' : 'Wire'}
+            </button>
           </div>
+        </div>
+      )}
 
-          <button
-            onClick={() => setWireframe(!wireframe)}
-            className="px-3 py-1.5 rounded-xl text-xs font-mono border border-[#443028] text-stone-800 dark:text-stone-200 hover:border-orange-500 cursor-pointer font-bold"
-          >
-            {wireframe ? 'Mesh' : 'Wire'}
-          </button>
+      {/* Sensor Ribbon Status */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+        <div className="p-2.5 rounded-xl bg-[#1c1512] border border-[#443028] flex items-center space-x-2 text-amber-400 font-bold">
+          <Thermometer className="w-4 h-4" />
+          <span>Skin Temp: {outerTempC}°C</span>
+        </div>
+        <div className="p-2.5 rounded-xl bg-[#1c1512] border border-[#443028] flex items-center space-x-2 text-orange-400 font-bold">
+          <Flame className="w-4 h-4" />
+          <span>Core Temp: ~{coreEstTempC}°C</span>
+        </div>
+        <div className="p-2.5 rounded-xl bg-[#1c1512] border border-[#443028] flex items-center space-x-2 text-emerald-400 font-bold">
+          <Layers className="w-4 h-4" />
+          <span>Yield: {biocharYieldKg} KG ({creditYieldTons} tCO2e)</span>
         </div>
       </div>
 
       {/* 3D Canvas Viewport + Sensor Controls */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Three.js Canvas */}
-        <div className="lg:col-span-2 rounded-2xl border border-[#443028] overflow-hidden relative shadow-lg min-h-[420px] cursor-grab active:cursor-grabbing">
-          <div ref={mountRef} className="w-full h-[420px]" />
+        <div className="lg:col-span-2 rounded-2xl border border-[#443028] overflow-hidden relative shadow-lg min-h-[380px] h-[380px] cursor-grab active:cursor-grabbing bg-[#120e0c]">
+          <div ref={mountRef} className="w-full h-full" />
 
-          {/* Floating Sensor Telemetry HUD */}
-          <div className="absolute top-4 left-4 p-4 rounded-xl bg-[#120e0c]/90 backdrop-blur-md border border-[#443028] text-xs font-mono space-y-2 text-stone-200 pointer-events-none shadow-xl">
-            <div className="flex items-center space-x-2 text-amber-500 font-bold border-b border-[#443028] pb-1">
-              <Thermometer className="w-4 h-4" />
-              <span>Outer Thermistor: {outerTempC}°C</span>
-            </div>
-            <div className="flex items-center space-x-2 text-orange-500 font-bold">
-              <Flame className="w-4 h-4" />
-              <span>Core Temp (Steinhart-Hart): {coreEstTempC}°C</span>
-            </div>
-            <div className="flex items-center space-x-2 text-emerald-500 font-bold">
-              <Layers className="w-4 h-4" />
-              <span>Biochar Yield: {biocharYieldKg} KG ({creditYieldTons} tCO2e)</span>
-            </div>
-          </div>
-
-          <div className="absolute bottom-4 right-4 bg-[#1c1512]/90 px-3 py-1.5 rounded-lg text-[11px] font-mono text-stone-300 pointer-events-none flex items-center space-x-1 border border-[#443028]">
+          <div className="absolute bottom-3 right-3 bg-[#1c1512]/90 px-2.5 py-1 rounded-lg text-[10px] font-mono text-stone-300 pointer-events-none flex items-center space-x-1 border border-[#443028]">
             <Eye className="w-3.5 h-3.5 text-orange-500" />
-            <span>Drag 3D Barrel</span>
+            <span>Click & Drag 3D Barrel</span>
           </div>
         </div>
 
